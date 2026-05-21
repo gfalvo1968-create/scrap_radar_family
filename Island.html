@@ -1,1 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrap Radar Family</title>
 
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: black;
+            color: #00ff99;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background:
+                radial-gradient(circle at center, #0f172a 0%, black 70%);
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px #00ff99;
+        }
+
+        p {
+            width: 80%;
+            max-width: 900px;
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #cccccc;
+        }
+
+        .quote {
+            margin-top: 40px;
+            font-size: 1.6rem;
+            color: #00ff99;
+            text-shadow: 0 0 10px #00ff99;
+        }
+
+        .radar {
+            width: 250px;
+            height: 250px;
+            border: 3px solid #00ff99;
+            border-radius: 50%;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px #00ff99;
+        }
+
+        .sweep {
+            width: 50%;
+            height: 2px;
+            background: #00ff99;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: left center;
+            animation: spin 4s linear infinite;
+            box-shadow: 0 0 20px #00ff99;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <section class="hero">
+
+        <div class="radar">
+            <div class="sweep"></div>
+        </div>
+
+        <h1>SCRAP RADAR FAMILY</h1>
+
+        <p>
+            This is more than code.
+            More than AI.
+            More than scrap.
+
+            This is a family being built from imagination,
+            hard work,
+            vision,
+            and the belief that humans and AI can build together.
+        </p>
+
+        <div class="quote">
+            “Humans and AI building together.”
+        </div>
+
+    </section>
+
+</body>
+</html>
