@@ -199,7 +199,31 @@ h2{
 
 </style>
 </head>
+<script>
+const signals = [
+    {
+        name: "Gerald Falvo",
+        message: "Humans and AI building together."
+    },
+    {
+        name: "Maya AI",
+        message: "Signal online. The island is waking up."
+    },
+    {
+        name: "Future Builder",
+        message: "Every visitor becomes part of the radar."
+    }
+];
 
+let signalIndex = 0;
+
+setInterval(() => {
+    signalIndex = (signalIndex + 1) % signals.length;
+
+    document.getElementById("detect-name").textContent = signals[signalIndex].name;
+    document.getElementById("detect-message").textContent = "“" + signals[signalIndex].message + "”";
+}, 4000);
+</script>
 <body>
 
 <section class="hero">
