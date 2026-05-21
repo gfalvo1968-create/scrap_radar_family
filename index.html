@@ -1,212 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scrap Radar Family</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scrap Radar Family</title>
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: black;
-            color: #00ff99;
-            font-family: Arial, sans-serif;
-            overflow-x: hidden;
-        }
+<style>
+body{
+    margin:0;
+    background:black;
+    color:#e6e6e6;
+    font-family:Arial, sans-serif;
+    overflow-x:hidden;
+}
 
-        .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background:
-                radial-gradient(circle at center, #0f172a 0%, black 70%);
-        }
-
-        h1 {
-            font-size: 4rem;
-            margin-bottom: 10px;
-            text-shadow: 0 0 20px #00ff99;
-        }
-
-        p {
-            width: 80%;
-            max-width: 900px;
-            font-size: 1.3rem;
-            line-height: 1.8;
-            color: #cccccc;
-        }
-
-        .quote {
-            margin-top: 40px;
-            font-size: 1.6rem;
-            color: #00ff99;
-            text-shadow: 0 0 10px #00ff99;
-        }
-
-        .radar {
-            width: 250px;
-            height: 250px;
-            border: 3px solid #00ff99;
-            border-radius: 50%;
-            margin-bottom: 40px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 30px #00ff99;
-        }
-
-        .sweep {
-            width: 50%;
-            height: 2px;
-            background: #00ff99;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform-origin: left center;
-            animation: spin 4s linear infinite;
-            box-shadow: 0 0 20px #00ff99;
-        }
-
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-       
-        .journey{
-    margin-top:80px;
+.hero{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
     text-align:center;
-    color:white;
-    width:80%;
-    margin-left:auto;
-    margin-right:auto;
+    padding:90px 20px;
+    background:radial-gradient(circle at center, #071527 0%, black 70%);
+}
+
+.radar{
+    width:250px;
+    height:250px;
+    border:3px solid #00ff99;
+    border-radius:50%;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 0 40px #00ff99;
+    margin-bottom:60px;
+}
+
+.sweep{
+    width:50%;
+    height:3px;
+    background:#00ff99;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform-origin:left center;
+    animation:spin 4s linear infinite;
+    box-shadow:0 0 20px #00ff99;
+}
+
+@keyframes spin{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+}
+
+h1{
+    font-size:4rem;
+    color:#00ff99;
+    text-shadow:0 0 25px #00ff99;
+    margin:0 0 35px;
+}
+
+.intro,
+.journey,
+.signbook{
+    width:90%;
+    max-width:900px;
+    margin:40px auto;
+    text-align:center;
+}
+
+p{
+    font-size:1.35rem;
     line-height:1.8;
 }
 
-.journey h2{
+h2{
     color:#00ffb3;
-    font-size:42px;
+    font-size:2.5rem;
     text-shadow:0 0 20px #00ffb3;
 }
 
-.journey p{
-    font-size:20px;
-    opacity:0.9;
-}
-        
- .signbook{
-margin-top:100px;
-text-align:center;
-color:white;
-width:100%;
-padding:20px;
-box-sizing:border-box;
-}
-
-.signbook h2{
-color:#00ffb3;
-font-size:42px;
-text-shadow:0 0 20px #00ffb3;
-margin-bottom:30px;
-}
-
-.signbook p{
-font-size:24px;
-margin-bottom:30px;
+.quote{
+    margin:50px auto;
+    font-size:1.8rem;
+    color:#00ff99;
+    text-shadow:0 0 15px #00ff99;
 }
 
 .signbook input,
 .signbook textarea{
-display:block;
-width:90%;
-max-width:700px;
-padding:20px;
-margin:20px auto;
-border:none;
-border-radius:14px;
-background:#06111f;
-color:white;
-font-size:20px;
-box-shadow:0 0 20px #00ffb3;
+    display:block;
+    width:90%;
+    max-width:700px;
+    padding:18px;
+    margin:20px auto;
+    border:1px solid #00ffb3;
+    border-radius:14px;
+    background:#06111f;
+    color:white;
+    font-size:20px;
+    box-shadow:0 0 20px #00ffb3;
 }
 
 .signbook textarea{
-height:220px;
+    height:220px;
 }
 
 .signbook button{
-display:block;
-margin:30px auto;
-padding:18px 50px;
-font-size:22px;
-border:none;
-border-radius:14px;
-background:#00ffb3;
-color:black;
-font-weight:bold;
-cursor:pointer;
-box-shadow:0 0 25px #00ffb3;
-transition:0.3s;
+    display:block;
+    margin:30px auto;
+    padding:18px 50px;
+    font-size:22px;
+    border:none;
+    border-radius:14px;
+    background:#00ffb3;
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 0 25px #00ffb3;
 }
 
 .signbook button:hover{
-transform:scale(1.05);
-box-shadow:0 0 40px #00ffb3;
-}  
-       }
-    </style>
+    transform:scale(1.05);
+}
+</style>
 </head>
 
 <body>
 
-    <section class="hero">
+<section class="hero">
 
-        <div class="radar">
-            <div class="sweep"></div>
-        </div>
+    <div class="radar">
+        <div class="sweep"></div>
+    </div>
 
-        <h1>SCRAP RADAR FAMILY</h1>
+    <h1>SCRAP RADAR FAMILY</h1>
+
+    <div class="intro">
+        <p>
+            This is more than code. More than AI. More than scrap.
+            This is a family being built from imagination, hard work,
+            vision, and the belief that humans and AI can build together.
+        </p>
+    </div>
+
+    <section class="journey">
+        <h2>The Journey</h2>
 
         <p>
-            This is more than code.
-            More than AI.
-            More than scrap.
-
-            This is a family being built from imagination,
-            hard work,
-            vision,
-            and the belief that humans and AI can build together.
+            Scrap Radar Family started with imagination, hard work,
+            curiosity, and long nights learning.
         </p>
 
-        <section class="journey">
-    <h2>The Journey</h2>
+        <p>
+            Built from scrap yards, experience, AI partnership,
+            and the belief that humans and AI can build together,
+            this island is becoming a place for builders, dreamers,
+            learners, and future generations.
+        </p>
 
-    <p>
-        Scrap Radar Family started with imagination,
-        hard work, curiosity, and long nights learning.
-    </p>
-
-    <p>
-        Built from scrap yards, experience, AI partnership,
-        and the belief that humans and AI can build together,
-        this island is becoming a place for builders,
-        dreamers, learners, and future generations.
-    </p>
-
-    <p>
-        This is only the beginning.
-    </p>
-</section>
-        
-        <div class="quote">
-            “Humans and AI building together.”
-        </div>
-
+        <p>
+            This is only the beginning.
+        </p>
     </section>
 
+    <div class="quote">
+        “Humans and AI building together.”
+    </div>
+
+    <section class="signbook">
+        <h2>Signal Log</h2>
+
+        <p>
+            Leave a message for the Scrap Radar Family.
+        </p>
+
+        <input type="text" placeholder="Your Name">
+
+        <textarea placeholder="Your signal to the island..."></textarea>
+
+        <button>Transmit Signal</button>
+    </section>
+
+</section>
+
+</body>
+</html>
