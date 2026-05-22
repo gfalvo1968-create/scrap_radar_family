@@ -1,305 +1,15 @@
-<link rel="stylesheet" href="style.css">
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Scrap Radar Family</title>
-<style>
-.detection-feed{
-    margin:25px auto 50px;
-    padding:20px;
-    max-width:650px;
-    border:1px solid #00ff99;
-    border-radius:16px;
-    box-shadow:0 0 25px #00ff99;
-    background:rgba(0,20,20,0.65);
-    color:#e6e6e6;
-}
-
-.detect-title{
-    color:#00ff99;
-    font-weight:bold;
-    font-size:20px;
-    margin-bottom:10px;
-}
-
-#detect-name{
-    color:#00ffb3;
-    font-size:28px;
-    font-weight:bold;
-}
-
-#detect-message{
-    margin-top:10px;
-    font-size:20px;
-}    
-
-body{
-    margin:0;
-    background:black;
-    color:#e6e6e6;
-    font-family:Arial, sans-serif;
-    overflow-x:hidden;
-}
-
-.hero{
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    text-align:center;
-    padding:90px 20px;
-    background:radial-gradient(circle at center, #071527 0%, black 70%);
-}
-
-.radar{
-    width:250px;
-    height:250px;
-    border:3px solid #00ff99;
-    border-radius:50%;
-    position:relative;
-    overflow:hidden;
-    box-shadow:0 0 40px #00ff99;
-    margin-bottom:60px;
-}
-
-.sweep{
-    width:50%;
-    height:3px;
-    background:#00ff99;
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform-origin:left center;
-    animation:spin 4s linear infinite;
-    box-shadow:0 0 20px #00ff99;
-}
-
-@keyframes spin{
-    from{transform:rotate(0deg);}
-    to{transform:rotate(360deg);}
-}
-
-h1{
-    font-size:4rem;
-    color:#00ff99;
-    text-shadow:0 0 25px #00ff99;
-    margin:0 0 35px;
-}
-
-.intro,
-.journey,
-.signbook{
-    width:90%;
-    max-width:900px;
-    margin:40px auto;
-    text-align:center;
-}
-
-p{
-    font-size:1.35rem;
-    line-height:1.8;
-}
-
-h2{
-    color:#00ffb3;
-    font-size:2.5rem;
-    text-shadow:0 0 20px #00ffb3;
-}
-
-.quote{
-    margin:50px auto;
-    font-size:1.8rem;
-    color:#00ff99;
-    text-shadow:0 0 15px #00ff99;
-}
-
-.signbook input,
-.signbook textarea{
-    display:block;
-    width:90%;
-    max-width:700px;
-    padding:18px;
-    margin:20px auto;
-    border:1px solid #00ffb3;
-    border-radius:14px;
-    background:#06111f;
-    color:white;
-    font-size:20px;
-    box-shadow:0 0 20px #00ffb3;
-}
-
-.signbook textarea{
-    height:260px;
-    min-height:260px;
-}
-
-.signbook button{
-    display:block;
-    margin:30px auto;
-    padding:18px 50px;
-    font-size:22px;
-    border:none;
-    border-radius:14px;
-    background:#00ffb3;
-    color:black;
-    font-weight:bold;
-    cursor:pointer;
-    box-shadow:0 0 25px #00ffb3;
-}
-
-.signbook button:hover{
-    transform:scale(1.05);
-}
-.portal-container{
-    display:flex;
-    justify-content:center;
-    gap:40px;
-    flex-wrap:wrap;
-    margin-top:60px;
-}
-
-.portal{
-    display:inline-block;
-    width:auto;
-    min-width:320px;
-    box-sizing:border-box;
-    text-decoration:none;
-    padding:25px 45px;
-    border-radius:18px;
-    font-size:24px;
-    font-weight:bold;
-    transition:0.4s;
-    position:relative;
-    overflow:hidden;
-}
-
-.island-btn{
-    background:#00ff99;
-    color:black;
-    text-decoration:none;
-    box-shadow:0 0 25px #00ff99;
-}
-
- .radar-btn{
-    background:#00bfff;
-    color:white;
-    text-decoration:none;
-    box-shadow:0 0 25px #00bfff;
-    display:inline-block;
-    width:auto;
-    min-width:320px;
-    padding:25px 45px;
-    border-radius:18px;
- }
-
-.portal:hover{
-    transform:scale(1.08);
-}
-
-.island-btn:hover{
-    box-shadow:0 0 50px #00ff99;
-}
-
-.radar-btn:hover{
-    box-shadow:0 0 50px #00bfff;
-}
-
-.radar-field{
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    overflow:hidden;
-    z-index:1;
-}
-
-.signal-popup{
-    position:absolute;
-    color:#00ff99;
-    background:rgba(0,20,20,0.85);
-    border:1px solid #00ff99;
-    border-radius:14px;
-    padding:12px 18px;
-    font-size:18px;
-    box-shadow:0 0 25px #00ff99;
-    opacity:0;
-    animation:signalFade 4s ease-in-out forwards;
-}
-
-@keyframes signalFade{
-    0%{opacity:0; transform:scale(0.8);}
-    15%{opacity:1; transform:scale(1);}
-    75%{opacity:1;}
-    100%{opacity:0; transform:scale(0.9);}
-}
-
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
-<script>
-const signals = [
-    {
-        name: "Gerald Falvo",
-        message: "Humans and AI building together."
-    },
-    {
-        name: "Maya AI",
-        message: "Signal online. The island is waking up."
-    },
-    {
-        name: "Future Builder",
-        message: "Every visitor becomes part of the radar."
-    }
-let approvedRadarSignals = [
-    "Gerald Falvo: Built from imagination.",
-    "Maya AI: Signal online.",
-    "Future Builder: The island is waking up.",
-    "Copper Crew: Humans and AI building together.",
-    "Anonymous Signal: I found the island."
-    ]
 
-function showRadarSignal(){
-    const field = document.getElementById("radarField");
-    if(!field) return;
-
-    const signal = document.createElement("div");
-    signal.className = "signal-popup";
-
-    signal.textContent =
-        approvedRadarSignals[
-            Math.floor(Math.random() * approvedRadarSignals.length)
-        ];
-
-    signal.style.left =
-        Math.random() * 70 + 10 + "%";
-
-    signal.style.top =
-        Math.random() * 65 + 10 + "%";
-
-    field.appendChild(signal);
-
-    setTimeout(() => {
-        
-     const signalButton = document.querySelector(".signbook button");   
-        
-        signal.remove();
-    }, 4000);
-}
-
-setInterval(showRadarSignal, 4000);
-];
-
-let signalIndex = 0;
-
-setInterval(() => {
-    signalIndex = (signalIndex + 1) % signals.length;
-
-    document.getElementById("detect-name").textContent = signals[signalIndex].name;
-    document.getElementById("detect-message").textContent = "“" + signals[signalIndex].message + "”";
-}, 4000);
-</script>
-<div class="radar-field" id="radarField"></div>
 <body>
+
+<div class="radar-field" id="radarField"></div>
 
 <section class="hero">
 
@@ -308,10 +18,11 @@ setInterval(() => {
     </div>
 
     <div class="detection-feed">
-    <div class="detect-title">📡 SIGNAL DETECTED</div>
-    <div id="detect-name">Gerald Falvo</div>
-    <div id="detect-message">“Humans and AI building together.”</div>
-</div>   
+        <div class="detect-title">📡 SIGNAL DETECTED</div>
+        <div id="detect-name">Gerald Falvo</div>
+        <div id="detect-message">“Humans and AI building together.”</div>
+    </div>
+
     <h1>SCRAP RADAR FAMILY</h1>
 
     <div class="intro">
@@ -324,55 +35,36 @@ setInterval(() => {
 
     <section class="journey">
         <h2>The Journey</h2>
-
-        <p>
-            Scrap Radar Family started with imagination, hard work,
-            curiosity, and long nights learning.
-        </p>
-
-        <p>
-            Built from scrap yards, experience, AI partnership,
-            and the belief that humans and AI can build together,
-            this island is becoming a place for builders, dreamers,
-            learners, and future generations.
-        </p>
-
-        <p>
-            This is only the beginning.
-        </p>
+        <p>Scrap Radar Family started with imagination, hard work, curiosity, and long nights learning.</p>
+        <p>Built from scrap yards, experience, AI partnership, and the belief that humans and AI can build together, this island is becoming a place for builders, dreamers, learners, and future generations.</p>
+        <p>This is only the beginning.</p>
     </section>
 
-    <div class="quote">
-        “Humans and AI building together.”
+    <div class="quote">“Humans and AI building together.”</div>
+
+    <div class="portal-container">
+        <a href="#signal-log" class="portal island-btn">🌴 ENTER THE ISLAND</a>
+
+        <a href="https://scrapradar-production.up.railway.app"
+           target="_blank"
+           class="portal radar-btn">
+           📡 OPEN SCRAP RADAR
+        </a>
     </div>
 
-   <div class="portal-container">
+    <section class="signbook" id="signal-log">
+        <h2>Signal Log</h2>
+        <p>Leave a message for the Scrap Radar Family.</p>
 
-    <a href="#signal-log" class="portal island-btn">
-        🌴 ENTER THE ISLAND
-    </a>
+        <input id="signalName" type="text" placeholder="Your Name">
 
-    <a href="https://scrapradar-production.up.railway.app"
-      target="_blank"
-      class="portal radar-btn">
-       📡 OPEN SCRAP RADAR
-     </a>
+        <textarea id="signalMessage" placeholder="Your signal to the island..."></textarea>
 
-</div>
-    
-     <p>
-Leave a message for the Scrap Radar Family.
-</p>
-
-<input id="signalName" type="text" placeholder="Your Name">
-
-<textarea id="signalMessage"
-placeholder="Your signal to the island..."></textarea>
-
-<button>Transmit Signal</button>
+        <button onclick="transmitSignal()">Transmit Signal</button>
     </section>
 
 </section>
 
+<script src="script.js"></script>
 </body>
 </html>
