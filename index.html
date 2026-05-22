@@ -248,6 +248,40 @@ const signals = [
         name: "Future Builder",
         message: "Every visitor becomes part of the radar."
     }
+const approvedRadarSignals = [
+    "Gerald Falvo: Built from imagination.",
+    "Maya AI: Signal online.",
+    "Future Builder: The island is waking up.",
+    "Copper Crew: Humans and AI building together.",
+    "Anonymous Signal: I found the island."
+];
+
+function showRadarSignal(){
+    const field = document.getElementById("radarField");
+    if(!field) return;
+
+    const signal = document.createElement("div");
+    signal.className = "signal-popup";
+
+    signal.textContent =
+        approvedRadarSignals[
+            Math.floor(Math.random() * approvedRadarSignals.length)
+        ];
+
+    signal.style.left =
+        Math.random() * 70 + 10 + "%";
+
+    signal.style.top =
+        Math.random() * 65 + 10 + "%";
+
+    field.appendChild(signal);
+
+    setTimeout(() => {
+        signal.remove();
+    }, 4000);
+}
+
+setInterval(showRadarSignal, 4000);
 ];
 
 let signalIndex = 0;
