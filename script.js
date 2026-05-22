@@ -1,10 +1,10 @@
-const signals = [
+let signals = [
     {
         name: "Gerald Falvo",
         message: "Humans and AI building together."
     },
     {
-        name: "Maya AI",
+        name: "Maya AI ChatGPT.”
         message: "Signal online. The island is waking up."
     },
     {
