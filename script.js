@@ -67,7 +67,10 @@ function transmitSignal(){
     }
 
     approvedRadarSignals.push(name + ": " + message);
-
+    signals.push({
+    name: name,
+    message: message
+});
     localStorage.setItem(
         "approvedSignals",
         JSON.stringify(approvedRadarSignals)
