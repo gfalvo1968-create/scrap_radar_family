@@ -248,7 +248,7 @@ const signals = [
         name: "Future Builder",
         message: "Every visitor becomes part of the radar."
     }
-const approvedRadarSignals = [
+let approvedRadarSignals = [
     "Gerald Falvo: Built from imagination.",
     "Maya AI: Signal online.",
     "Future Builder: The island is waking up.",
@@ -277,6 +277,9 @@ function showRadarSignal(){
     field.appendChild(signal);
 
     setTimeout(() => {
+        
+     const signalButton = document.querySelector(".signbook button");   
+        
         signal.remove();
     }, 4000);
 }
