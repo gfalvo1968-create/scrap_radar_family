@@ -81,14 +81,15 @@ function transmitSignal(){
         JSON.stringify(approvedRadarSignals)
     );
 
-    document.getElementById("signalName").value = "";
+        document.getElementById("signalName").value = "";
     document.getElementById("signalMessage").value = "";
+
+    showRadarSignal();
 }
-    window.addEventListener("load", function(){
+
+window.addEventListener("load", function(){
     showRadarSignal();
     setInterval(rotateDetectionFeed, 4000);
     setInterval(showRadarSignal, 4000);
 });
-
-    showRadarSignal();
 
