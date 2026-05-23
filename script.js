@@ -83,7 +83,7 @@ function transmitSignal(){
 
     document.getElementById("signalName").value = "";
     document.getElementById("signalMessage").value = "";
-    );
+}
     window.addEventListener("load", function(){
     showRadarSignal();
     setInterval(rotateDetectionFeed, 4000);
