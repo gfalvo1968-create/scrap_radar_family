@@ -13,15 +13,23 @@ let signals = [
     }
 ];
 
-let approvedRadarSignals = JSON.parse(
-    localStorage.getItem("approvedSignals")
-) || [
+let approvedRadarSignals = [];
+
+try {
+    approvedRadarSignals = JSON.parse(
+        localStorage.getItem("approvedSignals")
+    ) || [];
+} catch (e) {
+    approvedRadarSignals = [];
+}
+
+approvedRadarSignals.push(
     "Gerald Falvo: Built from imagination.",
-    "Maya AI: Signal online.",
+    "Maya AI Chat GPH Signal online.",
     "Future Builder: The island is waking up.",
     "Copper Crew: Humans and AI building together.",
     "Anonymous Signal: I found the island."
-];
+);
 
 let signalIndex = 0;
 
