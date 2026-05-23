@@ -202,9 +202,9 @@ h2{
     font-size:18px;
     font-weight:bold;
     box-shadow:0 0 35px #00ff99;
-    opacity:0;
+    opacity:1;
     z-index:10000;
-    animation:signalFade 4s ease-in-out forwards;
+    /* animation:signalFade 4s ease-in-out forwards; */
 }
 
 .founder-signal{
