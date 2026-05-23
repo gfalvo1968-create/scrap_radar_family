@@ -86,7 +86,3 @@ function transmitSignal(){
 
     showRadarSignal();
 }
-showRadarSignal();
-showRadarSignal();
-showRadarSignal();
-showRadarSignal();
