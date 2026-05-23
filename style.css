@@ -193,6 +193,7 @@ h2{
 
 .signal-popup{
     position:absolute;
+    max-width:320px;
     color:#00ff99;
     background:rgba(0,20,20,0.85);
     border:1px solid #00ff99;
