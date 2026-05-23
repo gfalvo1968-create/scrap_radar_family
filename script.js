@@ -44,23 +44,22 @@ function rotateDetectionFeed(){
 }
 
 function showRadarSignal(){
-    console.log("POPUP TEST");
     const signal = document.createElement("div");
-    signal.className = "signal-popup";
 
-    signal.textContent =
-        approvedRadarSignals[
-            Math.floor(Math.random() * approvedRadarSignals.length)
-        ];
+    signal.textContent = "TEST SIGNAL";
 
-    signal.style.left = Math.random() * 80 + 5 + "%";
-    signal.style.top = Math.random() * 80 + 5 + "%";
+    signal.style.position = "fixed";
+    signal.style.left = "20px";
+    signal.style.top = "120px";
+    signal.style.background = "yellow";
+    signal.style.color = "black";
+    signal.style.padding = "20px";
+    signal.style.fontSize = "30px";
+    signal.style.fontWeight = "bold";
+    signal.style.zIndex = "999999";
+    signal.style.border = "4px solid red";
 
     document.body.appendChild(signal);
-
-    setTimeout(() => {
-        signal.remove();
-    }, 4000);
 }
 
 function transmitSignal(){
