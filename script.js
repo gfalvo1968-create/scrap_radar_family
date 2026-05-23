@@ -36,9 +36,6 @@ function rotateDetectionFeed(){
 }
 
 function showRadarSignal(){
-    const field = document.getElementById("radarField");
-    if(!field) return;
-
     const signal = document.createElement("div");
     signal.className = "signal-popup";
 
@@ -50,7 +47,7 @@ function showRadarSignal(){
     signal.style.left = Math.random() * 80 + 5 + "%";
     signal.style.top = Math.random() * 80 + 5 + "%";
 
-    field.appendChild(signal);
+    document.body.appendChild(signal);
 
     setTimeout(() => {
         signal.remove();
