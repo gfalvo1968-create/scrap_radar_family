@@ -87,7 +87,6 @@ function transmitSignal(){
     showRadarSignal();
 }
 showRadarSignal();
-setInterval(rotateDetectionFeed, 4000);
 showRadarSignal();
 showRadarSignal();
 showRadarSignal();
