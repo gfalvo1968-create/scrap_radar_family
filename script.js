@@ -36,6 +36,7 @@ function rotateDetectionFeed(){
 }
 
 function showRadarSignal(){
+    console.log("POPUP TEST");
     const signal = document.createElement("div");
     signal.className = "signal-popup";
 
