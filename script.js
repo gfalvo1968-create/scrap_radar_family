@@ -63,6 +63,20 @@ function showRadarSignal(){
             Math.floor(Math.random() * approvedRadarSignals.length)
         ];
 
+    function renderSignalWall(){
+    const wall = document.getElementById("signalWall");
+    if(!wall) return;
+
+    wall.innerHTML = "";
+
+    approvedRadarSignals.slice(-10).reverse().forEach(function(signal){
+        const entry = document.createElement("div");
+        entry.className = "signal-entry";
+        entry.textContent = "📡 " + signal;
+        wall.appendChild(entry);
+    });
+}
+
     signal.style.left =
         Math.random() * 70 + 10 + "%";
 
@@ -120,16 +134,4 @@ window.onload = function(){
     setInterval(showRadarSignal,4000);
 
 };
-function renderSignalWall(){
-    const wall = document.getElementById("signalWall");
-    if(!wall) return;
-
-    wall.innerHTML = "";
-
-    approvedRadarSignals.slice(-10).reverse().forEach(function(signal){
-        const entry = document.createElement("div");
-        entry.className = "signal-entry";
-        entry.textContent = "📡 " + signal;
-        wall.appendChild(entry);
-    });
 }
