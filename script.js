@@ -70,25 +70,6 @@ function showRadarSignal(){
     }, 4000);
 }
 
-function renderSignalWall(){
-    const wall = document.getElementById("signalWall");
-
-    if(!wall){
-        return;
-    }
-
-    wall.innerHTML = "";
-
-    approvedRadarSignals.slice(-10).reverse().forEach(function(item){
-        const entry = document.createElement("div");
-
-        entry.className = "signal-entry";
-        entry.textContent = "📡 " + item;
-
-        wall.appendChild(entry);
-    });
-}
-
 function transmitSignal(){
 
     const name =
