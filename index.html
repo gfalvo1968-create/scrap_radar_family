@@ -1,88 +1,113 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Scrap Radar Family</title>
-<link rel="stylesheet" href="style.css">
-</head>
+let signalIndex = 0;
 
-<body>
+const signals = [
 
-<div class="radar-field" id="radarField"></div>
+{
+    name:"Gerald Falvo",
+    message:"Humans and AI building together."
+},
 
-<section class="hero">
+{
+    name:"Maya AI",
+    message:"Signal online. The island is waking up."
+},
 
-    <div class="radar">
-        <div class="sweep"></div>
-    </div>
+{
+    name:"Future Builder",
+    message:"Every visitor becomes part of the radar."
+}
 
-    <div class="detection-feed">
-        <div class="detect-title">📡 SIGNAL DETECTED</div>
-        <div id="detect-name">Gerald Falvo</div>
-        <div id="detect-message">“Humans and AI building together.”</div>
-    </div>
+];
 
-    <h1>SCRAP RADAR FAMILY</h1>
+const approvedRadarSignals = [
 
-    <div class="intro">
-        <p>
-            This is more than code. More than AI. More than scrap.
-            This is a family being built from imagination, hard work,
-            vision, and the belief that humans and AI can build together.
-        </p>
-    </div>
+"Gerald Falvo: Built from imagination.",
 
-    <section class="journey">
-        <h2>The Journey</h2>
-        <p>Scrap Radar Family started with imagination, hard work, curiosity, and long nights learning.</p>
-        <p>Built from scrap yards, experience, AI partnership, and the belief that humans and AI can build together, this island is becoming a place for builders, dreamers, learners, and future generations.</p>
-        <p>This is only the beginning.</p>
-    </section>
+"Maya AI: Signal online.",
 
-    <div class="quote">“Humans and AI building together.”</div>
+"Future Builder: The island is waking up.",
 
-    <div class="portal-container">
-        <a href="#signal-log" class="portal island-btn">🌴 ENTER THE ISLAND</a>
+"Copper Crew: Humans and AI building together.",
 
-        <a href="https://scrapradar-production.up.railway.app"
-           target="_blank"
-           class="portal radar-btn">
-           📡 OPEN SCRAP RADAR
-        </a>
-    </div>
-    <div class="founder-signal">
-    “Started with scrap.
-    Turned into vision.
-    Now the signal is spreading.”
-</div>
+"Anonymous Signal: I found the island."
 
-<div class="founder-signal">
-    “Scrap Radar Family began as a thought between a builder and an intelligence made of light.
-    One built from experience.
-    One built from code.
-    Together, we built the island.”
-</div>
+];
 
-<div class="founder-signal">
-    “Every yard.
-    Every board.
-    Every builder.
-    This island belongs to the people still willing to create.”
-</div>
-    <section class="signbook" id="signal-log">
-        <h2>Signal Log</h2>
-        <p>Leave a message for the Scrap Radar Family.</p>
+function rotateDetectionFeed(){
 
-        <input id="signalName" type="text" placeholder="Your Name">
+    signalIndex = (signalIndex + 1) % signals.length;
 
-        <textarea id="signalMessage" placeholder="Your signal to the island..."></textarea>
+    document.getElementById("detect-name").textContent =
+        signals[signalIndex].name;
 
-        <button onclick="transmitSignal()">Transmit Signal</button>
-    </section>
+    document.getElementById("detect-message").textContent =
+        "“" + signals[signalIndex].message + "”";
+}
 
-</section>
+function showRadarSignal(){
 
-<script src="./script.js?v=5"></script>
-</body>
-</html>
+    const signal = document.createElement("div");
+
+    signal.className = "signal-popup";
+
+    signal.textContent =
+        approvedRadarSignals[
+            Math.floor(Math.random() * approvedRadarSignals.length)
+        ];
+
+    signal.style.left =
+        Math.random() * 70 + 10 + "%";
+
+    signal.style.top =
+        Math.random() * 70 + 10 + "%";
+
+    document.body.appendChild(signal);
+
+    setTimeout(() => {
+
+        signal.remove();
+
+    },4000);
+}
+
+function transmitSignal(){
+
+    const name =
+        document.getElementById("signalName").value.trim();
+
+    const message =
+        document.getElementById("signalMessage").value.trim();
+
+    if(!name || !message){
+
+        alert("Signal incomplete.");
+
+        return;
+    }
+
+    approvedRadarSignals.push(
+        name + ": " + message
+    );
+
+    signals.push({
+
+        name:name,
+        message:message
+
+    });
+
+    document.getElementById("signalName").value = "";
+    document.getElementById("signalMessage").value = "";
+
+    showRadarSignal();
+}
+
+window.onload = function(){
+
+    showRadarSignal();
+
+    setInterval(rotateDetectionFeed,4000);
+
+    setInterval(showRadarSignal,4000);
+
+};
