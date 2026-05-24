@@ -126,6 +126,41 @@ button{
     box-shadow:0 0 25px #00ff99;
 }
 
+.portal-container{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    flex-wrap:wrap;
+    margin:50px auto;
+}
+
+.portal{
+    display:inline-block;
+    min-width:320px;
+    box-sizing:border-box;
+    text-decoration:none;
+    padding:25px 45px;
+    border-radius:18px;
+    font-size:24px;
+    font-weight:bold;
+}
+
+.portal:hover{
+    transform:scale(1.08);
+}
+
+.island-btn{
+    background:#00ff99;
+    color:black;
+    box-shadow:0 0 25px #00ff99;
+}
+
+.radar-btn{
+    background:#00bfff;
+    color:white;
+    box-shadow:0 0 25px #00bfff;
+}
+
 .signal-popup{
     position:fixed;
     background:#00ff99;
