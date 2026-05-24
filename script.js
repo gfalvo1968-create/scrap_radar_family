@@ -33,6 +33,14 @@ const approvedRadarSignals = [
 
 ];
 
+const savedSignals = JSON.parse(
+    localStorage.getItem("approvedRadarSignals")
+);
+
+if(savedSignals){
+    approvedRadarSignals.push(...savedSignals);
+}
+
 function rotateDetectionFeed(){
 
     signalIndex = (signalIndex + 1) % signals.length;
