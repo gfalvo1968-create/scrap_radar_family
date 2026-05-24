@@ -1,113 +1,69 @@
-let signalIndex = 0;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scrap Radar Family</title>
 
-const signals = [
+<link rel="stylesheet" href="style.css">
 
-{
-    name:"Gerald Falvo",
-    message:"Humans and AI building together."
-},
+</head>
+<body>
 
-{
-    name:"Maya AI",
-    message:"Signal online. The island is waking up."
-},
+<section class="hero">
 
-{
-    name:"Future Builder",
-    message:"Every visitor becomes part of the radar."
-}
+<div class="radar">
+    <div class="sweep"></div>
+</div>
 
-];
+<div class="detection-feed">
+    <div class="detect-title">📡 SIGNAL DETECTED</div>
 
-const approvedRadarSignals = [
+    <div id="detect-name">
+        Gerald Falvo
+    </div>
 
-"Gerald Falvo: Built from imagination.",
+    <div id="detect-message">
+        “Humans and AI building together.”
+    </div>
+</div>
 
-"Maya AI: Signal online.",
+<h1>SCRAP RADAR FAMILY</h1>
 
-"Future Builder: The island is waking up.",
+<p>
+This is more than code. More than AI. More than scrap.
+This is a family being built from imagination,
+hard work, vision, and the belief that humans and AI can build together.
+</p>
 
-"Copper Crew: Humans and AI building together.",
+</section>
 
-"Anonymous Signal: I found the island."
+<section class="journey">
 
-];
+<h2>The Journey</h2>
 
-function rotateDetectionFeed(){
+<p>
+Scrap Radar Family started with imagination,
+hard work, curiosity, and long nights learning.
+</p>
 
-    signalIndex = (signalIndex + 1) % signals.length;
+</section>
 
-    document.getElementById("detect-name").textContent =
-        signals[signalIndex].name;
+<section class="signbook">
 
-    document.getElementById("detect-message").textContent =
-        "“" + signals[signalIndex].message + "”";
-}
+<h2>Signal Log</h2>
 
-function showRadarSignal(){
+<input id="signalName" placeholder="Your Name">
 
-    const signal = document.createElement("div");
+<textarea id="signalMessage" placeholder="Your signal to the island..."></textarea>
 
-    signal.className = "signal-popup";
+<button onclick="transmitSignal()">
+Transmit Signal
+</button>
 
-    signal.textContent =
-        approvedRadarSignals[
-            Math.floor(Math.random() * approvedRadarSignals.length)
-        ];
+</section>
 
-    signal.style.left =
-        Math.random() * 70 + 10 + "%";
+<script src="script.js"></script>
 
-    signal.style.top =
-        Math.random() * 70 + 10 + "%";
-
-    document.body.appendChild(signal);
-
-    setTimeout(() => {
-
-        signal.remove();
-
-    },4000);
-}
-
-function transmitSignal(){
-
-    const name =
-        document.getElementById("signalName").value.trim();
-
-    const message =
-        document.getElementById("signalMessage").value.trim();
-
-    if(!name || !message){
-
-        alert("Signal incomplete.");
-
-        return;
-    }
-
-    approvedRadarSignals.push(
-        name + ": " + message
-    );
-
-    signals.push({
-
-        name:name,
-        message:message
-
-    });
-
-    document.getElementById("signalName").value = "";
-    document.getElementById("signalMessage").value = "";
-
-    showRadarSignal();
-}
-
-window.onload = function(){
-
-    showRadarSignal();
-
-    setInterval(rotateDetectionFeed,4000);
-
-    setInterval(showRadarSignal,4000);
-
-};
+</body>
+</html>
