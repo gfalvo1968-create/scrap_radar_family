@@ -53,35 +53,37 @@ function rotateDetectionFeed(){
 }
 
 function showRadarSignal(){
+    const left = Math.random() * 50 + 20;
+    const top = Math.random() * 40 + 20;
+
     const signal = document.createElement("div");
-
     signal.className = "signal-popup";
-    signal.textContent = approvedRadarSignals[
-        Math.floor(Math.random() * approvedRadarSignals.length)
-    ];
 
-    signal.style.left = Math.random() * 50 + 20 + "%";
-    signal.style.top = Math.random() * 40 + 20 + "%";
+    signal.textContent =
+        approvedRadarSignals[
+            Math.floor(Math.random() * approvedRadarSignals.length)
+        ];
+
+    signal.style.left = left + "%";
+    signal.style.top = top + "%";
 
     document.body.appendChild(signal);
-    document.body.appendChild(signal);
 
-const ripple = document.createElement("div");
+    const ripple = document.createElement("div");
+    ripple.className = "radar-ripple";
 
-ripple.className = "radar-ripple";
+    ripple.style.left = left + "%";
+    ripple.style.top = top + "%";
 
-ripple.style.left = signal.style.left;
-ripple.style.top = signal.style.top;
+    document.body.appendChild(ripple);
 
-document.body.appendChild(ripple);
+    setTimeout(function(){
+        ripple.remove();
+    }, 2200);
 
-setTimeout(function(){
-    ripple.remove();
-}, 2200);
-
-setTimeout(function(){
-    signal.remove();
-}, 4000);
+    setTimeout(function(){
+        signal.remove();
+    }, 4000);
 }
 
 function transmitSignal(){
