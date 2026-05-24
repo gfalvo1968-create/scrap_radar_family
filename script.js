@@ -79,21 +79,22 @@ function transmitSignal(){
         document.getElementById("signalMessage").value.trim();
 
     if(!name || !message){
-
         alert("Signal incomplete.");
-
         return;
     }
 
-    approvedRadarSignals.push(
-        name + ": " + message
+    const newSignal = name + ": " + message;
+
+    approvedRadarSignals.push(newSignal);
+
+    localStorage.setItem(
+        "approvedRadarSignals",
+        JSON.stringify(approvedRadarSignals)
     );
 
     signals.push({
-
         name:name,
         message:message
-
     });
 
     document.getElementById("signalName").value = "";
