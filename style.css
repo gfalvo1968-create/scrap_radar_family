@@ -171,6 +171,9 @@ button{
     font-weight:bold;
     z-index:999999;
     box-shadow:0 0 12px rgba(0,255,153,0.45);
+    border:1px solid rgba(255,255,255,0.35);
+    letter-spacing:1px;
+    
     animation:fadeSignal 4s forwards;
 }
 
