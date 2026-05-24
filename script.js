@@ -141,4 +141,4 @@ window.onload = function(){
     setInterval(showRadarSignal,4000);
 
 };
-}
+
