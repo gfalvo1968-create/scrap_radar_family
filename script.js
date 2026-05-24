@@ -82,6 +82,9 @@ document.body.appendChild(ripple);
 setTimeout(function(){
     ripple.remove();
 }, 2200);
+setTimeout(function(){
+    signal.remove();
+}, 4000);
 
 function renderSignalWall(){
     const wall = document.getElementById("signalWall");
