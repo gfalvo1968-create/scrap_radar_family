@@ -170,7 +170,7 @@ button{
     border-radius:12px;
     font-weight:bold;
     z-index:999999;
-    box-shadow:0 0 30px #00ff99;
+    box-shadow:0 0 12px rgba(0,255,153,0.45);
     animation:fadeSignal 4s forwards;
 }
 
