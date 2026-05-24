@@ -1,4 +1,5 @@
-let signals = [
+
+alert("SCRIPT LOADED");let signals = [
     {
         name: "Gerald Falvo",
         message: "Humans and AI building together."
