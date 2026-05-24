@@ -64,10 +64,24 @@ function showRadarSignal(){
     signal.style.top = Math.random() * 40 + 20 + "%";
 
     document.body.appendChild(signal);
+    document.body.appendChild(signal);
 
-    setTimeout(function(){
-        signal.remove();
-    }, 4000);
+const ripple = document.createElement("div");
+
+ripple.className = "radar-ripple";
+
+ripple.style.left = signal.style.left;
+ripple.style.top = signal.style.top;
+
+document.body.appendChild(ripple);
+
+setTimeout(function(){
+    ripple.remove();
+}, 2200);
+
+setTimeout(function(){
+    signal.remove();
+}, 4000);
 }
 
 function transmitSignal(){
