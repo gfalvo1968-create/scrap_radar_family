@@ -1,19 +1,15 @@
 body{
     margin:0;
     background:black;
-    color:#e6e6e6;
-    font-family:Arial, sans-serif;
-    overflow-x:hidden;
+    color:white;
+    font-family:Arial,sans-serif;
+    text-align:center;
 }
 
 .hero{
     min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    text-align:center;
-    padding:90px 20px;
-    background:radial-gradient(circle at center, #071527 0%, black 70%);
+    padding:80px 20px;
+    background:radial-gradient(circle,#071527 0%,black 70%);
 }
 
 .radar{
@@ -21,10 +17,10 @@ body{
     height:250px;
     border:3px solid #00ff99;
     border-radius:50%;
+    margin:40px auto;
     position:relative;
     overflow:hidden;
     box-shadow:0 0 40px #00ff99;
-    margin-bottom:40px;
 }
 
 .sweep{
@@ -40,190 +36,126 @@ body{
 }
 
 @keyframes spin{
-    from{transform:rotate(0deg);}
-    to{transform:rotate(360deg);}
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
 }
 
 .detection-feed{
-    margin:20px auto 50px;
+    max-width:600px;
+    margin:30px auto;
     padding:20px;
-    max-width:650px;
     border:1px solid #00ff99;
-    border-radius:16px;
+    border-radius:18px;
+    background:rgba(0,20,20,0.7);
     box-shadow:0 0 25px #00ff99;
-    background:rgba(0,20,20,0.65);
-    color:#e6e6e6;
 }
 
 .detect-title{
     color:#00ff99;
+    font-size:24px;
     font-weight:bold;
-    font-size:20px;
-    margin-bottom:10px;
 }
 
 #detect-name{
-    color:#00ffb3;
-    font-size:28px;
+    color:#00ffcc;
+    font-size:38px;
+    margin-top:15px;
     font-weight:bold;
 }
 
 #detect-message{
-    margin-top:10px;
-    font-size:20px;
+    margin-top:15px;
+    font-size:22px;
 }
 
 h1{
-    font-size:4rem;
     color:#00ff99;
+    font-size:4rem;
     text-shadow:0 0 25px #00ff99;
-    margin:0 0 35px;
-}
-
-.intro,
-.journey,
-.signbook{
-    width:90%;
-    max-width:900px;
-    margin:40px auto;
-    text-align:center;
-}
-
-p{
-    font-size:1.35rem;
-    line-height:1.8;
 }
 
 h2{
-    color:#00ffb3;
-    font-size:2.5rem;
-    text-shadow:0 0 20px #00ffb3;
+    color:#00ffcc;
+    text-shadow:0 0 15px #00ffcc;
 }
 
-.quote{
-    margin:50px auto;
-    font-size:1.8rem;
-    color:#00ff99;
-    text-shadow:0 0 15px #00ff99;
+p{
+    max-width:900px;
+    margin:30px auto;
+    line-height:1.8;
+    font-size:1.3rem;
 }
 
-.portal-container{
-    display:flex;
-    justify-content:center;
-    gap:40px;
-    flex-wrap:wrap;
-    margin-top:60px;
+.signbook{
+    padding:80px 20px;
 }
 
-.portal{
-    display:inline-block;
-    width:auto;
-    min-width:320px;
-    box-sizing:border-box;
-    text-decoration:none;
-    padding:25px 45px;
-    border-radius:18px;
-    font-size:24px;
-    font-weight:bold;
-    transition:0.4s;
-}
-
-.portal:hover{
-    transform:scale(1.08);
-}
-
-.island-btn{
-    background:#00ff99;
-    color:black;
-    box-shadow:0 0 25px #00ff99;
-}
-
-.radar-btn{
-    background:#00bfff;
-    color:white;
-    box-shadow:0 0 25px #00bfff;
-}
-
-.signbook input,
-.signbook textarea{
-    display:block;
+input,
+textarea{
     width:90%;
     max-width:700px;
-    box-sizing:border-box;
-    padding:18px;
+    display:block;
     margin:20px auto;
-    border:1px solid #00ffb3;
-    border-radius:14px;
+    padding:18px;
     background:#06111f;
     color:white;
+    border:1px solid #00ff99;
+    border-radius:12px;
     font-size:20px;
-    box-shadow:0 0 20px #00ffb3;
+    box-shadow:0 0 20px #00ff99;
 }
 
-.signbook textarea{
-    height:260px;
-    min-height:260px;
+textarea{
+    min-height:220px;
 }
 
-.signbook button{
-    display:block;
-    margin:30px auto;
+button{
     padding:18px 50px;
-    font-size:22px;
-    border:none;
-    border-radius:14px;
-    background:#00ffb3;
+    background:#00ff99;
     color:black;
+    border:none;
+    border-radius:12px;
+    font-size:22px;
     font-weight:bold;
     cursor:pointer;
-    box-shadow:0 0 25px #00ffb3;
-}
-
-.signbook button:hover{
-    transform:scale(1.05);
-}
-
-.radar-field{
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    overflow:hidden;
-    z-index:9999;
+    box-shadow:0 0 25px #00ff99;
 }
 
 .signal-popup{
     position:fixed;
-    max-width:260px;
-    color:black;
     background:#00ff99;
-    border:2px solid white;
-    border-radius:14px;
-    padding:12px 18px;
-    font-size:18px;
+    color:black;
+    padding:15px 20px;
+    border-radius:12px;
     font-weight:bold;
-    box-shadow:0 0 35px #00ff99;
-    opacity:1;
-    z-index:10000;
-    /* animation:signalFade 4s ease-in-out forwards; */
+    z-index:999999;
+    box-shadow:0 0 30px #00ff99;
+    animation:fadeSignal 4s forwards;
 }
 
-.founder-signal{
-    max-width:900px;
-    margin:40px auto;
-    padding:25px;
-    border:1px solid #00ffb3;
-    border-radius:18px;
-    background:rgba(0,20,30,0.75);
-    color:#00ffb3;
-    font-size:1.3rem;
-    line-height:1.8;
-    text-align:center;
-    box-shadow:0 0 25px #00ffb3;
-}
+@keyframes fadeSignal{
 
-@keyframes signalFade{
-    0%{opacity:0; transform:scale(0.8);}
-    15%{opacity:1; transform:scale(1);}
-    75%{opacity:1;}
-    100%{opacity:0; transform:scale(0.9);}
+    0%{
+        opacity:0;
+        transform:scale(0.7);
+    }
+
+    15%{
+        opacity:1;
+        transform:scale(1);
+    }
+
+    80%{
+        opacity:1;
+    }
+
+    100%{
+        opacity:0;
+        transform:scale(0.9);
+    }
 }
