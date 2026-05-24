@@ -165,7 +165,7 @@ button{
     position:fixed;
     background:rgba(0,255,153,0.18);
     backdrop-filter:blur(6px);
-    color:black;
+    color:#cffff0;
     padding:15px 20px;
     border-radius:12px;
     font-weight:bold;
