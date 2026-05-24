@@ -128,6 +128,7 @@ function transmitSignal(){
 window.onload = function(){
 
     showRadarSignal();
+    renderSignalWall();
 
     setInterval(rotateDetectionFeed,4000);
 
