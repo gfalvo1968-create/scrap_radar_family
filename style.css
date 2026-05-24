@@ -164,7 +164,7 @@ button{
 
 .signal-popup{
     position:fixed;
-    background:rgba(0,255,153,0.18);
+    background: rgba(0, 40, 25, 0.55);
     backdrop-filter:blur(6px);
     color:#cffff0;
     padding:15px 20px;
