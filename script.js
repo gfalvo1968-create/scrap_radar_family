@@ -60,8 +60,8 @@ function showRadarSignal(){
         Math.floor(Math.random() * approvedRadarSignals.length)
     ];
 
-    signal.style.left = Math.random() * 70 + 10 + "%";
-    signal.style.top = Math.random() * 70 + 10 + "%";
+    signal.style.left = Math.random() * 50 + 20 + "%";
+    signal.style.top = Math.random() * 40 + 20 + "%";
 
     document.body.appendChild(signal);
 
