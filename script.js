@@ -79,6 +79,25 @@ function showRadarSignal(){
     },4000);
 }
 
+];
+
+function renderSignalWall(){
+    const wall = document.getElementById("signalWall");
+    if(!wall) return;
+
+    wall.innerHTML = "";
+
+    approvedRadarSignals.slice(-10).reverse().forEach(function(signal){
+        const entry = document.createElement("div");
+
+        entry.className = "signal-entry";
+
+        entry.textContent = "📡 " + signal;
+
+        wall.appendChild(entry);
+    });
+}
+
 function transmitSignal(){
 
     const name =
