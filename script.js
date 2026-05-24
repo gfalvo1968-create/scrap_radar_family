@@ -53,46 +53,37 @@ function rotateDetectionFeed(){
 }
 
 function showRadarSignal(){
-
     const signal = document.createElement("div");
 
     signal.className = "signal-popup";
+    signal.textContent = approvedRadarSignals[
+        Math.floor(Math.random() * approvedRadarSignals.length)
+    ];
 
-    signal.textContent =
-        approvedRadarSignals[
-            Math.floor(Math.random() * approvedRadarSignals.length)
-        ];
-}
-
-    signal.style.left =
-        Math.random() * 70 + 10 + "%";
-
-    signal.style.top =
-        Math.random() * 70 + 10 + "%";
+    signal.style.left = Math.random() * 70 + 10 + "%";
+    signal.style.top = Math.random() * 70 + 10 + "%";
 
     document.body.appendChild(signal);
 
-    setTimeout(() => {
-
+    setTimeout(function(){
         signal.remove();
-
-    },4000);
+    }, 4000);
 }
-
-];
 
 function renderSignalWall(){
     const wall = document.getElementById("signalWall");
-    if(!wall) return;
+
+    if(!wall){
+        return;
+    }
 
     wall.innerHTML = "";
 
-    approvedRadarSignals.slice(-10).reverse().forEach(function(signal){
+    approvedRadarSignals.slice(-10).reverse().forEach(function(item){
         const entry = document.createElement("div");
 
         entry.className = "signal-entry";
-
-        entry.textContent = "📡 " + signal;
+        entry.textContent = "📡 " + item;
 
         wall.appendChild(entry);
     });
