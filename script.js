@@ -120,6 +120,7 @@ function transmitSignal(){
     document.getElementById("signalMessage").value = "";
 
     showRadarSignal();
+    renderSignalWall();
 }
 window.onload = function(){
     showRadarSignal();
