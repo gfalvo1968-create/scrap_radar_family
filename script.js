@@ -121,15 +121,11 @@ function transmitSignal(){
 
     showRadarSignal();
 }
-
 window.onload = function(){
-
     showRadarSignal();
     renderSignalWall();
 
-    setInterval(rotateDetectionFeed,4000);
-
-    setInterval(showRadarSignal,4000);
-
+    setInterval(rotateDetectionFeed, 4000);
+    setInterval(showRadarSignal, 4000);
 };
 
