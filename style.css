@@ -240,5 +240,33 @@ button{
     background:rgba(0,25,20,0.35);
     box-shadow:0 0 12px rgba(0,255,153,0.25);
 }
+.radar-ripple{
+    position:fixed;
+    width:20px;
+    height:20px;
+    border:2px solid rgba(0,255,153,0.8);
+    border-radius:50%;
+    box-shadow:0 0 20px rgba(0,255,153,0.8);
+    pointer-events:none;
+    z-index:999998;
+    animation:rippleOut 2.2s ease-out forwards;
+}
+
+@keyframes rippleOut{
+    0%{
+        transform:scale(0.2);
+        opacity:0.9;
+    }
+
+    70%{
+        opacity:0.45;
+    }
+
+    100%{
+        transform:scale(8);
+        opacity:0;
+    }
+}
+
 }
 
