@@ -223,5 +223,22 @@ button{
     100%{
         opacity:1;
     }
+    #signalWall{
+    max-width:900px;
+    margin:40px auto;
+    color:#00ffcc;
+    font-size:1.1rem;
+    line-height:1.7;
+    opacity:0.85;
+}
+
+.signal-entry{
+    margin:15px auto;
+    padding:14px 18px;
+    border:1px solid rgba(0,255,153,0.35);
+    border-radius:12px;
+    background:rgba(0,25,20,0.35);
+    box-shadow:0 0 12px rgba(0,255,153,0.25);
+}
 }
 
