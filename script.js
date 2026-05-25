@@ -90,24 +90,6 @@ setTimeout(function(){
     signal.remove();
 }, 4000);
 
-const radar = document.querySelector(".radar");
-
-if(radar){
-
-    const blip = document.createElement("div");
-
-    blip.className = "radar-blip";
-
-    blip.style.left = "50%";
-    blip.style.top = "50%";
-
-    radar.appendChild(blip);
-
-    setTimeout(function(){
-        blip.remove();
-    }, 1200);
-}
-
 }
 function transmitSignal(){
 
