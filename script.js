@@ -89,8 +89,14 @@ function showRadarSignal(){
 
     blip.className = "radar-blip";
 
-    blip.style.left = left + "%";
-    blip.style.top = top + "%";
+    const radar = document.querySelector(".radar");
+const radarBox = radar.getBoundingClientRect();
+
+blip.style.left =
+    radarBox.left + radarBox.width / 2 + "px";
+
+blip.style.top =
+    radarBox.top + radarBox.height / 2 + "px";
 
     document.body.appendChild(blip);
 
