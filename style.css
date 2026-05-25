@@ -323,7 +323,34 @@ button{
         transform:scale(8);
         opacity:0;
     }
+.radar-blip{
+    position:fixed;
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:#00ff99;
+    box-shadow:
+        0 0 12px #00ff99,
+        0 0 28px #00ff99;
+    pointer-events:none;
+    z-index:999999;
+    animation:blipFlash 1.2s ease-out forwards;
 }
 
+@keyframes blipFlash{
+    0%{
+        opacity:0;
+        transform:scale(0.4);
+    }
+
+    20%{
+        opacity:1;
+        transform:scale(1.2);
+    }
+
+    100%{
+        opacity:0;
+        transform:scale(0.2);
+    }
 }
 
