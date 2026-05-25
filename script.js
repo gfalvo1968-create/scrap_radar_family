@@ -53,6 +53,7 @@ function rotateDetectionFeed(){
 }
 
 function showRadarSignal(){
+    console.log("radar popup fired");
     const left = Math.random() * 50 + 20;
     const top = Math.random() * 40 + 20;
 
