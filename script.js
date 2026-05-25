@@ -83,12 +83,17 @@ function showRadarSignal(){
     }, 2200);
 
     setTimeout(function(){
-        signal.remove();
-    }, 4000);
+    ripple.remove();
+}, 2200);
+
+setTimeout(function(){
+    signal.remove();
+}, 4000);
 
 const radar = document.querySelector(".radar");
 
 if(radar){
+
     const blip = document.createElement("div");
 
     blip.className = "radar-blip";
@@ -101,6 +106,8 @@ if(radar){
     setTimeout(function(){
         blip.remove();
     }, 1200);
+}
+
 }
 function transmitSignal(){
 
