@@ -85,6 +85,19 @@ function showRadarSignal(){
     setTimeout(function(){
         signal.remove();
     }, 4000);
+    const blip = document.createElement("div");
+
+    blip.className = "radar-blip";
+
+    blip.style.left = left + "%";
+    blip.style.top = top + "%";
+
+    document.body.appendChild(blip);
+
+    setTimeout(function(){
+        blip.remove();
+}, 1200);
+
 }
 
 function transmitSignal(){
