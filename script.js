@@ -123,11 +123,19 @@ window.onload = function(){
 
     showRadarSignal();
 
-    renderSignalWall();
+    if(typeof renderSignalWall === "function"){
+        renderSignalWall();
+    }
 
-    setInterval(rotateDetectionFeed, 4000);
+    if(typeof rotateDetectionFeed === "function"){
+        setInterval(function(){
+            rotateDetectionFeed();
+        }, 4000);
+    }
 
-    setInterval(showRadarSignal, 4000);
+    setInterval(function(){
+        showRadarSignal();
+    }, 4000);
 
 };
 
