@@ -91,19 +91,34 @@ function showRadarSignal(){
 
     const radar = document.querySelector(".radar");
 const radarBox = radar.getBoundingClientRect();
+.radar-blip{
+    position:absolute;
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    background:#00ff99;
+    box-shadow:0 0 15px #00ff99, 0 0 35px #00ff99;
+    pointer-events:none;
+    z-index:10;
+    animation:blipFlash 1.2s ease-out forwards;
+}
 
-blip.style.left =
-    radarBox.left + radarBox.width / 2 + "px";
+@keyframes blipFlash{
+    0%{
+        opacity:0;
+        transform:scale(0.3);
+    }
 
-blip.style.top =
-    radarBox.top + radarBox.height / 2 + "px";
+    20%{
+        opacity:1;
+        transform:scale(1.3);
+    }
 
-    document.body.appendChild(blip);
-
-    setTimeout(function(){
-        blip.remove();
-}, 1200);
-
+    100%{
+        opacity:0;
+        transform:scale(0.2);
+    }
+}
 }
 
 function transmitSignal(){
