@@ -4,6 +4,7 @@ body{
     color:white;
     font-family:Arial,sans-serif;
     text-align:center;
+    animation:staticFlicker 12s infinite;
 }
 
 .hero{
@@ -11,7 +12,6 @@ body{
     padding:80px 20px;
     background:radial-gradient(circle,#071527 0%,black 70%);
 }
-
 
 .radar{
     width:250px;
@@ -37,13 +37,8 @@ body{
 }
 
 @keyframes spin{
-    from{
-        transform:rotate(0deg);
-    }
-
-    to{
-        transform:rotate(360deg);
-    }
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
 }
 
 .detection-feed{
@@ -92,41 +87,6 @@ p{
     font-size:1.3rem;
 }
 
-.signbook{
-    padding:80px 20px;
-}
-
-input,
-textarea{
-    width:90%;
-    max-width:700px;
-    display:block;
-    margin:20px auto;
-    padding:18px;
-    background:#06111f;
-    color:white;
-    border:1px solid #00ff99;
-    border-radius:12px;
-    font-size:20px;
-    box-shadow:0 0 20px #00ff99;
-}
-
-textarea{
-    min-height:220px;
-}
-
-button{
-    padding:18px 50px;
-    background:#00ff99;
-    color:black;
-    border:none;
-    border-radius:12px;
-    font-size:22px;
-    font-weight:bold;
-    cursor:pointer;
-    box-shadow:0 0 25px #00ff99;
-}
-
 .portal-container{
     display:flex;
     justify-content:center;
@@ -162,10 +122,41 @@ button{
     box-shadow:0 0 25px #00bfff;
 }
 
+input,
+textarea{
+    width:90%;
+    max-width:700px;
+    display:block;
+    margin:20px auto;
+    padding:18px;
+    background:#06111f;
+    color:white;
+    border:1px solid #00ff99;
+    border-radius:12px;
+    font-size:20px;
+    box-shadow:0 0 20px #00ff99;
+}
+
+textarea{
+    min-height:220px;
+}
+
+button{
+    padding:18px 50px;
+    background:#00ff99;
+    color:black;
+    border:none;
+    border-radius:12px;
+    font-size:22px;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 0 25px #00ff99;
+}
+
 .signal-popup{
     position:fixed;
-    background: rgba(0, 40, 25, 0.55);
-    backdrop-filter: blur(4px);
+    background:rgba(0,40,25,0.55);
+    backdrop-filter:blur(4px);
     color:#cffff0;
     padding:15px 20px;
     border-radius:12px;
@@ -174,56 +165,54 @@ button{
     box-shadow:0 0 12px rgba(0,255,153,0.45);
     border:1px solid rgba(255,255,255,0.35);
     letter-spacing:1px;
-    
     animation:fadeSignal 4s forwards;
 }
 
 @keyframes fadeSignal{
-
     0%{
         opacity:0;
         transform:scale(0.7);
     }
-
     15%{
         opacity:1;
         transform:scale(1);
     }
-
     80%{
         opacity:1;
     }
-
     100%{
         opacity:0;
         transform:scale(0.9);
     }
-    body{
-    animation:staticFlicker 12s infinite;
 }
 
-@keyframes staticFlicker{
+.radar-ripple{
+    position:fixed;
+    width:20px;
+    height:20px;
+    border:2px solid rgba(0,255,153,0.8);
+    border-radius:50%;
+    box-shadow:0 0 20px rgba(0,255,153,0.8);
+    pointer-events:none;
+    z-index:99998;
+    animation:rippleOut 2.2s ease-out forwards;
+}
 
+@keyframes rippleOut{
     0%{
-        opacity:1;
+        transform:scale(0.2);
+        opacity:0.9;
     }
-
-    97%{
-        opacity:1;
+    70%{
+        opacity:0.45;
     }
-
-    98%{
-        opacity:0.96;
-    }
-
-    99%{
-        opacity:0.97;
-    }
-
     100%{
-        opacity:1;
+        transform:scale(8);
+        opacity:0;
     }
-    #signalWall{
+}
+
+#signalWall{
     max-width:900px;
     margin:40px auto;
     color:#00ffcc;
@@ -233,96 +222,53 @@ button{
 }
 
 .signal-entry{
-    margin:15px auto;
-    padding:14px 18px;
-    border:1px solid rgba(0,255,153,0.35);
-    border-radius:12px;
-    background:rgba(0,25,20,0.35);
-    box-shadow:0 0 12px rgba(0,255,153,0.25);
-}
-.signal-entry{
     padding:12px;
     margin-bottom:10px;
     border-radius:12px;
-
     background:rgba(0,255,170,0.08);
-
     border:1px solid rgba(0,255,170,0.2);
-
     color:#7fffd4;
-
     font-size:14px;
-
     box-shadow:0 0 12px rgba(0,255,170,0.15);
-
     animation:signalFade 0.8s ease;
-
     backdrop-filter:blur(3px);
 }
 
 .signal-entry:first-child{
     border-color:#00ffcc;
-
     box-shadow:
         0 0 18px rgba(0,255,170,0.4),
         0 0 30px rgba(0,255,170,0.15);
-
     animation:pulseSignal 3s infinite;
 }
 
 @keyframes signalFade{
-
     from{
         opacity:0;
         transform:translateY(10px);
     }
-
     to{
         opacity:1;
-        transform:translateY(0px);
+        transform:translateY(0);
     }
 }
 
 @keyframes pulseSignal{
-
-    0%{
-        transform:scale(1);
-    }
-
-    50%{
-        transform:scale(1.02);
-    }
-
-    100%{
-        transform:scale(1);
-    }
-}
-.radar-ripple{
-    position:fixed;
-    width:20px;
-    height:20px;
-    border:2px solid rgba(0,255,153,0.8);
-    border-radius:50%;
-    box-shadow:0 0 20px rgba(0,255,153,0.8);
-    pointer-events:none;
-    z-index:999998;
-    animation:rippleOut 2.2s ease-out forwards;
+    0%{transform:scale(1);}
+    50%{transform:scale(1.02);}
+    100%{transform:scale(1);}
 }
 
-@keyframes rippleOut{
-    0%{
-        transform:scale(0.2);
-        opacity:0.9;
-    }
+@keyframes staticFlicker{
+    0%{opacity:1;}
+    97%{opacity:1;}
+    98%{opacity:0.96;}
+    99%{opacity:0.97;}
+    100%{opacity:1;}
+}
 
-    70%{
-        opacity:0.45;
-    }
+/* HALL OF FAME ROOM */
 
-    100%{
-        transform:scale(8);
-        opacity:0;
-    }
 .hall-body{
     margin:0;
     overflow:hidden;
@@ -338,6 +284,7 @@ button{
     text-shadow:0 0 30px #00ff99;
     letter-spacing:4px;
 }
+
 .mega-radar{
     position:relative;
     width:620px;
@@ -348,54 +295,101 @@ button{
     border:4px solid #00ff99;
     border-radius:50%;
     overflow:hidden;
-    background:radial-gradient(circle, rgba(0,255,153,0.08) 0%, rgba(0,0,0,1) 72%);
+    background:radial-gradient(circle, rgba(0,255,153,0.08) 0%, black 72%);
     box-shadow:
         0 0 35px #00ff99,
         0 0 80px rgba(0,255,153,0.35),
         inset 0 0 45px rgba(0,255,153,0.25);
+    animation:radarPulse 5s infinite ease-in-out;
 }
 
 .mega-sweep{
     position:absolute;
-
     width:50%;
     height:4px;
-
     top:50%;
     left:50%;
-
     transform-origin:left center;
-
     background:#00ff99;
-
     box-shadow:
         0 0 18px #00ff99,
         0 0 45px rgba(0,255,153,0.8);
-
     animation:megaSpin 4s linear infinite;
-
     overflow:visible;
 }
 
 .mega-sweep::after{
     content:"";
-
     position:absolute;
-
     left:-220px;
     top:-68px;
-
     width:220px;
     height:140px;
-
     background:linear-gradient(
         90deg,
         rgba(0,255,153,0.28),
         rgba(0,255,153,0.08),
         rgba(0,255,153,0)
     );
-
     filter:blur(18px);
 }
+
+@keyframes megaSpin{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
 }
 
+@keyframes radarPulse{
+    0%{box-shadow:0 0 35px #00ff99, inset 0 0 45px rgba(0,255,153,0.25);}
+    50%{box-shadow:0 0 65px #00ff99, inset 0 0 65px rgba(0,255,153,0.35);}
+    100%{box-shadow:0 0 35px #00ff99, inset 0 0 45px rgba(0,255,153,0.25);}
+}
+
+.hall-blip{
+    position:absolute;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:#00ff99;
+    box-shadow:
+        0 0 20px #00ff99,
+        0 0 40px #00ff99;
+    transform:translate(-50%,-50%);
+    animation:hallBlipFade 3.5s forwards;
+}
+
+.hall-label{
+    position:absolute;
+    transform:translate(-50%,20px);
+    color:#cffff0;
+    font-size:14px;
+    white-space:nowrap;
+    text-shadow:0 0 12px #00ff99;
+    animation:hallBlipFade 3.5s forwards;
+}
+
+@keyframes hallBlipFade{
+    0%{
+        opacity:0;
+        transform:translate(-50%,20px) scale(0.6);
+    }
+    15%{
+        opacity:1;
+        transform:translate(-50%,20px) scale(1);
+    }
+    85%{
+        opacity:1;
+    }
+    100%{
+        opacity:0;
+        transform:translate(-50%,20px) scale(0.7);
+    }
+}
+
+.hall-terminal{
+    margin-top:20px;
+    color:#7fffd4;
+    text-shadow:0 0 10px #00ff99;
+    opacity:0.75;
+    letter-spacing:2px;
+}
