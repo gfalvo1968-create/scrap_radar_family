@@ -1,19 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hall Of Fame Radar</title>
-<link rel="stylesheet" href="style.css">
-</head>
+<div id="megaRadar" style="
+    position:relative;
+    width:620px;
+    height:620px;
+    max-width:82vw;
+    max-height:82vw;
+    margin:60px auto 20px auto;
+    border:4px solid #00ff99;
+    border-radius:50%;
+    box-shadow:0 0 40px #00ff99, inset 0 0 40px rgba(0,255,153,0.25);
+    overflow:hidden;
+">
 
-<body class="hall-body">
-
-<h1 class="hall-title">HALL OF FAME RADAR</h1>
-
-<div class="mega-radar" id="megaRadar">
-    <div class="mega-sweep"></div>
-</div>
+    <div style="
+        position:absolute;
+        width:50%;
+        height:4px;
+        top:50%;
+        left:50%;
+        background:#00ff99;
+        transform-origin:left center;
+        box-shadow:0 0 25px #00ff99;
+        animation:megaSpin 4s linear infinite;
+    "></div>
 
 </div>
 
