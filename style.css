@@ -376,21 +376,25 @@ button{
 
     overflow:visible;
 }
-}
 
 .mega-sweep::after{
     content:"";
+
     position:absolute;
-    left:0;
-    top:-70px;
-    width:100%;
+
+    left:-220px;
+    top:-68px;
+
+    width:220px;
     height:140px;
+
     background:linear-gradient(
         90deg,
         rgba(0,255,153,0.28),
         rgba(0,255,153,0.08),
         rgba(0,255,153,0)
     );
+
     filter:blur(18px);
 }
 }
