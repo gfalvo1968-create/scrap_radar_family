@@ -6,24 +6,25 @@ const hallSignals = [
     "Anonymous Signal: Watching The Journey"
 ];
 
-function hallBlip(){
-    const radar = document.getElementById("megaRadar");
+const radar = document.getElementById("megaRadar");
+
+function createHallSignal(){
     if(!radar) return;
 
     const blip = document.createElement("div");
     blip.className = "hall-blip";
+
+    const label = document.createElement("div");
+    label.className = "hall-label";
+
+    label.textContent =
+        hallSignals[Math.floor(Math.random() * hallSignals.length)];
 
     const x = Math.random() * 70 + 15;
     const y = Math.random() * 70 + 15;
 
     blip.style.left = x + "%";
     blip.style.top = y + "%";
-
-    const label = document.createElement("div");
-    label.className = "hall-label";
-    label.textContent = hallSignals[
-        Math.floor(Math.random() * hallSignals.length)
-    ];
 
     label.style.left = x + "%";
     label.style.top = y + "%";
@@ -38,6 +39,6 @@ function hallBlip(){
 }
 
 window.onload = function(){
-    hallBlip();
-    setInterval(hallBlip, 3000);
+    createHallSignal();
+    setInterval(createHallSignal, 2500);
 };
