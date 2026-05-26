@@ -321,17 +321,17 @@ button{
 .mega-sweep::after{
     content:"";
     position:absolute;
-    left:-220px;
-    top:-68px;
-    width:220px;
-    height:140px;
+    right:0;
+    top:-24px;
+    width:260px;
+    height:55px;
     background:linear-gradient(
-        90deg,
-        rgba(0,255,153,0.28),
-        rgba(0,255,153,0.08),
+        270deg,
+        rgba(0,255,153,0.65),
+        rgba(0,255,153,0.25),
         rgba(0,255,153,0)
     );
-    filter:blur(18px);
+    filter:blur(16px);
 }
 
 @keyframes megaSpin{
