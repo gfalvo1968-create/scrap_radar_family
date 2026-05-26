@@ -24,18 +24,6 @@ body{
     box-shadow:0 0 40px #00ff99;
 }
 
-.sweep{
-    width:50%;
-    height:3px;
-    background:#00ff99;
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform-origin:left center;
-    animation:spin 4s linear infinite;
-    box-shadow:0 0 20px #00ff99;
-}
-
 @keyframes spin{
     from{transform:rotate(0deg);}
     to{transform:rotate(360deg);}
