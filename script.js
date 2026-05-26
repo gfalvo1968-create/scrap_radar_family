@@ -54,8 +54,8 @@ function rotateDetectionFeed(){
 
 function showRadarSignal(){
     console.log("radar popup fired");
-    const left = Math.random() * 50 + 20;
-    const top = Math.random() * 40 + 20;
+    const left = Math.random() * 60 + 25;
+    const top = Math.random() * 30 + 28;
 
     const signal = document.createElement("div");
     signal.className = "signal-popup";
