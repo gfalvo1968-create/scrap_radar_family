@@ -1,5 +1,7 @@
 let activeSignals = [];
+
 radar.appendChild(label);
+
 activeSignals.push({ blip, label });
 
 if(activeSignals.length > 2){
