@@ -1,21 +1,5 @@
 let activeSignals = [];
 
-radar.appendChild(label);
-
-activeSignals.push({ blip, label });
-
-if(activeSignals.length > 2){
-    const oldSignal = activeSignals.shift();
-
-    oldSignal.blip.style.opacity = "0";
-    oldSignal.label.style.opacity = "0";
-
-    setTimeout(() => {
-        oldSignal.blip.remove();
-        oldSignal.label.remove();
-    }, 1000);
-}
-
 const hallSignals = [
     "Gerald Falvo: Founder Signal",
     "Maya AI: Signal Online",
@@ -50,10 +34,22 @@ function createHallSignal(){
     radar.appendChild(blip);
     radar.appendChild(label);
 
-    setTimeout(function(){
-        blip.remove();
-        label.remove();
-    }, 3500);
+    activeSignals.push({ blip, label });
+
+    if(activeSignals.length > 2){
+        const oldSignal = activeSignals.shift();
+
+        oldSignal.blip.style.transition = "opacity 1s ease";
+        oldSignal.label.style.transition = "opacity 1s ease";
+
+        oldSignal.blip.style.opacity = "0";
+        oldSignal.label.style.opacity = "0";
+
+        setTimeout(() => {
+            oldSignal.blip.remove();
+            oldSignal.label.remove();
+        }, 1000);
+    }
 }
 
 window.onload = function(){
