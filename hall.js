@@ -22,7 +22,7 @@ function createHallSignal(){
     label.textContent =
         hallSignals[Math.floor(Math.random() * hallSignals.length)];
 
-    const x = Math.random() * 58 + 18;
+    const x = Math.random() * 50 + 25;
     const y = Math.random() * 48 + 30;
 
     blip.style.left = x + "%";
