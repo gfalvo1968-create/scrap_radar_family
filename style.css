@@ -298,20 +298,16 @@ button{
     overflow:visible;
 }
 
-.mega-sweep::after{
-    content:"";
+.sweep{
+    width:50%;
+    height:3px;
+    background:#00ff99;
     position:absolute;
-    right:0;
-    top:-24px;
-    width:260px;
-    height:55px;
-    background:linear-gradient(
-        270deg,
-        rgba(0,255,153,0.65),
-        rgba(0,255,153,0.25),
-        rgba(0,255,153,0)
-    );
-    filter:blur(16px);
+    top:50%;
+    left:50%;
+    transform-origin:left center;
+    animation:spin 4s linear infinite;
+    box-shadow:0 0 20px #00ff99;
 }
 
 @keyframes megaSpin{
