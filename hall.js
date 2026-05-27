@@ -1,4 +1,5 @@
 let activeSignals = [];
+radar.appendChild(label);
 const hallSignals = [
     "Gerald Falvo: Founder Signal",
     "Maya AI: Signal Online",
