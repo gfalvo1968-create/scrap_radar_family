@@ -1,3 +1,4 @@
+let activeSignals = [];
 const hallSignals = [
     "Gerald Falvo: Founder Signal",
     "Maya AI: Signal Online",
