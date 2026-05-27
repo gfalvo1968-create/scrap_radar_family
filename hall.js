@@ -37,7 +37,7 @@ function createHallSignal(){
         hallSignals[Math.floor(Math.random() * hallSignals.length)];
 
     const x = Math.random() * 58 + 18;
-    const y = Math.random() * 48 + 22;
+    const y = Math.random() * 48 + 30;
 
     blip.style.left = x + "%";
     blip.style.top = y + "%";
