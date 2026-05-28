@@ -1,27 +1,49 @@
+let activeSignals = [];
+
+const hallSignals = [
+    "Gerald Falvo: Founder Signal",
+    "Maya AI: Signal Online",
+    "Copper Crew: Builder Detected",
+    "Future Builder: Island Access Granted",
+    "Anonymous Signal: Watching The Journey"
+];
+
 const radar = document.getElementById("megaRadar");
 
 function createHallSignal(){
-    if(!radar){
-        alert("No megaRadar found");
-        return;
-    }
+    if(!radar) return;
 
     const label = document.createElement("div");
-    label.textContent = "Maya AI: Signal Online";
+    label.className = "hall-label";
 
-    label.style.position = "absolute";
-    label.style.left = "50%";
-    label.style.top = "50%";
-    label.style.color = "white";
-    label.style.fontSize = "22px";
-    label.style.zIndex = "9999";
-    label.style.background = "rgba(0,255,153,0.3)";
-    label.style.padding = "10px";
-    label.style.borderRadius = "10px";
+    label.textContent =
+        hallSignals[Math.floor(Math.random() * hallSignals.length)];
+
+    const x = Math.random() * 65 + 17;
+    const y = Math.random() * 60 + 18;
+
+    label.style.left = x + "%";
+    label.style.top = y + "%";
 
     radar.appendChild(label);
+
+    activeSignals.push(label);
+
+    if(activeSignals.length > 3){
+        const oldLabel = activeSignals.shift();
+
+        oldLabel.style.opacity = "0";
+
+        setTimeout(() => {
+            oldLabel.remove();
+        }, 800);
+    }
 }
 
 window.onload = function(){
     createHallSignal();
+    createHallSignal();
+    createHallSignal();
+
+    setInterval(createHallSignal, 2500);
 };
