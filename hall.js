@@ -36,7 +36,7 @@ function createHallSignal(){
 
     activeSignals.push({ blip, label });
 
-    if(activeSignals.length > 2){
+    if(activeSignals.length > 3)}
         const oldSignal = activeSignals.shift();
 
         oldSignal.blip.style.transition = "opacity 1s ease";
