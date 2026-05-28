@@ -24,6 +24,8 @@ function createHallSignal(){
 
     label.style.left = x + "%";
     label.style.top = y + "%";
+    label.style.transition = "all 0.8s ease";
+    label.style.zIndex = "20";
 
     radar.appendChild(label);
 
