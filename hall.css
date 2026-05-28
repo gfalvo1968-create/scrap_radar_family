@@ -79,7 +79,7 @@
 
 .hall-label{
     position:absolute;
-    transform:translate(-50%,20px);
+    transform:translate(-50%, 45%);
     color:#cffff0;
     font-size:14px;
     white-space:nowrap;
