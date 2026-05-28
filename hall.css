@@ -79,12 +79,19 @@
 
 .hall-label{
     position:absolute;
-    transform:translate(-50%, 45%);
-    color:#cffff0;
+    z-index:20;
+    color:#ffffff;
     font-size:14px;
+    font-weight:bold;
     white-space:nowrap;
     text-shadow:0 0 12px #00ff99;
-    animation:hallBlipFade 3.5s forwards;
+    background:rgba(0,40,25,0.55);
+    border:1px solid rgba(0,255,153,0.35);
+    border-radius:10px;
+    padding:6px 10px;
+    box-shadow:0 0 14px rgba(0,255,153,0.4);
+    transform:translate(-50%,35px);
+    pointer-events:none;
 }
 
 @keyframes hallBlipFade{
