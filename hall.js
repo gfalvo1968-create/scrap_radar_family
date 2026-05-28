@@ -5,7 +5,12 @@ const hallSignals = [
     "Maya AI: Signal Online",
     "Copper Crew: Builder Detected",
     "Future Builder: Island Access Granted",
-    "Anonymous Signal: Watching The Journey"
+    "Anonymous Signal: Watching The Journey",
+    "Scrap Radar Family: Signal Locked",
+    "Board Sense: System Waking Up",
+    "Builder Crew: New Contact Detected",
+    "Island Watcher: Still Online",
+    "Signal Room: Active"
 ];
 
 const radar = document.getElementById("megaRadar");
