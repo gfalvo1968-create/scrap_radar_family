@@ -66,8 +66,8 @@
 
 .hall-blip{
     position:absolute;
-    width:16px;
-    height:16px;
+    width:8px;
+    height:8px;
     border-radius:50%;
     background:#00ff99;
     box-shadow:
