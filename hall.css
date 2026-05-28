@@ -109,3 +109,46 @@
     100%{
         opacity:0;
         transform:translate(-50%,20px) scale(0.7);
+    .hall-terminal{
+    margin-top:25px;
+    color:#7fffd4;
+    font-size:14px;
+    letter-spacing:3px;
+    opacity:0.7;
+    text-shadow:0 0 12px #00ff99;
+    animation:terminalPulse 2s infinite alternate;
+}
+
+.back-button{
+    display:inline-block;
+    margin-top:25px;
+    padding:14px 28px;
+    color:#00ffcc;
+    text-decoration:none;
+    border:1px solid rgba(0,255,170,0.35);
+    border-radius:14px;
+    background:rgba(0,40,20,0.45);
+    box-shadow:
+        0 0 18px rgba(0,255,170,0.2),
+        inset 0 0 18px rgba(0,255,170,0.08);
+    transition:all 0.35s ease;
+}
+
+.back-button:hover{
+    transform:scale(1.05);
+    box-shadow:
+        0 0 30px rgba(0,255,170,0.45),
+        inset 0 0 20px rgba(0,255,170,0.12);
+}
+
+@keyframes terminalPulse{
+    from{
+        opacity:0.45;
+        letter-spacing:2px;
+    }
+
+    to{
+        opacity:0.9;
+        letter-spacing:4px;
+    }
+}
