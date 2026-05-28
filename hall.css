@@ -73,8 +73,8 @@
     box-shadow:
         0 0 20px #00ff99,
         0 0 40px #00ff99;
-    transform:translate(-50%,-40%);
-    transform:translate(-50%,-20%);
+    transform:translate(-50%,40%);
+    transform:translate(-50%,20%);
     animation:hallBlipFade 3.5s forwards;
 }
 
