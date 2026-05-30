@@ -25,7 +25,7 @@ function createHallSignal(){
         hallSignals[Math.floor(Math.random() * hallSignals.length)];
 
     const x = Math.random() * 50 + 25;
-    const y = Math.random() * 65 + 15;
+    const y = Math.random() * 30 + 15;
 
     label.style.left = x + "%";
     label.style.top = y + "%";
