@@ -18,11 +18,7 @@
 
 .sweep{
     width:50%;
-    height:3px;
-    background:#00ff99;
-    position:absolute;
-    top:50%;
-    left:50%;
+    height:
     transform-origin:left center;
     animation:spin 4s linear infinite;
     box-shadow:0 0 20px #00ff99;
@@ -84,6 +80,7 @@
     100%{
         opacity:0;
         transform:translate(-50%,20px) scale(0.7);
+    }   
     .hall-terminal{
     margin-top:25px;
     color:#7fffd4;
