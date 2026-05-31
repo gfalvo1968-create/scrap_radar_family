@@ -112,6 +112,14 @@
         0 0 30px rgba(0,255,170,0.45),
         inset 0 0 20px rgba(0,255,170,0.12);
 }
+.wall-motto{
+    display:block;
+    font-size:12px;
+    margin-top:4px;
+    color:#7fffd4;
+    opacity:0.8;
+    letter-spacing:1px;
+}
 
 @keyframes terminalPulse{
     from{
