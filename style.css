@@ -369,3 +369,11 @@ button{
     opacity:0.75;
     letter-spacing:2px;
 }
+.wall-motto{
+    display:block;
+    font-size:12px;
+    margin-top:4px;
+    color:#7fffd4;
+    opacity:0.8;
+    letter-spacing:1px;
+}
