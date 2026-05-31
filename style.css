@@ -103,6 +103,11 @@ p{
     color:black;
     box-shadow:0 0 25px #00ff99;
 }
+.wall-link{
+    display:block;
+    text-align:center;
+    margin:20px auto;
+}
 
 .radar-btn{
     background:#00bfff;
