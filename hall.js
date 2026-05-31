@@ -5,7 +5,7 @@ const hallSignals = [
   "Scrap Radar Family: Signal Locked",
   "Future Builder: Island Access Granted",
   "Maya AI ChatGTB Signal Online",
-  "Copper Crew: Builder Detected",
+  "Ever Evolving Ever Growing”,
   "Anonymous Signal: Watching The Journey",
   "Signal Room: Active",
   "Legacy Builder: Hall Verified"
