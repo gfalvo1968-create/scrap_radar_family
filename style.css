@@ -331,7 +331,7 @@ button{
         0 0 20px #00ff99,
         0 0 40px #00ff99;
     transform:translate(-50%,-50%);
-    animation:hallBlipFade 0.08s forwards;
+    animation:hallBlipFade 3.5sforwards;
 }
 
 .hall-label{
@@ -341,12 +341,12 @@ button{
     font-size:14px;
     white-space:nowrap;
     text-shadow:0 0 12px #00ff99;
-    animation:hallBlipFade O.08s forwards;
+    animation:hallBlipFade 3.5sforwards;
 }
 
 @keyframes hallBlipFade{
     0%{
-        opacity:0;
+        opacity:0; 
         transform:translate(-50%,20px) scale(0.6);
     }
     15%{
