@@ -27,8 +27,8 @@ function createHallSignal(){
     label.textContent =
         hallSignals[Math.floor(Math.random() * hallSignals.length)];
 
-    const x = Math.random() * 50 + 25;
-    const y = Math.random() * 30 + 15;
+    const x = Math.random() * 90 + 5;
+    const y = Math.random() * 90 + 5;
 
     label.style.left = x + "%";
     label.style.top = y + "%";
