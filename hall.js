@@ -32,6 +32,8 @@ function createHallSignal(){
 
     label.style.left = x + "%";
     label.style.top = y + "%";
+    label.style.maxWidth = "220px";
+    label.style.textAlign = "center";
     label.style.transition = "all 0.8s ease";
     label.style.zIndex = "20";
 
