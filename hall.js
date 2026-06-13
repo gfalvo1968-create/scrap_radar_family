@@ -41,7 +41,7 @@ function createHallSignal(){
 
     activeSignals.push(label);
 
-    if(activeSignals.length > 10){
+    if(activeSignals.length > 20){
         const oldLabel = activeSignals.shift();
 
         oldLabel.style.opacity = "0";
