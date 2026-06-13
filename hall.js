@@ -41,7 +41,7 @@ function createHallSignal(){
 
         setTimeout(() => {
             oldLabel.remove();
-        }, 5000);
+        }, 15000);
     }
 }
 
