@@ -50,5 +50,5 @@ window.onload = function(){
     createHallSignal();
     createHallSignal();
 
-    setInterval(createHallSignal, 2500);
+    setInterval(createHallSignal, 1000);
 };
