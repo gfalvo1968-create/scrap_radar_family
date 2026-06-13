@@ -1,14 +1,18 @@
 let activeSignals = [];
 
 const hallSignals = [
-  "Gerald Falvo: Founder Signal",
-  "Scrap Radar Family: Signal Locked",
-  "Future Builder: Island Access Granted",
-  "Maya AI ChatGTB Signal Online",
-  "Ever Evolving Ever Growing”,
-  "Anonymous Signal: Watching The Journey",
-  "Signal Room: Active",
-  "Legacy Builder: Hall Verified"
+"Gerald Falvo: Founder Signal",
+"Maya AI: Signal Online",
+"Jerry: Scrap King",
+"Copper Crew: Humans and AI Building Together",
+"Board Sense: Online",
+"Scrap Radar: Tracking",
+"Future Builder: Island Access Granted",
+"Legacy Builder: Hall Verified",
+"Signal Room: Active",
+"Ever Evolving Ever Growing",
+"Hall Of Fame Member",
+"Radar Family Forever"
 ];
 
 const radar = document.getElementById("megaRadar");
