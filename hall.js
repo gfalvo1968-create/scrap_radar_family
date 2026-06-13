@@ -16,6 +16,7 @@ const hallSignals = [
 ];
 
 const radar = document.getElementById("megaRadar");
+console.log("RADAR FOUND", radar);
 
 function createHallSignal(){
     if(!radar) return;
