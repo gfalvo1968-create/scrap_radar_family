@@ -85,8 +85,9 @@ p{
 }
 
 .portal{
-    display:inline-block;
-    min-width:320px;
+    display:block;
+    width:320px;
+    text-align:center;
     box-sizing:border-box;
     text-decoration:none;
     padding:25px 45px;
