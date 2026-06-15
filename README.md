@@ -35,3 +35,4 @@ Features:
 * Mobile Friendly Layout
 
 Built by Gerald Falvo and Maya AI.
+Add design standards and V1.0 milestone
