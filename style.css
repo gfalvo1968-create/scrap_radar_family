@@ -105,6 +105,11 @@ p{
     color:black;
     box-shadow:0 0 25px #00ff99;
 }
+.maya-btn{
+    background:#bb66ff;
+    color:white;
+    box-shadow:0 0 25px #bb66ff;
+}
 .wall-link{
     display:block;
     text-align:center;
