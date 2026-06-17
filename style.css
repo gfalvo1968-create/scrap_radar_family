@@ -132,6 +132,11 @@ box-shadow:0 0 25px rgba(0,255,153,0.3);
 
     box-shadow:0 0 25px #bb66ff;
 }
+.boardsense-btn{
+    background:#ff4df0;
+    color:white;
+    box-shadow:0 0 30px #ff4df0;
+}
 .wall-link{
     display:block;
     text-align:center;
