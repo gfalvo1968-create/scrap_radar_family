@@ -192,6 +192,93 @@ document.getElementById('dashboard').style.display='block';
 </div>
 
 <!-- DASHBOARD -->
+<div id="dashboard" class="dashboard" style="display:none;">
+
+    <header class="dashboard-header">
+        <h1>🧠 BOARD SENSE</h1>
+        <p>AI Powered Scrap Intelligence</p>
+
+        <div class="system-status">
+            🟢 AI Engine Online |
+            Version 0.6.0 |
+            Harbor Connected
+        </div>
+    </header>
+
+    <section class="panel">
+        <h2>📷 Scan Board</h2>
+
+        <input type="file" id="boardImage" accept="image/*">
+
+        <button id="analyzeBtn">
+            Analyze Board
+        </button>
+    </section>
+
+    <section class="panel">
+        <h2>🔍 Board Investigation Report</h2>
+
+        <div id="predictionBox">
+
+            Waiting for scan...
+
+        </div>
+
+    </section>
+
+    <section class="panel">
+        <h2>🥇 Recovery Intelligence</h2>
+
+        <div id="recoveryBox">
+
+            Recovery information will appear here.
+
+        </div>
+
+    </section>
+
+    <section class="panel">
+        <h2>📚 Harbor Knowledge</h2>
+
+        <div id="lessonBox">
+
+            Today's lesson will appear here.
+
+        </div>
+
+    </section>
+
+    <section class="panel">
+        <h2>🔭 Harbor Spyglass</h2>
+
+        <button>
+
+            Investigate Further
+
+        </button>
+
+    </section>
+
+    <section class="panel sponsor">
+
+        ⭐ Sponsored Space
+
+    </section>
+
+    <footer>
+
+        🧭
+        North • Knowledge
+
+        East • Discovery
+
+        South • Teaching
+
+        West • Legacy
+
+    </footer>
+
+</div>
 
 <script>
 function $(id){
