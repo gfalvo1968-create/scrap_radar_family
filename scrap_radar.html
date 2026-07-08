@@ -194,25 +194,43 @@ header p{
 </div>
 
 <div id="boardsense-panel" class="panel">
+
     <h2>🧠 Board Sense AI</h2>
 
-    <button id="scan-board-btn">📷 Scan Board</button>
+    <button id="scan-board-btn" class="scan-btn">
+        📷 SCAN BOARD
+    </button>
 
-    <p><strong>Status:</strong> Ready</p>
+    <div class="status">
+        🟢 System Ready
+    </div>
 
-    <p><strong>AI Confidence:</strong> --%</p>
+    <hr>
 
-    <p><strong>Board Grade:</strong> Unknown</p>
+    <p><strong>AI Confidence</strong></p>
+    <progress id="confidence-bar" value="0" max="100"></progress>
+    <p id="confidence-text">0%</p>
 
-    <p><strong>Estimated Value:</strong> $0.00</p>
+    <p><strong>Board Grade</strong></p>
+    <p id="board-grade">Waiting for Scan...</p>
 
-    <p><strong>Gold Score:</strong> --</p>
+    <p><strong>Estimated Value</strong></p>
+    <p id="board-value">$0.00</p>
 
-    <p><strong>Silver Score:</strong> --</p>
+    <p><strong>Gold Score</strong></p>
+    <progress id="gold-score" value="0" max="100"></progress>
 
-    <p><strong>Copper Score:</strong> --</p>
+    <p><strong>Silver Score</strong></p>
+    <progress id="silver-score" value="0" max="100"></progress>
 
-    <p><strong>Last Scan:</strong> None</p>
+    <p><strong>Copper Score</strong></p>
+    <progress id="copper-score" value="0" max="100"></progress>
+
+    <hr>
+
+    <p><strong>Last Scan</strong></p>
+    <p id="last-scan">Never</p>
+
 </div>
 
 <div id="refinery-panel" class="panel">
