@@ -275,9 +275,12 @@ progress::-webkit-progress-value{
 
     <hr>
 
-    <p><strong>AI Confidence</strong></p>
-    <progress id="confidence-bar" value="0" max="100"></progress>
-    <p id="confidence-text">0%</p>
+    <div class="confidence-header">
+    <strong>AI Confidence</strong>
+    <span id="confidence-text">0%</span>
+</div>
+
+<progress id="confidence-bar" value="0" max="100"></progress>
 
     <p><strong>Board Grade</strong></p>
     <p id="board-grade">Waiting for Scan...</p>
