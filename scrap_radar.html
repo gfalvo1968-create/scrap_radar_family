@@ -609,6 +609,18 @@ clearInterval(counter);
 badge.innerHTML="🟢 COMPLETE";
 
 }
+    const temp = document.getElementById("solution-temp");
+
+let temperature = 72;
+
+const tempTimer = setInterval(() => {
+
+    if (temperature < 104) {
+        temperature++;
+        temp.innerHTML = temperature + "°F";
+    }
+
+}, 1200);
 
 }
 
