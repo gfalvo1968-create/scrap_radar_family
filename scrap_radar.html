@@ -551,6 +551,13 @@ const counter = setInterval(() => {
     goldDisplay.innerHTML = gold.toFixed(2) + " g";
     silverDisplay.innerHTML = silver.toFixed(2) + " g";
     copperDisplay.innerHTML = copper.toFixed(2) + " lb";
+    const value =
+(gold * 105) +
+(silver * 1.10) +
+(copper * 4.25);
+
+valueDisplay.innerHTML =
+"$" + value.toFixed(2);
 
 }, 300);
 
