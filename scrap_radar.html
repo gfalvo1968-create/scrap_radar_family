@@ -524,5 +524,67 @@ box-shadow:
 </div>
 
 </div>
+
+    <script>
+
+function startRecovery(){
+
+const badge=document.getElementById("lab-process");
+
+badge.innerHTML="🟡 RUNNING";
+
+const steps=[
+"step1",
+"step2",
+"step3",
+"step4",
+"step5",
+"step6",
+"step7"
+];
+
+const names=[
+"Ready to Start",
+"Strip Gold",
+"Filter Solution",
+"Electrolysis",
+"Wash & Rinse",
+"Dry & Collect",
+"Complete"
+];
+
+let current=0;
+
+function nextStep(){
+
+if(current>0){
+
+document.getElementById(steps[current-1]).innerHTML=
+"✅ "+names[current-1];
+
+}
+
+if(current<steps.length){
+
+document.getElementById(steps[current]).innerHTML=
+"🟡 "+names[current];
+
+current++;
+
+setTimeout(nextStep,2000);
+
+}else{
+
+badge.innerHTML="🟢 COMPLETE";
+
+}
+
+}
+
+nextStep();
+
+}
+
+</script>
 </body>
 </html>
