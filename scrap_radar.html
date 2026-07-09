@@ -559,6 +559,16 @@ const counter = setInterval(() => {
     goldDisplay.innerHTML = gold.toFixed(2) + " g";
     silverDisplay.innerHTML = silver.toFixed(2) + " g";
     copperDisplay.innerHTML = copper.toFixed(2) + " lb";
+    seconds++;
+
+if (seconds === 60) {
+    seconds = 0;
+    minutes++;
+}
+
+document.getElementById("process-time").innerHTML =
+    String(minutes).padStart(2, "0") + ":" +
+    String(seconds).padStart(2, "0");
     goldScore.value = Math.min(gold * 20, 100);
     silverScore.value = Math.min(silver * 25, 100);
     copperScore.value = Math.min(copper * 7, 100);
