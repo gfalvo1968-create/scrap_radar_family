@@ -654,11 +654,39 @@ const tempTimer = setInterval(() => {
 nextStep();
 
 }
-function startScan(){
+function startScan() {
 
-    document.getElementById("board-grade").innerHTML =
-        "📷 Capturing Image...";
+    const grade = document.getElementById("board-grade");
+    const confidence = document.getElementById("confidence-text");
+    const bar = document.getElementById("confidence-bar");
 
+    grade.innerHTML = "📷 Capturing Image...";
+    confidence.innerHTML = "0%";
+    bar.value = 0;
+
+    setTimeout(() => {
+        grade.innerHTML = "🧠 AI Analyzing Board...";
+        confidence.innerHTML = "35%";
+        bar.value = 35;
+    }, 1000);
+
+    setTimeout(() => {
+        grade.innerHTML = "🔍 Detecting Gold Fingers...";
+        confidence.innerHTML = "68%";
+        bar.value = 68;
+    }, 2000);
+
+    setTimeout(() => {
+        grade.innerHTML = "💾 Counting CPU Chips...";
+        confidence.innerHTML = "86%";
+        bar.value = 86;
+    }, 3000);
+
+    setTimeout(() => {
+        grade.innerHTML = "✅ High Grade Server Board";
+        confidence.innerHTML = "98%";
+        bar.value = 98;
+    }, 4000);
 }
 
 </script>
