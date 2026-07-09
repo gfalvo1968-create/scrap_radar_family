@@ -533,6 +533,26 @@ const badge=document.getElementById("lab-process");
 
 badge.innerHTML="🟡 RUNNING";
 
+    let gold = 0;
+let silver = 0;
+let copper = 0;
+
+const goldDisplay = document.getElementById("gold-recovery");
+const silverDisplay = document.getElementById("silver-recovery");
+const copperDisplay = document.getElementById("copper-recovery");
+
+const counter = setInterval(() => {
+
+    gold += 0.03;
+    silver += 0.02;
+    copper += 0.15;
+
+    goldDisplay.innerHTML = gold.toFixed(2) + " g";
+    silverDisplay.innerHTML = silver.toFixed(2) + " g";
+    copperDisplay.innerHTML = copper.toFixed(2) + " lb";
+
+}, 300);
+
 const steps=[
 "step1",
 "step2",
