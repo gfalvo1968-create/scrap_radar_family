@@ -236,6 +236,27 @@ progress::-webkit-progress-value{
         0 0 10px #39ff14,
         0 0 20px #39ff14;
 }
+    @keyframes pulseGreen{
+    0%{
+        opacity:.6;
+    }
+
+    50%{
+        opacity:1;
+        text-shadow:
+            0 0 8px #39ff14,
+            0 0 18px #39ff14,
+            0 0 28px #39ff14;
+    }
+
+    100%{
+        opacity:.6;
+    }
+}
+
+.active-step{
+    animation:pulseGreen 1.6s infinite;
+}
 
 </style>
 
