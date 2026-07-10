@@ -359,6 +359,13 @@ progress::-webkit-progress-value{
     📷 START AI SCAN
     </button>
 
+    <input
+    type="file"
+    id="board-image"
+    accept="image/*"
+    style="display:none"
+    onchange="loadBoard(event)">
+
     <div class="status">
         🟢 System Ready
     </div>
