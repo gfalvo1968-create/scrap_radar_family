@@ -582,13 +582,9 @@ document.getElementById("process-time").innerHTML =
     silverScore.value = Math.min(silver * 25, 100);
     copperScore.value = Math.min(copper * 7, 100);
     const value =
-(gold * 105) +
-(silver * 1.10) +
-(copper * 4.25);
- valueDisplay.innerHTML = "$" + value.toFixed(2);
-
-valueDisplay.innerHTML =
-"$" + value.toFixed(2);
+    const value =
+    (gold / scanGold) * scanValue;
+     valueDisplay.innerHTML = "$" + value.toFixed(2);
 
 }, 300);
 
