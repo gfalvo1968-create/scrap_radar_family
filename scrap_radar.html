@@ -561,9 +561,9 @@ const copperScore = document.getElementById("copper-score");
 
 const counter = setInterval(() => {
 
-    gold += 0.03;
-    silver += 0.02;
-    copper += 0.15;
+    gold += scanGold / 90;
+    silver += scanSilver / 90;
+    copper += scanCopper / 90;
 
     goldDisplay.innerHTML = gold.toFixed(2) + " g";
     silverDisplay.innerHTML = silver.toFixed(2) + " g";
