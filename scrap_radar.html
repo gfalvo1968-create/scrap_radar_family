@@ -559,6 +559,28 @@ let scanGold = 0;
 let scanSilver = 0;
 let scanCopper = 0;
 let scanValue = 0;
+        function loadBoard(event){
+
+    const file = event.target.files[0];
+
+    if(!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        const img = document.getElementById("board-preview");
+
+        img.src = e.target.result;
+        img.style.display = "block";
+
+        startScan();
+
+    };
+
+    reader.readAsDataURL(file);
+
+}
 
 function startRecovery(){
 
