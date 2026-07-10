@@ -361,11 +361,12 @@ progress::-webkit-progress-value{
     </button>
 
     <input
-    type="file"
-    id="board-image"
-    accept="image/*"
-    style="display:none"
-    onchange="loadBoard(event)">
+type="file"
+id="board-image"
+accept="image/*"
+capture="environment"
+style="display:none"
+onchange="loadBoard(event)">
 
     <div style="text-align:center;margin-bottom:15px;">
     <img
