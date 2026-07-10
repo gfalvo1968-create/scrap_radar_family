@@ -353,28 +353,6 @@ progress::-webkit-progress-value{
 
     <h2>🧠 Board Sense AI</h2>
 
-    function loadBoard(event){
-
-    const file = event.target.files[0];
-
-    if(!file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = function(e){
-
-        const img = document.getElementById("board-preview");
-
-        img.src = e.target.result;
-        img.style.display = "block";
-
-        startScan();
-
-    };
-
-    reader.readAsDataURL(file);
-
-}
 
     <button id="scan-board-btn"
         class="scan-btn"
