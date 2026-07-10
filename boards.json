@@ -1,1 +1,15 @@
-
+[
+  {
+    "id": 1,
+    "name": "High Grade Server Board",
+    "grade": "A+",
+    "goldScore": 92,
+    "silverScore": 64,
+    "copperScore": 81,
+    "estimatedValue": 742.50,
+    "goldRecovery": 2.70,
+    "silverRecovery": 1.80,
+    "copperRecovery": 13.50,
+    "recommendation": "REFINE"
+  }
+]
