@@ -1,9 +1,9 @@
-from app.core.reasoning import BoardReasoner
-from app.core.scoring import ScoreEngine
-from app.core.confidence import ConfidenceEngine
-from app.core.recovery import RecoveryAdvisor
-from app.core.fingerprint import Fingerprint
-from app.core.report import Report
+from core.reasoning import BoardReasoner
+from core.scoring import ScoreEngine
+from core.confidence import ConfidenceEngine
+from core.recovery import RecoveryAdvisor
+from core.fingerprint import Fingerprint
+from core.report import Report
 
 
 class BoardSenseEngine:
