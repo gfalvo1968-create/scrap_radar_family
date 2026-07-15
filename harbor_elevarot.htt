@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harbor Elevator</title>
+
+<link rel="stylesheet" href="harbor_elevator.css">
+</head>
+
+<body>
+
+<div class="elevator">
+
+<h1>🛗 Harbor Elevator</h1>
+
+<p>Where would you like to go today?</p>
+
+<button>🏝 Harbor Island</button>
+
+<button>📡 Floor 1 - Scrap Radar</button>
+
+<button>🧠 Floor 2 - Board Sense</button>
+
+<button disabled>🏢 Floor 3 - Business Center 🔒</button>
+
+<button disabled>🤖 Floor 4 - Maya AI 🔒</button>
+
+<button disabled>🔐 Floor 5 - Security 🔒</button>
+
+<button disabled>📬 Floor 6 - Mail Room</button>
+
+<button disabled>📦 Floor 7 - Warehouse</button>
+
+<button disabled>📚 Floor 8 - History Room</button>
+
+<button disabled>⚙️ Floor 9 - Harbor Engine 🔒</button>
+
+</div>
+
+<script src="harbor_elevator.js"></script>
+
+</body>
+</html>
