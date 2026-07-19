@@ -286,7 +286,135 @@ img.preview{
 
 </div>
 
+<script>
 
+function $(id){
+    return document.getElementById(id);
+}
+
+// ---------- Startup ----------
+
+window.addEventListener("load", () => {
+
+    const splash = $("splash");
+    const dashboard = $("dashboard");
+
+    if (dashboard) {
+        dashboard.style.display = "none";
+        dashboard.classList.add("hidden");
+    }
+
+    const enterBtn = $("enterDashboardBtn");
+
+    if (enterBtn) {
+
+        enterBtn.onclick = function () {
+
+            splash.style.display = "none";
+
+            dashboard.classList.remove("hidden");
+
+            dashboard.style.display = "block";
+
+            console.log("Dashboard opened");
+
+        };
+
+    }
+
+    const elevatorBtn = $("elevatorBtn");
+
+    if (elevatorBtn) {
+
+        elevatorBtn.onclick = function () {
+
+            window.location.href = "harbor_elevator.html";
+
+        };
+
+    }
+
+    const analyzeBtn = $("analyzeBtn");
+
+    if (analyzeBtn) {
+
+        analyzeBtn.onclick = function () {
+
+            uploadImage();
+
+        };
+
+    }
+
+});
+
+
+// ---------- Upload ----------
+
+async function uploadImage() {
+
+    const input = $("boardImage");
+
+    if (!input || input.files.length === 0) {
+
+        $("predictionBox").innerHTML =
+            "Please choose an image first.";
+
+        return;
+
+    }
+
+    const file = input.files[0];
+
+    $("uploadStatus").innerHTML =
+        "Uploading " + file.name + "...";
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    try {
+
+        const response = await fetch("/upload", {
+
+            method: "POST",
+
+            body: formData
+
+        });
+
+        const data = await response.json();
+
+        $("predictionBox").innerHTML =
+            "<b>Grade:</b> " + data.ai_grade +
+            "<br><b>Confidence:</b> " + data.confidence +
+            "<br><b>Action:</b> " + data.action +
+            "<br><b>Estimated Value:</b> $" + data.value_estimate;
+
+        $("uploadStatus").innerHTML =
+            "Analysis complete.";
+
+        if (typeof renderSignals === "function") {
+
+            renderSignals(data.signals);
+
+        }
+
+    }
+
+    catch (err) {
+
+        $("predictionBox").innerHTML =
+            "Upload failed.<br><br>" + err;
+
+        $("uploadStatus").innerHTML =
+            "Upload failed.";
+
+    }
+
+}
+
+</script>
 
 </body>
 </html>
