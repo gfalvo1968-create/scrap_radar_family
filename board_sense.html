@@ -324,15 +324,18 @@ window.addEventListener("load", () => {
 
     }
 
-    const analyzeBtn = $("analyzeBtn");
-
     if (analyzeBtn) {
 
-        analyzeBtn.onclick = function () {
+    analyzeBtn.onclick = function () {
 
-            uploadImage();
+        devLog("------------------------");
+        devLog("Analyze button pressed");
 
-        };
+        uploadImage();
+
+    };
+
+}
 
     }
 
