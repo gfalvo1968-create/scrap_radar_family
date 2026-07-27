@@ -365,7 +365,9 @@ async function uploadImage() {
     }
 
     const file = input.files[0];
-
+    
+    devLog("Analysis complete.");
+    devLog("Ready for next scan.");
     $("uploadStatus").innerHTML =
         "Uploading " + file.name + "...";
     devLog("Uploading image...");
