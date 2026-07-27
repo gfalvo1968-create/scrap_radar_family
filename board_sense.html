@@ -368,6 +368,8 @@ async function uploadImage() {
 
     $("uploadStatus").innerHTML =
         "Uploading " + file.name + "...";
+    devLog("Uploading image...");
+    devLog("Creating request...");
 
     const formData = new FormData();
 
