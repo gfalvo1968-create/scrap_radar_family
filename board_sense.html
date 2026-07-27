@@ -358,9 +358,6 @@ async function uploadImage() {
     }
 
     const file = input.files[0];
-    devLog("ERROR: " + err);
-    devLog("Analysis complete.");
-    devLog("Ready for next scan.");
     $("uploadStatus").innerHTML =
         "Uploading " + file.name + "...";
     devLog("Uploading image...");
@@ -382,6 +379,8 @@ async function uploadImage() {
         });
 
         const data = await response.json();
+        devLog("Analysis complete.");
+        devLog("Ready for next scan.");
         devLog("Response received.");
         devLog("AI Grade: " + data.ai_grade);
     .   devLog("Confidence: " + data.confidence + "%");
