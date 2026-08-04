@@ -1,17 +1,21 @@
 // Harbor Elevator Navigation
 
-function goTo(page) {
-    window.location.href = page;
-}
-
 document.addEventListener("DOMContentLoaded", () => {
 
-    const buttons = document.querySelectorAll("button");
+    const buttons = document.querySelectorAll("button[data-page]");
 
-    buttons[0].onclick = () => goTo("island_portal.html");
+    buttons.forEach(button => {
 
-    buttons[1].onclick = () => goTo("index.html");       // Scrap Radar
+        button.addEventListener("click", () => {
 
-    buttons[2].onclick = () => goTo("board_sense.html"); // Board Sense
+            const page = button.dataset.page;
+
+            if (page) {
+                window.location.href = page;
+            }
+
+        });
+
+    });
 
 });
