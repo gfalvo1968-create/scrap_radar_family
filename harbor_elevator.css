@@ -53,3 +53,15 @@ p {
     color: #cccccc;
     margin-bottom: 30px;
 }
+.button-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fit,minmax(130px,1fr));
+
+    gap:18px;
+
+    margin-top:30px;
+
+}
