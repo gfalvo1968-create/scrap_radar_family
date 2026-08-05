@@ -1,1 +1,87 @@
+/*
+==================================================
+ HARBOR INTELLIGENCE PLATFORM
+ Master Stylesheet
+ Version: 2.0
+==================================================
+*/
 
+:root{
+    --bg:#050505;
+    --panel:#101010;
+    --green:#39ff14;
+    --green-soft:#8cff8c;
+    --blue:#00d4ff;
+    --gold:#ffd54a;
+    --border:rgba(57,255,20,.35);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:var(--bg);
+    color:var(--green);
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+header{
+    text-align:center;
+    padding:35px 20px;
+}
+
+header h1{
+    font-size:54px;
+    color:var(--green);
+    text-shadow:0 0 20px var(--green);
+}
+
+header p{
+    color:var(--green-soft);
+    margin-top:10px;
+    font-size:20px;
+}
+
+.dashboard{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+    gap:20px;
+    padding:20px;
+}
+
+.panel{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:20px;
+    transition:.3s;
+}
+
+.panel:hover{
+    transform:translateY(-4px);
+    box-shadow:0 0 25px rgba(57,255,20,.25);
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#00aa00;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+    transition:.25s;
+}
+
+button:hover{
+    background:#00dd00;
+}
+
+.status{
+    color:var(--green-soft);
+    margin-top:10px;
+}
