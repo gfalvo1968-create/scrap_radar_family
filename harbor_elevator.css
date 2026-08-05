@@ -65,3 +65,46 @@ p {
     margin-top:30px;
 
 }
+.button-grid button{
+
+    height:110px;
+
+    border:none;
+
+    border-radius:18px;
+
+    background:#202020;
+
+    color:white;
+
+    font-size:18px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    box-shadow:
+        0 0 12px rgba(0,255,150,.25);
+
+}
+
+.button-grid button:hover{
+
+    transform:scale(1.05);
+
+    background:#00ff99;
+
+    color:black;
+
+    box-shadow:
+        0 0 30px #00ff99;
+
+}
+
+.button-grid button:disabled{
+
+    opacity:.35;
+
+    cursor:not-allowed;
+
+}
