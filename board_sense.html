@@ -292,23 +292,25 @@ function $(id){
     return document.getElementById(id);
 }
 
-// ---------- Startup ----------
+const enterBtn = $("enterDashboardBtn");
 
-window.addEventListener("load", () => {
+if (enterBtn) {
 
-    const splash = $("splash");
-    const dashboard = $("dashboard");
-
-    if (dashboard) {
-        dashboard.style.display = "none";
-        dashboard.classList.add("hidden");
-    }
-
-    const enterBtn = $("enterDashboardBtn");
-
-    if (enterBtn) {
+    enterBtn.onclick = function () {
 
         alert("ENTER CLICKED");
+
+        splash.style.display = "none";
+
+        dashboard.classList.remove("hidden");
+
+        dashboard.style.display = "block";
+
+        console.log("Dashboard opened");
+
+    };
+
+}
 
             splash.style.display = "none";
 
