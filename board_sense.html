@@ -281,36 +281,25 @@ img.preview{
         South • Teaching
 
         West • Legacy
+        // ---------- Startup ----------
 
-    </footer>
+window.addEventListener("load", () => {
 
-</div>
+    const splash = $("splash");
+    const dashboard = $("dashboard");
+    const enterBtn = $("enterDashboardBtn");
+    const analyzeBtn = $("analyzeBtn");
 
-<script>
+    if (dashboard) {
+        dashboard.style.display = "none";
+        dashboard.classList.add("hidden");
+    }
 
-function $(id){
-    return document.getElementById(id);
-}
+    if (enterBtn) {
 
-const enterBtn = $("enterDashboardBtn");
+        enterBtn.onclick = function () {
 
-if (enterBtn) {
-
-    enterBtn.onclick = function () {
-
-        alert("ENTER CLICKED");
-
-        splash.style.display = "none";
-
-        dashboard.classList.remove("hidden");
-
-        dashboard.style.display = "block";
-
-        console.log("Dashboard opened");
-
-    };
-
-}
+            alert("ENTER CLICKED");
 
             splash.style.display = "none";
 
@@ -324,8 +313,20 @@ if (enterBtn) {
 
     }
 
-
     if (analyzeBtn) {
+
+        analyzeBtn.onclick = function () {
+
+            devLog("------------------------");
+            devLog("Analyze button pressed");
+
+            uploadImage();
+
+        };
+
+    }
+
+});
 
     analyzeBtn.onclick = function () {
 
