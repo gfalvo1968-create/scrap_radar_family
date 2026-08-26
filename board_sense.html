@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Board Sense</title>
 <style>
-body{margin:0;padding:0;background:#050505;color:#39ff14;font-family:Arial,Helvetica,sans-serif;overflow-x:hidden}.hidden{display:none}.action-btn,button{display:inline-block;background:#111;color:#39ff14;border:1px solid #39ff14;border-radius:12px;padding:12px 18px;cursor:pointer;font-weight:bold;transition:.25s;text-decoration:none}.action-btn:hover,button:hover{background:#39ff14;color:#000;box-shadow:0 0 18px rgba(57,255,20,.7)}.panel{background:#101010;border:1px solid rgba(57,255,20,.35);border-radius:18px;padding:18px;margin-bottom:20px;box-shadow:0 0 20px rgba(57,255,20,.08)}#splash{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:radial-gradient(circle at center,#0d1f0d,#030303)}#radarCircle{width:260px;height:260px;border-radius:50%;border:4px solid #39ff14;position:relative;overflow:hidden;margin-bottom:30px;box-shadow:0 0 20px rgba(57,255,20,.6),inset 0 0 25px rgba(57,255,20,.25)}#radarSweep{position:absolute;width:50%;height:4px;background:#39ff14;top:50%;left:50%;transform-origin:left center;animation:radarSpin 2s linear infinite;box-shadow:0 0 18px #39ff14}@keyframes radarSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}#dashboard{display:none;padding:20px}.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}input[type=file]{margin-top:10px;color:#39ff14}.nav-row{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.status{color:#7dff7d}.type-box{margin:12px 0;padding:12px;border:1px solid #00b7ff;border-radius:10px;color:#dff8ff;background:#07131a}.type-name{font-size:22px;font-weight:bold;color:#00b7ff}.type-reason{margin-top:6px;color:#b8eaff}
+body{margin:0;padding:0;background:#050505;color:#39ff14;font-family:Arial,Helvetica,sans-serif;overflow-x:hidden}.hidden{display:none}.action-btn,button{display:inline-block;background:#111;color:#39ff14;border:1px solid #39ff14;border-radius:12px;padding:12px 18px;cursor:pointer;font-weight:bold;transition:.25s;text-decoration:none}.action-btn:hover,button:hover{background:#39ff14;color:#000;box-shadow:0 0 18px rgba(57,255,20,.7)}.panel{background:#101010;border:1px solid rgba(57,255,20,.35);border-radius:18px;padding:18px;margin-bottom:20px;box-shadow:0 0 20px rgba(57,255,20,.08)}#splash{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:radial-gradient(circle at center,#0d1f0d,#030303)}#radarCircle{width:260px;height:260px;border-radius:50%;border:4px solid #39ff14;position:relative;overflow:hidden;margin-bottom:30px;box-shadow:0 0 20px rgba(57,255,20,.6),inset 0 0 25px rgba(57,255,20,.25)}#radarSweep{position:absolute;width:50%;height:4px;background:#39ff14;top:50%;left:50%;transform-origin:left center;animation:radarSpin 2s linear infinite;box-shadow:0 0 18px #39ff14}@keyframes radarSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}#dashboard{display:none;padding:20px}input[type=file]{margin-top:10px;color:#39ff14}.nav-row{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.status{color:#7dff7d}.type-box{margin:12px 0;padding:12px;border:1px solid #00b7ff;border-radius:10px;color:#dff8ff;background:#07131a}.type-name{font-size:22px;font-weight:bold;color:#00b7ff}.type-reason{margin-top:6px;color:#b8eaff}.recovery-card{margin:12px 0;padding:14px;border:1px solid rgba(255,215,0,.55);border-radius:12px;background:#171307;color:#f4f4f4}.recovery-title{font-weight:bold;font-size:18px;color:#ffd84d}.recovery-rank{color:#ffe990}.recovery-reason{margin:7px 0;color:#ddd}.recovery-advice{margin-top:8px;color:#9dff87}.signal-list{margin:8px 0 0 20px;padding:0;color:#f4df8a}.muted{color:#aaa}
 </style>
 </head>
 <body>
@@ -15,92 +15,42 @@ body{margin:0;padding:0;background:#050505;color:#39ff14;font-family:Arial,Helve
   <p>AI Powered Scrap Intelligence</p>
   <button id="enterDashboardBtn" type="button">🧠 ENTER BOARD SENSE DASHBOARD</button>
 </div>
-
 <div id="dashboard">
-<header>
-  <h1>🧠 BOARD SENSE</h1>
-  <p>AI Powered Scrap Intelligence</p>
-  <div class="status">🟢 AI Engine Online • Harbor Connected</div>
-  <div class="nav-row">
-    <a class="action-btn" href="island_portal.html">🏝️ BACK TO ISLAND</a>
-    <a class="action-btn" href="scrap_radar.html">📡 SCRAP RADAR DASHBOARD</a>
-  </div>
-</header>
-
-<section class="panel">
-  <h2>📷 Scan Board</h2>
-  <input type="file" id="boardImage" accept="image/*" capture="environment">
-  <button id="analyzeBtn" type="button">Analyze Board</button>
-  <p id="uploadStatus">Ready for a board image.</p>
-</section>
-
-<section class="panel">
-  <h2>🔍 Board Investigation Report</h2>
-  <div id="predictionBox">Waiting for scan...</div>
-</section>
+<header><h1>🧠 BOARD SENSE</h1><p>AI Powered Scrap Intelligence</p><div class="status">🟢 AI Engine Online • Harbor Connected</div><div class="nav-row"><a class="action-btn" href="island_portal.html">🏝️ BACK TO ISLAND</a><a class="action-btn" href="scrap_radar.html">📡 SCRAP RADAR DASHBOARD</a></div></header>
+<section class="panel"><h2>📷 Scan Board</h2><input type="file" id="boardImage" accept="image/*" capture="environment"><button id="analyzeBtn" type="button">Analyze Board</button><p id="uploadStatus">Ready for a board image.</p></section>
+<section class="panel"><h2>🔍 Board Investigation Report</h2><div id="predictionBox">Waiting for scan...</div></section>
 <section class="panel"><h2>🥇 Recovery Intelligence</h2><div id="recoveryBox">Recovery information will appear here.</div></section>
-<section class="panel"><h2>📚 Harbor Knowledge</h2><div id="lessonBox">Today's lesson will appear here.</div></section>
+<section class="panel"><h2>📚 Harbor Knowledge</h2><div id="lessonBox">Reference-sheet guidance will appear here.</div></section>
 <section class="panel sponsor">⭐ Sponsored Space</section>
 </div>
-
 <script>
 const $ = id => document.getElementById(id);
-
-window.addEventListener('DOMContentLoaded', () => {
-  const splash = $('splash');
-  const dashboard = $('dashboard');
-  const enterBtn = $('enterDashboardBtn');
-  const analyzeBtn = $('analyzeBtn');
-
-  enterBtn.addEventListener('click', () => {
-    splash.style.display = 'none';
-    dashboard.style.display = 'block';
-    window.scrollTo(0, 0);
-  });
-
-  analyzeBtn.addEventListener('click', uploadImage);
-});
-
+const esc = value => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+window.addEventListener('DOMContentLoaded',()=>{const splash=$('splash'),dashboard=$('dashboard');$('enterDashboardBtn').addEventListener('click',()=>{splash.style.display='none';dashboard.style.display='block';window.scrollTo(0,0)});$('analyzeBtn').addEventListener('click',uploadImage)});
+function renderRecovery(data){
+  const refs=data.reference_intelligence?.matches ?? [];
+  const signals=data.recovery_signals ?? [];
+  let html='<b>Grade guidance:</b> '+esc(data.grade ?? data.ai_grade ?? 'Unknown')+'<br><b>Pay Dirt Ready:</b> '+(data.pay_dirt_ready?'YES':'NO');
+  if(data.grade_notes) html+='<br><span class="muted">'+esc(data.grade_notes)+'</span>';
+  if(signals.length) html+='<ul class="signal-list">'+signals.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>';
+  if(!refs.length){html+='<p class="muted">No strong reference-library match yet. Board Sense is staying conservative.</p>';return html;}
+  html+=refs.map(m=>'<div class="recovery-card"><div class="recovery-title">'+esc(m.category)+'</div><div class="recovery-rank">Reference grade: '+esc(m.grade)+' • Value rank: '+esc(m.value_rank)+'/10</div><div class="recovery-reason">Why it matched: '+esc(m.reason)+'</div>'+(m.material_signals?.length?'<div>Material signals: '+m.material_signals.map(esc).join(', ')+'</div>':'')+(m.sorting_advice?'<div class="recovery-advice">Sorting advice: '+esc(m.sorting_advice)+'</div>':'')+'</div>').join('');
+  return html;
+}
+function renderKnowledge(data){
+  const refs=data.reference_intelligence?.matches ?? [];
+  if(!refs.length) return 'No specific reference-sheet lesson triggered by this scan.';
+  return refs.map(m=>'<b>'+esc(m.category)+':</b> '+esc(m.notes || m.sorting_advice || m.reason)).join('<br><br>');
+}
 async function uploadImage(){
-  const input = $('boardImage');
-  if(!input.files || input.files.length === 0){
-    $('predictionBox').textContent = 'Please choose an image first.';
-    return;
-  }
-
-  const file = input.files[0];
-  $('uploadStatus').textContent = 'Uploading ' + file.name + '...';
-  const formData = new FormData();
-  formData.append('file', file);
-
+  const input=$('boardImage');if(!input.files||input.files.length===0){$('predictionBox').textContent='Please choose an image first.';return;}
+  const file=input.files[0];$('uploadStatus').textContent='Uploading '+file.name+'...';const formData=new FormData();formData.append('file',file);
   try{
-    const response = await fetch('https://boardsense.scrapradarfamily.com/analyze', {method:'POST', body:formData});
-    if(!response.ok) throw new Error('Board Sense returned HTTP ' + response.status);
-    const data = await response.json();
-
-    const boardType = data.board_type ?? 'General PCB';
-    const typeReason = data.board_type_reason ?? 'No stronger board-type pattern confirmed yet.';
-    const grade = data.grade ?? data.ai_grade ?? 'Unknown';
-    const confidence = data.confidence ?? 'Unknown';
-    const recommendation = data.recommendation ?? data.action ?? 'See investigation details.';
-    const score = data.score ?? 'N/A';
-    const model = data.model ?? 'Board Sense';
-
-    $('predictionBox').innerHTML =
-      '<div class="type-box">' +
-        '<div class="type-name">' + boardType + '</div>' +
-        '<div class="type-reason">' + typeReason + '</div>' +
-      '</div>' +
-      '<b>Grade:</b> ' + grade +
-      '<br><b>Confidence:</b> ' + confidence + '%' +
-      '<br><b>Recovery Score:</b> ' + score +
-      '<br><b>Recommendation:</b> ' + recommendation +
-      '<br><b>Engine:</b> ' + model;
-    $('uploadStatus').textContent = 'Analysis complete.';
-  }catch(err){
-    $('predictionBox').textContent = 'Upload failed: ' + err.message;
-    $('uploadStatus').textContent = 'Upload failed.';
-  }
+    const response=await fetch('https://boardsense.scrapradarfamily.com/analyze',{method:'POST',body:formData});if(!response.ok)throw new Error('Board Sense returned HTTP '+response.status);const data=await response.json();
+    const boardType=data.board_type??'General PCB',typeReason=data.board_type_reason??'No stronger board-type pattern confirmed yet.',grade=data.grade??data.ai_grade??'Unknown',confidence=data.confidence??'Unknown',recommendation=data.recommendation??data.action??'See investigation details.',score=data.score??'N/A',model=data.model??'Board Sense';
+    $('predictionBox').innerHTML='<div class="type-box"><div class="type-name">'+esc(boardType)+'</div><div class="type-reason">'+esc(typeReason)+'</div></div><b>Grade:</b> '+esc(grade)+'<br><b>Confidence:</b> '+esc(confidence)+'%<br><b>Recovery Score:</b> '+esc(score)+'<br><b>Recommendation:</b> '+esc(recommendation)+'<br><b>Engine:</b> '+esc(model);
+    $('recoveryBox').innerHTML=renderRecovery(data);$('lessonBox').innerHTML=renderKnowledge(data);$('uploadStatus').textContent='Analysis complete.';
+  }catch(err){$('predictionBox').textContent='Upload failed: '+err.message;$('recoveryBox').textContent='Recovery intelligence unavailable until analysis succeeds.';$('lessonBox').textContent='Reference knowledge unavailable until analysis succeeds.';$('uploadStatus').textContent='Upload failed.';}
 }
 </script>
 </body>
