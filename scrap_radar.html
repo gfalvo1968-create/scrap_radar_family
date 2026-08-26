@@ -560,152 +560,104 @@ box-shadow:
 
 </div>
 
-    <script>
+<script>
 let scanGold = 0;
 let scanSilver = 0;
 let scanCopper = 0;
 let scanValue = 0;
-        function loadBoard(event){
 
+function loadBoard(event){
     const file = event.target.files[0];
-
     if(!file) return;
 
     const reader = new FileReader();
-
     reader.onload = function(e){
-
         const img = document.getElementById("board-preview");
-
         img.src = e.target.result;
         img.style.display = "block";
-
         startScan();
-
     };
-
     reader.readAsDataURL(file);
-
 }
 
 function startRecovery(){
-
-const badge=document.getElementById("lab-process");
-
-badge.innerHTML="🟡 RUNNING";
+    const badge=document.getElementById("lab-process");
+    badge.innerHTML="🟡 RUNNING";
 
     let gold = 0;
-let silver = 0;
-let copper = 0;
+    let silver = 0;
+    let copper = 0;
+    let seconds = 0;
+    let minutes = 0;
 
-let seconds = 0;
-let minutes = 0;
+    const goldDisplay = document.getElementById("gold-recovery");
+    const silverDisplay = document.getElementById("silver-recovery");
+    const copperDisplay = document.getElementById("copper-recovery");
+    const valueDisplay = document.getElementById("board-value");
+    const goldScore = document.getElementById("gold-score");
+    const silverScore = document.getElementById("silver-score");
+    const copperScore = document.getElementById("copper-score");
 
-const goldDisplay = document.getElementById("gold-recovery");
-const silverDisplay = document.getElementById("silver-recovery");
-const copperDisplay = document.getElementById("copper-recovery");
-const valueDisplay = document.getElementById("board-value");
-const timeDisplay = document.getElementById("process-time");
-const goldScore = document.getElementById("gold-score");
-const silverScore = document.getElementById("silver-score");
-const copperScore = document.getElementById("copper-score");
+    const counter = setInterval(() => {
+        gold += scanGold / 90;
+        silver += scanSilver / 90;
+        copper += scanCopper / 90;
 
-const counter = setInterval(() => {
+        goldDisplay.innerHTML = gold.toFixed(2) + " g";
+        silverDisplay.innerHTML = silver.toFixed(2) + " g";
+        copperDisplay.innerHTML = copper.toFixed(2) + " lb";
+        seconds++;
 
-    gold += scanGold / 90;
-    silver += scanSilver / 90;
-    copper += scanCopper / 90;
+        if (seconds === 60) {
+            seconds = 0;
+            minutes++;
+        }
 
-    goldDisplay.innerHTML = gold.toFixed(2) + " g";
-    silverDisplay.innerHTML = silver.toFixed(2) + " g";
-    copperDisplay.innerHTML = copper.toFixed(2) + " lb";
-    seconds++;
+        document.getElementById("process-time").innerHTML =
+            String(minutes).padStart(2, "0") + ":" +
+            String(seconds).padStart(2, "0");
 
-if (seconds === 60) {
-    seconds = 0;
-    minutes++;
-}
+        goldScore.value = Math.min(gold * 20, 100);
+        silverScore.value = Math.min(silver * 25, 100);
+        copperScore.value = Math.min(copper * 7, 100);
 
-document.getElementById("process-time").innerHTML =
-    String(minutes).padStart(2, "0") + ":" +
-    String(seconds).padStart(2, "0");
-    goldScore.value = Math.min(gold * 20, 100);
-    silverScore.value = Math.min(silver * 25, 100);
-    copperScore.value = Math.min(copper * 7, 100);
-    const value =
-    (gold / scanGold) * scanValue;
-     valueDisplay.innerHTML = "$" + value.toFixed(2);
+        const value = scanGold > 0 ? (gold / scanGold) * scanValue : 0;
+        valueDisplay.innerHTML = "$" + value.toFixed(2);
+    }, 300);
 
-}, 300);
+    const steps=["step1","step2","step3","step4","step5","step6","step7"];
+    const names=["Ready to Start","Strip Gold","Filter Solution","Electrolysis","Wash & Rinse","Dry & Collect","Complete"];
+    let current=0;
 
-const steps=[
-"step1",
-"step2",
-"step3",
-"step4",
-"step5",
-"step6",
-"step7"
-];
+    function nextStep(){
+        if(current>0){
+            document.getElementById(steps[current-1]).innerHTML="✅ "+names[current-1];
+        }
 
-const names=[
-"Ready to Start",
-"Strip Gold",
-"Filter Solution",
-"Electrolysis",
-"Wash & Rinse",
-"Dry & Collect",
-"Complete"
-];
-
-let current=0;
-
-function nextStep(){
-
-if(current>0){
-
-document.getElementById(steps[current-1]).innerHTML=
-"✅ "+names[current-1];
-
-}
-
-if(current<steps.length){
-
-document.getElementById(steps[current]).innerHTML=
-"🟡 "+names[current];
-badge.innerHTML = "🟡 " + names[current];
-
-current++;
-
-setTimeout(nextStep,2000);
-
-}else{
-
-clearInterval(counter);
-
-badge.innerHTML="🟢 COMPLETE";
-
-}
-    const temp = document.getElementById("solution-temp");
-
-let temperature = 72;
-
-const tempTimer = setInterval(() => {
-
-    if (temperature < 104) {
-        temperature++;
-        temp.innerHTML = temperature + "°F";
+        if(current<steps.length){
+            document.getElementById(steps[current]).innerHTML="🟡 "+names[current];
+            badge.innerHTML = "🟡 " + names[current];
+            current++;
+            setTimeout(nextStep,2000);
+        }else{
+            clearInterval(counter);
+            badge.innerHTML="🟢 COMPLETE";
+        }
     }
 
-}, 1200);
+    const temp = document.getElementById("solution-temp");
+    let temperature = 72;
+    setInterval(() => {
+        if (temperature < 104) {
+            temperature++;
+            temp.innerHTML = temperature + "°F";
+        }
+    }, 1200);
 
+    nextStep();
 }
 
-nextStep();
-
-}
 function startScan() {
-
     const grade = document.getElementById("board-grade");
     const confidence = document.getElementById("confidence-text");
     const bar = document.getElementById("confidence-bar");
@@ -733,37 +685,40 @@ function startScan() {
     }, 3000);
 
     setTimeout(() => {
+        grade.innerHTML = "✅ High Grade Server Board";
+        confidence.innerHTML = "98%";
+        bar.value = 98;
 
-    grade.innerHTML = "✅ High Grade Server Board";
-    confidence.innerHTML = "98%";
-    bar.value = 98;
-
-    document.getElementById("board-value").innerHTML = "$742.50";
-    document.getElementById("last-scan").innerHTML = "Just Now";
-    document.getElementById("board-type").innerHTML = "Server Motherboard";
-    document.getElementById("cpu-count").innerHTML = "2";
-    document.getElementById("ram-count").innerHTML = "8";
-    document.getElementById("gold-fingers").innerHTML = "94%";
+        document.getElementById("board-value").innerHTML = "$742.50";
+        document.getElementById("last-scan").innerHTML = "Just Now";
+        document.getElementById("board-type").innerHTML = "Server Motherboard";
+        document.getElementById("cpu-count").innerHTML = "2";
+        document.getElementById("ram-count").innerHTML = "8";
+        document.getElementById("gold-fingers").innerHTML = "94%";
         scanGold = 2.70;
         scanSilver = 1.80;
         scanCopper = 13.50;
         scanValue = 742.50;
 
-    document.getElementById("gold-score").value = 92;
-    document.getElementById("silver-score").value = 64;
-    document.getElementById("copper-score").value = 81;
+        document.getElementById("gold-score").value = 92;
+        document.getElementById("silver-score").value = 64;
+        document.getElementById("copper-score").value = 81;
 
-    document.getElementById("gold-recovery").innerHTML = "2.70 g";
-    document.getElementById("silver-recovery").innerHTML = "1.80 g";
-    document.getElementById("copper-recovery").innerHTML = "13.50 lb";
+        document.getElementById("gold-recovery").innerHTML = "2.70 g";
+        document.getElementById("silver-recovery").innerHTML = "1.80 g";
+        document.getElementById("copper-recovery").innerHTML = "13.50 lb";
+        document.getElementById("lab-process").innerHTML = "🟢 READY";
+    }, 4000);
+}
 
-    document.getElementById("lab-process").innerHTML = "🟢 READY";
-
-}, 4000);
-document.getElementById("elevatorBtn").onclick = function () {
-    window.location.href = "harbor_elevator.html";
-};
-
+document.addEventListener("DOMContentLoaded", () => {
+    const elevatorBtn = document.getElementById("elevatorBtn");
+    if (elevatorBtn) {
+        elevatorBtn.addEventListener("click", () => {
+            window.location.href = "harbor_elevator.html";
+        });
+    }
+});
 </script>
 </body>
 </html>
