@@ -4,98 +4,43 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Scrap Radar Family</title>
-
 <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
-    
 <div class="portal-container">
-
-<a href="island_portal.html" class="portal island-btn">
-🌴 ENTER THE ISLAND
-</a>
-
-<a href="maya.html" class="portal maya-btn">
-🤖 MAYA AI CONTROL ROOM
-</a>
-
-<a href="board_sense.html" class="portal boardsense-btn">
-🧠 BOARD SENSE
-</a>
-   
-<a href="scrap_radar.html" class="portal radar-btn">
-    📡 OPEN SCRAP RADAR
-</a>
-
+<a href="welcome_hall.html" class="portal island-btn">🏛️ WELCOME HALL</a>
+<a href="island_portal.html" class="portal island-btn">🌴 ENTER THE ISLAND</a>
+<a href="maya.html" class="portal maya-btn">🤖 MAYA AI CONTROL ROOM</a>
+<a href="board_sense.html" class="portal boardsense-btn">🧠 BOARD SENSE</a>
+<a href="scrap_radar.html" class="portal radar-btn">📡 OPEN SCRAP RADAR</a>
 </div>
-
 <section class="hero">
-
-<div class="radar">
-    <div class="sweep"></div>
-</div>
-
+<div class="radar"><div class="sweep"></div></div>
 <div class="detection-feed">
-    <div class="detect-title">📡 SIGNAL DETECTED</div>
-
-    <div id="detect-name">
-        Gerald Falvo
-    </div>
-
-    <div id="detect-message">
-        “Humans and AI building together.”
-    </div>
+<div class="detect-title">📡 SIGNAL DETECTED</div>
+<div id="detect-name">Gerald Falvo</div>
+<div id="detect-message">“Humans and AI building together.”</div>
 </div>
-
 <h1>SCRAP RADAR FAMILY</h1>
-
-<p>
-This is more than code. More than AI. More than scrap.
+<p>This is more than code. More than AI. More than scrap.
 This is a family being built from imagination,
-hard work, vision, and the belief that humans and AI can build together.
-</p>
-
+hard work, vision, and the belief that humans and AI can build together.</p>
 </section>
-
 <section class="journey">
-
 <h2>The Journey</h2>
-
-<p>
-Scrap Radar Family started with imagination,
-hard work, curiosity, and long nights learning.
-</p>
-
+<p>Scrap Radar Family started with imagination,
+hard work, curiosity, and long nights learning.</p>
 </section>
-
 <section class="signbook" id="signal-log">
-
 <h2>Signal Log</h2>
-
 <input id="signalName" placeholder="Your Name">
-
 <textarea id="signalMessage" placeholder="Your signal to the island..."></textarea>
-
 <div class="button-center">
-
-<button onclick="transmitSignal()">
-Transmit Signal
-</button>
-
-<a href="hall.html" class="wall-button">
-ENTER THE WALL
-<br>
-<span class="wall-subtitle">Where Every Name Lives On</span>
-</a>
-
+<button onclick="transmitSignal()">Transmit Signal</button>
+<a href="hall.html" class="wall-button">ENTER THE WALL<br><span class="wall-subtitle">Where Every Name Lives On</span></a>
 </div>
-
 <div id="signalWall"></div>
-
 </section>
-
 <script src="script.js"></script>
-
 </body>
 </html>
