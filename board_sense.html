@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Board Sense</title>
 <style>
-body{margin:0;padding:0;background:#050505;color:#39ff14;font-family:Arial,Helvetica,sans-serif;overflow-x:hidden}.hidden{display:none}.action-btn,button{display:inline-block;background:#111;color:#39ff14;border:1px solid #39ff14;border-radius:12px;padding:12px 18px;cursor:pointer;font-weight:bold;transition:.25s;text-decoration:none}.action-btn:hover,button:hover{background:#39ff14;color:#000;box-shadow:0 0 18px rgba(57,255,20,.7)}.panel{background:#101010;border:1px solid rgba(57,255,20,.35);border-radius:18px;padding:18px;margin-bottom:20px;box-shadow:0 0 20px rgba(57,255,20,.08)}#splash{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:radial-gradient(circle at center,#0d1f0d,#030303)}#radarCircle{width:260px;height:260px;border-radius:50%;border:4px solid #39ff14;position:relative;overflow:hidden;margin-bottom:30px;box-shadow:0 0 20px rgba(57,255,20,.6),inset 0 0 25px rgba(57,255,20,.25)}#radarSweep{position:absolute;width:50%;height:4px;background:#39ff14;top:50%;left:50%;transform-origin:left center;animation:radarSpin 2s linear infinite;box-shadow:0 0 18px #39ff14}@keyframes radarSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}#dashboard{display:none;padding:20px}.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}input[type=file]{margin-top:10px;color:#39ff14}.nav-row{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.status{color:#7dff7d}
+body{margin:0;padding:0;background:#050505;color:#39ff14;font-family:Arial,Helvetica,sans-serif;overflow-x:hidden}.hidden{display:none}.action-btn,button{display:inline-block;background:#111;color:#39ff14;border:1px solid #39ff14;border-radius:12px;padding:12px 18px;cursor:pointer;font-weight:bold;transition:.25s;text-decoration:none}.action-btn:hover,button:hover{background:#39ff14;color:#000;box-shadow:0 0 18px rgba(57,255,20,.7)}.panel{background:#101010;border:1px solid rgba(57,255,20,.35);border-radius:18px;padding:18px;margin-bottom:20px;box-shadow:0 0 20px rgba(57,255,20,.08)}#splash{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:radial-gradient(circle at center,#0d1f0d,#030303)}#radarCircle{width:260px;height:260px;border-radius:50%;border:4px solid #39ff14;position:relative;overflow:hidden;margin-bottom:30px;box-shadow:0 0 20px rgba(57,255,20,.6),inset 0 0 25px rgba(57,255,20,.25)}#radarSweep{position:absolute;width:50%;height:4px;background:#39ff14;top:50%;left:50%;transform-origin:left center;animation:radarSpin 2s linear infinite;box-shadow:0 0 18px #39ff14}@keyframes radarSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}#dashboard{display:none;padding:20px}.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}input[type=file]{margin-top:10px;color:#39ff14}.nav-row{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.status{color:#7dff7d}.type-box{margin:12px 0;padding:12px;border:1px solid #00b7ff;border-radius:10px;color:#dff8ff;background:#07131a}.type-name{font-size:22px;font-weight:bold;color:#00b7ff}.type-reason{margin-top:6px;color:#b8eaff}
 </style>
 </head>
 <body>
@@ -78,16 +78,24 @@ async function uploadImage(){
     if(!response.ok) throw new Error('Board Sense returned HTTP ' + response.status);
     const data = await response.json();
 
+    const boardType = data.board_type ?? 'General PCB';
+    const typeReason = data.board_type_reason ?? 'No stronger board-type pattern confirmed yet.';
     const grade = data.grade ?? data.ai_grade ?? 'Unknown';
     const confidence = data.confidence ?? 'Unknown';
     const recommendation = data.recommendation ?? data.action ?? 'See investigation details.';
     const score = data.score ?? 'N/A';
+    const model = data.model ?? 'Board Sense';
 
     $('predictionBox').innerHTML =
+      '<div class="type-box">' +
+        '<div class="type-name">' + boardType + '</div>' +
+        '<div class="type-reason">' + typeReason + '</div>' +
+      '</div>' +
       '<b>Grade:</b> ' + grade +
       '<br><b>Confidence:</b> ' + confidence + '%' +
-      '<br><b>Score:</b> ' + score +
-      '<br><b>Recommendation:</b> ' + recommendation;
+      '<br><b>Recovery Score:</b> ' + score +
+      '<br><b>Recommendation:</b> ' + recommendation +
+      '<br><b>Engine:</b> ' + model;
     $('uploadStatus').textContent = 'Analysis complete.';
   }catch(err){
     $('predictionBox').textContent = 'Upload failed: ' + err.message;
