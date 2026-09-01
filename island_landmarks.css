@@ -4,7 +4,7 @@
   position:absolute;
   z-index:14;
   top:67.5%;
-  left:31%;
+  left:3%;
   width:250px;
   height:330px;
   pointer-events:none;
@@ -143,10 +143,10 @@
 @media(max-width:720px){
   .builders-landmark{
     top:69%;
-    left:31%;
+    left:-2%;
     width:170px;
     height:245px;
-    transform:scale(.72);
+    transform:scale(.68);
     transform-origin:top left;
   }
 }
