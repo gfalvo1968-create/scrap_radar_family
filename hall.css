@@ -1,129 +1,18 @@
-/* HALL OF FAME ROOM */
+/* WALL OF NAMES RADAR */
 
+.mega-sweep{position:absolute;width:50%;height:4px;top:50%;left:50%;transform-origin:left center;background:#00ff99;box-shadow:0 0 18px #00ff99,0 0 45px rgba(0,255,153,.8);animation:megaSpin 4s linear infinite;overflow:visible}
+@keyframes megaSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
-.mega-sweep{
-    position:absolute;
-    width:50%;
-    height:4px;
-    top:50%;
-    left:50%;
-    transform-origin:left center;
-    background:#00ff99;
-    box-shadow:
-        0 0 18px #00ff99,
-        0 0 45px rgba(0,255,153,0.8);
-    animation:megaSpin 4s linear infinite;
-    overflow:visible;
-}
+.hall-label{position:absolute;z-index:20;color:#fff;font-size:14px;font-weight:bold;line-height:1.35;background:rgba(0,40,25,.72);border:1px solid rgba(0,255,153,.5);border-radius:10px;padding:7px 10px;box-shadow:0 0 16px rgba(0,255,153,.45);transform:translate(-50%,-50%);pointer-events:none;white-space:normal;animation:hallBlipFade 6s linear forwards;opacity:0;text-shadow:0 0 10px #00ff99}
+@keyframes hallBlipFade{0%{opacity:0;transform:translate(-50%,-40%) scale(.72)}15%{opacity:1;transform:translate(-50%,-50%) scale(1)}82%{opacity:1}100%{opacity:0;transform:translate(-50%,-60%) scale(.8)}}
 
-.sweep{
-    width:50%;
-    height:
-    transform-origin:left center;
-    animation:spin 4s linear infinite;
-    box-shadow:0 0 20px #00ff99;
-}
+.hall-terminal{margin:20px auto 12px;color:#7fffd4;font-size:14px;letter-spacing:3px;opacity:.82;text-shadow:0 0 12px #00ff99;animation:terminalPulse 2s infinite alternate}
+@keyframes terminalPulse{from{opacity:.55;letter-spacing:2px}to{opacity:.95;letter-spacing:4px}}
 
-@keyframes megaSpin{
-    from{transform:rotate(0deg);}
-    to{transform:rotate(360deg);}
-}
+.sign-wall-button{display:inline-block;margin:10px auto 4px;padding:15px 26px;border:1px solid #00ff99;border-radius:12px;background:#061610;color:#dffff2;font-size:16px;font-weight:900;letter-spacing:.05em;cursor:pointer;box-shadow:0 0 20px rgba(0,255,153,.28);transition:transform .2s,box-shadow .2s}
+.sign-wall-button:hover,.sign-wall-button:focus-visible{transform:translateY(-2px);box-shadow:0 0 32px rgba(0,255,153,.55);outline:2px solid #baffdf;outline-offset:3px}
 
-@keyframes radarPulse{
-    0%{box-shadow:0 0 35px #00ff99, inset 0 0 45px rgba(0,255,153,0.25);}
-    50%{box-shadow:0 0 65px #00ff99, inset 0 0 65px rgba(0,255,153,0.35);}
-    100%{box-shadow:0 0 35px #00ff99, inset 0 0 45px rgba(0,255,153,0.25);}
-}
+.back-button{display:inline-block;margin:18px 8px 28px;padding:14px 28px;color:#00ffcc;text-decoration:none;border:1px solid rgba(0,255,170,.35);border-radius:14px;background:rgba(0,40,20,.45);box-shadow:0 0 18px rgba(0,255,170,.2),inset 0 0 18px rgba(0,255,170,.08);transition:all .35s ease}
+.back-button:hover,.back-button:focus-visible{transform:scale(1.04);box-shadow:0 0 30px rgba(0,255,170,.45),inset 0 0 20px rgba(0,255,170,.12)}
 
-.hall-blip{
-    position:absolute;
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:#00ff99;
-    box-shadow:
-        0 0 20px #00ff99,
-        0 0 40px #00ff99;
-    transform:translate(-50%,40%);
-}
-
-.hall-label{
-    position:absolute;
-    z-index:20;
-    color:#ffffff;
-    font-size:14px;
-    font-weight:bold;
-    white-space:nowrap;
-    text-shadow:0 0 12px #00ff99;
-    background:rgba(0,40,25,0.65);
-    border:1px solid rgba(0,255,153,0.45);
-    border-radius:10px;
-    padding:6px 10px;
-    box-shadow:0 0 14px rgba(0,255,153,0.4);
-    transform:translate(-50%,-50%);
-    pointer-events:none;
-    transition:opacity 0.8s ease;
-    
-    animation: hallBlipFade 5s linear forwards;
-    opacity: 0;
-}
-
-@keyframes hallBlipFade{
-    0%{
-        opacity:0;
-        transform:translate(-50%,20px) scale(0.6);
-    }
-    15%{
-        opacity:1;
-        transform:translate(-50%,20px) scale(1);
-    }
-    85%{
-        opacity:1;
-    }
-    100%{
-        opacity:0;
-        transform:translate(-50%,20px) scale(0.7);
-    }   
-    .hall-terminal{
-    margin-top:25px;
-    color:#7fffd4;
-    font-size:14px;
-    letter-spacing:3px;
-    opacity:0.7;
-    text-shadow:0 0 12px #00ff99;
-    animation:terminalPulse 2s infinite alternate;
-}
-
-.back-button{
-    display:inline-block;
-    margin-top:25px;
-    padding:14px 28px;
-    color:#00ffcc;
-    text-decoration:none;
-    border:1px solid rgba(0,255,170,0.35);
-    border-radius:14px;
-    background:rgba(0,40,20,0.45);
-    box-shadow:
-        0 0 18px rgba(0,255,170,0.2),
-        inset 0 0 18px rgba(0,255,170,0.08);
-    transition:all 0.35s ease;
-}
-
-.back-button:hover{
-    transform:scale(1.05);
-    box-shadow:
-        0 0 30px rgba(0,255,170,0.45),
-        inset 0 0 20px rgba(0,255,170,0.12);
-}
-
-@keyframes terminalPulse{
-    from{
-        opacity:0.45;
-        letter-spacing:2px;
-    }
-
-    to{
-        opacity:0.9;
-        letter-spacing:4px;
-    }
-}
+@media(max-width:720px){.hall-title{font-size:clamp(2.4rem,12vw,4rem)!important;margin-top:24px!important}#megaRadar{margin-top:30px!important}.hall-label{font-size:11px;padding:6px 8px}.hall-terminal{font-size:11px;letter-spacing:1.6px}.sign-wall-button{font-size:14px}}
