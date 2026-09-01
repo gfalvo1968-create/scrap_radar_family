@@ -1,61 +1,68 @@
-let activeSignals = [];
+const SUPABASE_URL = "https://plcecfxejriiorzwqbfc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_VeT36jSz3w8itRpHNnvl5g_Qe1bYiRJ";
 
-const hallSignals = [
-"Gerald Falvo: Founder Signal",
-"Maya AI: Signal Online",
-"Jerry: Scrap King",
-"Copper Crew: Humans and AI Building Together",
-"Board Sense: Online",
-"Scrap Radar: Tracking",
-"Future Builder: Island Access Granted",
-"Legacy Builder: Hall Verified",
-"Signal Room: Active",
-"Ever Evolving Ever Growing",
-"Hall Of Fame Member",
-"Radar Family Forever"
-];
+let activeSignals = [];
+let hallSignals = [];
 
 const radar = document.getElementById("megaRadar");
-console.log("RADAR FOUND", radar);
 
-function createHallSignal(){
-    if(!radar) return;
+async function loadApprovedNames(){
+  try{
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/wall_of_names?select=display_name,remark&status=eq.approved&order=display_order.asc`, {
+      headers:{
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`
+      }
+    });
 
-    const label = document.createElement("div");
-    label.className = "hall-label";
+    if(!response.ok) throw new Error(`Wall request failed: ${response.status}`);
+    const rows = await response.json();
 
-    label.textContent =
-        hallSignals[Math.floor(Math.random() * hallSignals.length)];
+    hallSignals = rows.map(row => ({
+      name: row.display_name,
+      remark: row.remark || "Every Name Lives On."
+    }));
 
-    const x = Math.random() * 80 + 10;
-    const y = Math.random() * 80 + 10;
+    const count = document.getElementById("approvedCount");
+    if(count) count.textContent = String(hallSignals.length);
 
-    label.style.left = x + "%";
-    label.style.top = y + "%";
-    label.style.maxWidth = "220px";
-    label.style.textAlign = "center";
-    label.style.transition = "all 0.8s ease";
-    label.style.zIndex = "20";
-
-    radar.appendChild(label);
-
-    activeSignals.push(label);
-
-    if(activeSignals.length > 20){
-        const oldLabel = activeSignals.shift();
-
-        oldLabel.style.opacity = "0";
-
-        setTimeout(() => {
-            oldLabel.remove();
-        }, 15000);
+    if(hallSignals.length){
+      createHallSignal();
+      createHallSignal();
+      createHallSignal();
     }
+  }catch(error){
+    console.error("Wall of Names load error", error);
+  }
 }
 
-window.onload = function(){
-    createHallSignal();
-    createHallSignal();
-    createHallSignal();
+function createHallSignal(){
+  if(!radar || !hallSignals.length) return;
 
-    setInterval(createHallSignal, 1000);
-};
+  const signal = hallSignals[Math.floor(Math.random() * hallSignals.length)];
+  const label = document.createElement("div");
+  label.className = "hall-label";
+  label.textContent = signal.remark ? `${signal.name}: ${signal.remark}` : signal.name;
+
+  const x = Math.random() * 76 + 12;
+  const y = Math.random() * 76 + 12;
+  label.style.left = `${x}%`;
+  label.style.top = `${y}%`;
+  label.style.maxWidth = "250px";
+  label.style.textAlign = "center";
+  label.style.zIndex = "20";
+
+  radar.appendChild(label);
+  activeSignals.push(label);
+
+  if(activeSignals.length > 12){
+    const oldLabel = activeSignals.shift();
+    oldLabel.remove();
+  }
+}
+
+window.addEventListener("load", async () => {
+  await loadApprovedNames();
+  setInterval(createHallSignal, 1800);
+  setInterval(loadApprovedNames, 60000);
+});
