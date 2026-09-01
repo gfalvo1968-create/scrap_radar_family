@@ -29,6 +29,129 @@ Never double-count service revenue and avoided disposal expense. Keep cash reven
 
 ---
 
+## Pricing, Customer Value, and ROI Principles
+
+Scrap Radar Family should be affordable to ordinary individual users. Pricing should reflect the economic scale and usage of the customer rather than extracting the maximum possible amount from every user. Larger commercial and enterprise operations can support higher-priced plans appropriate to their volume, team features, integrations, reporting, and economic scale.
+
+### No earnings promises
+
+Never market the product with claims such as **“you will make”** a stated amount or multiple. The system can show possibilities, opportunities, scenarios, and the user's own measured results, but it must not guarantee earnings.
+
+Core marketing rule:
+
+**Never promise earnings. Demonstrate opportunities, provide the tools, and measure actual results.**
+
+### Scrap Radar ROI Ledger
+
+The Family should make the value of the subscription visible. Instead of merely counting scans or analyses, track verified economic benefit where the user supplies or confirms the necessary numbers.
+
+Keep these categories distinct:
+- Realized additional profit
+- Verified savings / avoided loss
+- Verified recovered value
+- Potential opportunity not yet realized
+- Costs required to capture the opportunity
+- Subscription cost
+
+A detected opportunity must not be counted as realized profit until the relevant recovery, sale, saving, or transaction actually occurs.
+
+Possible dashboard question:
+
+**“Did Scrap Radar pay for itself this month?”**
+
+Example scenario discussed for explaining the concept, not promising results:
+- Subscription: $19.95/month
+- Two boards evaluated per day
+- Six days per week = 12 boards/week
+- Recovery program adds $20 of value per board
+- Additional cost to create that value: $9 per board
+- Net additional profit: $11 per board
+- 12 × $11 = $132 additional weekly profit before subscription
+- $132 − $19.95 = $112.05 above the full monthly subscription cost when comparing that week's result with one month's subscription fee
+
+The dashboard should use the customer's own recorded results whenever possible so the evidence speaks for itself.
+
+---
+
+## Credit and Recognition Principle
+
+**Credit should follow contribution, not job title.**
+
+A successful job or product can depend on skilled workers, runners, support people, researchers, testers, customers who report problems, people who supply field knowledge, and even the person who simply kept the crew moving by fetching coffee. Contributions should not disappear merely because someone was not seeking recognition or did not hold a prominent title.
+
+Scrap Radar Family should preserve the names and contributions of people who genuinely helped build it. The Island's recognition philosophy, **“Every Name Lives On,”** should reflect this.
+
+### Original logo contribution
+
+A person currently believed to be named **Casey Clark** contributed the original Scrap Radar Family logo concept because she thought it looked good, without seeking recognition. She continues to show interest in the program and asks questions about its capabilities. Before publishing permanent credit, **confirm the exact spelling of her name**.
+
+Planned recognition after confirmation:
+
+**Original Scrap Radar Family Logo Concept • Casey Clark**
+
+The credit should be respectful and permanent without turning it into an oversized promotional display.
+
+---
+
+## Central Scrap Radar Market Intelligence Architecture
+
+**Scrap Radar owns market truth. Family applications consume market intelligence. Applications identify what they have; Scrap Radar determines what the verified market says it is worth.**
+
+Pricing and market intelligence should live centrally in Scrap Radar rather than being independently duplicated in Board Sense, Battery Sense, Car Sense, Smartphone Sense, or future Family applications.
+
+The central market layer should be able to normalize and preserve:
+- Material
+- Form / grade / purity when relevant
+- Price
+- Unit
+- Timestamp
+- Source and provenance
+- Geography when relevant
+- Market type: spot, benchmark, scrap, buyer/cash-out
+- Confidence / verification status
+- Historical observations
+
+Maintain a hard distinction between **benchmark market value** and **actual cash-out value** from a yard, buyer, refiner, or other destination.
+
+Every monetary contribution to an analysis should be auditable back to its basis. Working principle:
+
+**Every dollar needs a receipt.**
+
+Preserve price history so future tools can show trends, historical ranges, and evidence-based hold/sell context without guaranteeing future appreciation.
+
+---
+
+## Critical & Rare-Earth Materials Intelligence
+
+Do not focus only on copper and precious metals. Electronics may contain overlooked specialty and critical-material streams.
+
+Examples to evaluate include:
+- Hard-drive actuator magnet assemblies, often containing strong rare-earth permanent magnets
+- Speaker/motor magnet assemblies
+- Neodymium-bearing magnet candidates
+- Tantalum-bearing capacitor candidates
+- Cobalt/nickel battery-material candidates
+- Rare-earth ceramics, magnets, and other critical-material components
+
+SPIKE and future Family applications may identify **likely component/material families**, but visual suspicion alone must not automatically add monetary value.
+
+Required reasoning ladder:
+
+**Identify → Evidence → Verify → Recovery Potential → Economics**
+
+Presence and value are separate questions. Physical verification, actual recoverable quantity, material form/purity, buyer requirements, recovery cost, and a legitimate price basis may all be needed before a critical-material candidate contributes dollars to a valuation.
+
+Possible recommendations:
+- Separate
+- Sell to specialist
+- Reuse
+- Stockpile
+- Recover when economically justified
+
+**Stockpile** can be a legitimate economic recommendation when a material has potential future value but current recovery/sale economics are poor.
+
+---
+
 ## Reuse or Recycle — Future App
 
 Working concept: a general-purpose Scrap Radar Family program that photographs an item/component and answers:
@@ -181,28 +304,6 @@ A previously encountered very thin filament was physically found to be plated, r
 
 ---
 
-## Rare-Earth / Critical-Material Streams
-
-Do not focus only on copper and precious metals. Electronics may contain overlooked specialty and critical-material streams.
-
-Examples to evaluate:
-- Hard-drive actuator magnet assemblies, often containing strong rare-earth permanent magnets
-- Speaker/motor magnet assemblies
-- Other specialized electronic components where critical materials may be present
-
-Image analysis should identify a **likely component/material family**, not claim exact chemistry without verification.
-
-Possible recommendations:
-- Separate
-- Sell to specialist
-- Reuse
-- Stockpile
-- Recover when economically justified
-
-**Stockpile** can be a legitimate economic recommendation when a material has potential future value but current recovery/sale economics are poor.
-
----
-
 ## Hard Drives
 
 Opened hard-drive assemblies are useful examples of multiple value streams inside one item:
@@ -228,6 +329,7 @@ The system should evaluate each stream independently instead of assigning one ge
 7. Value is not only commodity value. Reuse, service revenue, avoided disposal, labor time, and second-life utility can dominate the economics.
 8. Scale changes decisions. A tiny amount per item can matter across hundreds of units.
 9. Teach the reasoning process, not only today's prices. Prices change; good sorting and decision logic survives them.
+10. Material identification and material valuation are separate stages. A suspected valuable material requires sufficient evidence and a legitimate market/recovery basis before it contributes dollars.
 
 ---
 
@@ -235,7 +337,7 @@ The system should evaluate each stream independently instead of assigning one ge
 
 Keep specialized programs focused while sharing the same decision philosophy:
 
-- **Scrap Radar:** market/business intelligence and material economics
+- **Scrap Radar:** central market/business intelligence, material economics, price history, and Family ROI ledger
 - **Board Sense / SPIKE:** board identification, condition, recovery intelligence, and buy/sell/harvest decisions
 - **Battery Sense:** battery diagnosis, safe reuse/repair/repurpose/recycle decisions
 - **Reuse or Recycle:** general second-life decision engine for electronics and recovered components
