@@ -3,10 +3,11 @@
 .builders-landmark{
   position:absolute;
   z-index:14;
-  top:67.5%;
-  left:3%;
+  top:46%;
+  right:5%;
+  left:auto;
   width:250px;
-  height:330px;
+  height:300px;
   pointer-events:none;
   filter:drop-shadow(0 12px 12px rgba(0,0,0,.22));
 }
@@ -101,9 +102,6 @@
 }
 
 .learning-sign{
-  position:absolute;
-  left:13px;
-  top:263px;
   width:224px;
   padding:9px 10px 8px;
   box-sizing:border-box;
@@ -118,6 +116,14 @@
   text-align:center;
   box-shadow:0 7px 10px rgba(0,0,0,.25),inset 0 0 0 2px rgba(235,188,105,.25);
   transform:rotate(-1deg);
+}
+
+.landmark-learning-sign{
+  position:absolute;
+  z-index:14;
+  top:42.5%;
+  left:4%;
+  pointer-events:none;
 }
 
 .learning-sign::before,
@@ -142,12 +148,20 @@
 
 @media(max-width:720px){
   .builders-landmark{
-    top:69%;
-    left:-2%;
+    top:47%;
+    right:-3%;
+    left:auto;
     width:170px;
     height:245px;
-    transform:scale(.68);
-    transform-origin:top left;
+    transform:scale(.66);
+    transform-origin:top right;
+  }
+
+  .landmark-learning-sign{
+    top:42.5%;
+    left:2%;
+    width:190px;
+    font-size:9px;
   }
 }
 
