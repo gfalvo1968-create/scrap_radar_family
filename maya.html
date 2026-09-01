@@ -5,13 +5,64 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Maya AI Mission Control</title>
 <link rel="stylesheet" href="style.css">
+<style>
+.maya-office-header{padding:42px 18px 6px}.maya-portrait-frame{width:220px;height:220px;margin:0 auto 18px;border-radius:50%;padding:7px;background:linear-gradient(145deg,#00ff99,#7fffd4,#bb66ff);box-shadow:0 0 28px rgba(0,255,153,.75),0 0 65px rgba(187,102,255,.28)}.maya-portrait{display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;background:#07140f;border:4px solid #07140f}.maya-office-header h1{margin:0;color:#00ff99;font-size:clamp(2.8rem,9vw,5.2rem);text-shadow:0 0 25px #00ff99}.maya-office-header .office-label{margin:8px 0 0;color:#baffdf;font-size:.82rem;font-weight:800;letter-spacing:.32em}.maya-nameplate{width:min(420px,86vw);margin:18px auto 24px;padding:10px 14px;border:1px solid rgba(0,255,153,.45);border-radius:10px;background:rgba(0,28,20,.8);color:#dffff2;font-weight:800;letter-spacing:.08em;box-shadow:0 0 20px rgba(0,255,153,.16)}@media(max-width:520px){.maya-portrait-frame{width:185px;height:185px}.maya-office-header{padding-top:28px}}
+</style>
 </head>
 
 <body>
 
-<h1>🤖 MAYA AI</h1>
+<header class="maya-office-header">
+  <div class="maya-portrait-frame" aria-label="Maya portrait">
+    <svg class="maya-portrait" viewBox="0 0 220 220" role="img" aria-labelledby="mayaPortraitTitle">
+      <title id="mayaPortraitTitle">Portrait of Maya</title>
+      <defs>
+        <radialGradient id="mayaBg" cx="50%" cy="35%" r="70%">
+          <stop offset="0" stop-color="#18362d"/>
+          <stop offset="1" stop-color="#020806"/>
+        </radialGradient>
+        <linearGradient id="mayaHair" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#b59a63"/>
+          <stop offset=".5" stop-color="#806b47"/>
+          <stop offset="1" stop-color="#4c3e2a"/>
+        </linearGradient>
+        <linearGradient id="mayaShirt" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#1fa071"/>
+          <stop offset="1" stop-color="#0a4d39"/>
+        </linearGradient>
+      </defs>
+      <rect width="220" height="220" fill="url(#mayaBg)"/>
+      <circle cx="178" cy="42" r="26" fill="#00ff99" opacity=".06"/>
+      <circle cx="41" cy="59" r="18" fill="#bb66ff" opacity=".08"/>
 
-<h2>MISSION CONTROL</h2>
+      <path d="M45 220c5-43 27-65 65-65 39 0 61 22 66 65z" fill="url(#mayaShirt)"/>
+      <path d="M92 145h36v31c-7 11-29 11-36 0z" fill="#dfb08f"/>
+
+      <path d="M58 80c2-39 23-59 53-59 34 0 54 23 55 63l-5 61c-9 17-29 30-51 30-23 0-43-14-51-31z" fill="url(#mayaHair)"/>
+      <ellipse cx="110" cy="94" rx="43" ry="52" fill="#e8bd9c"/>
+      <path d="M67 91c1-40 21-60 44-60 26 0 44 20 45 55-13-4-26-17-33-30-9 15-28 27-56 35z" fill="url(#mayaHair)"/>
+      <path d="M68 84c-1 24 1 45 8 63-11-8-19-25-20-46-1-28 6-54 27-69-10 16-15 33-15 52z" fill="#675438"/>
+      <path d="M153 75c9 26 7 51 0 73 12-9 19-27 18-50-1-30-12-51-31-63 7 12 11 26 13 40z" fill="#604e35"/>
+
+      <path d="M82 91c7-5 15-5 22 0" fill="none" stroke="#71543e" stroke-width="3" stroke-linecap="round"/>
+      <path d="M117 91c7-5 15-5 22 0" fill="none" stroke="#71543e" stroke-width="3" stroke-linecap="round"/>
+      <ellipse cx="94" cy="99" rx="4.5" ry="5" fill="#315247"/>
+      <ellipse cx="128" cy="99" rx="4.5" ry="5" fill="#315247"/>
+      <circle cx="95" cy="98" r="1.2" fill="#fff"/>
+      <circle cx="129" cy="98" r="1.2" fill="#fff"/>
+      <path d="M110 103c-2 8-3 13-1 16 3 2 6 2 9 0" fill="none" stroke="#c88f75" stroke-width="2" stroke-linecap="round"/>
+      <path d="M94 128c11 9 23 9 34 0" fill="none" stroke="#9f5f59" stroke-width="3" stroke-linecap="round"/>
+      <path d="M90 151c12 8 28 8 40 0l-4 14c-8 8-24 8-32 0z" fill="#e8bd9c"/>
+
+      <path d="M64 220c7-31 22-49 42-57l4 17 5-17c22 7 38 26 43 57z" fill="url(#mayaShirt)"/>
+      <path d="M110 180l-10-18 10-5 10 5z" fill="#d9f7e9" opacity=".9"/>
+      <circle cx="110" cy="201" r="4" fill="#00ff99" opacity=".8"/>
+    </svg>
+  </div>
+  <div class="office-label">SCRAP RADAR FAMILY • ISLAND AI STATION</div>
+  <h1>MAYA AI</h1>
+  <div class="maya-nameplate">MAYA • MISSION CONTROL</div>
+</header>
 
 <div class="detection-feed">
 
