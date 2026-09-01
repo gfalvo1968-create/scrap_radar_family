@@ -3,28 +3,69 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Island</title>
+<title>Scrap Radar Family Island</title>
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
-<h1>🏝️ THE ISLAND</h1>
-<div class="mission-panel">
-<h2>LEARN. TEACH. DISCUSS. BUILD.</h2>
-<p>Every discovery matters.</p>
-<p>Every lesson has value.</p>
-<p>Every person knows something worth sharing.</p>
-<p>No one knows everything.</p>
-<p>Everyone knows something.</p>
-<p>The Island is where that knowledge comes together.</p>
-<p><strong>Every Name Lives On.</strong></p>
-</div>
-<div class="portal-container">
-<a href="welcome_hall.html" class="portal island-btn">🏛️ WELCOME HALL</a>
-<a href="welcome_hall.html#builders-hall" class="portal wall-button">🧭 BUILDERS HALL</a>
-<a href="maya.html" class="portal maya-btn">🤖 MAYA AI CONTROL ROOM</a>
-<a id="dashboard-btn" href="scrap_radar.html" class="portal radar-btn">📡 ENTER DASHBOARD</a>
-<a href="board_sense_case.html" class="portal boardsense-btn">🧠 BOARD SENSE</a>
-<a href="hall.html" class="portal wall-button">🧱 WALL OF NAMES</a>
-</div>
+<body class="island-world">
+  <section class="island-scene" aria-label="Scrap Radar Family Island path">
+    <div class="island-sky"></div>
+    <div class="island-ocean"></div>
+
+    <div class="island-title-card">
+      <div class="island-eyebrow">WELCOME TO</div>
+      <h1>🏝️ SCRAP RADAR FAMILY ISLAND</h1>
+      <p>Walk the sandy path. Tap a hut to enter.</p>
+    </div>
+
+    <div class="palm palm-left palm-one" aria-hidden="true">🌴</div>
+    <div class="palm palm-right palm-two" aria-hidden="true">🌴</div>
+    <div class="palm palm-left palm-three" aria-hidden="true">🌴</div>
+    <div class="palm palm-right palm-four" aria-hidden="true">🌴</div>
+
+    <div class="sand-path" aria-hidden="true"></div>
+    <div class="footprints footprints-one" aria-hidden="true">👣</div>
+    <div class="footprints footprints-two" aria-hidden="true">👣</div>
+    <div class="footprints footprints-three" aria-hidden="true">👣</div>
+
+    <nav class="island-huts" aria-label="Island destinations">
+      <a href="welcome_hall.html" class="hut hut-hall">
+        <span class="hut-roof">🏚️</span>
+        <span class="hut-sign">WELCOME HALL</span>
+        <small>Tap to walk inside</small>
+      </a>
+
+      <a href="board_sense_case.html" class="hut hut-board">
+        <span class="hut-roof">🛖</span>
+        <span class="hut-sign">BOARD SENSE</span>
+        <small>SPIKE's board lab</small>
+      </a>
+
+      <a href="scrap_radar.html" class="hut hut-radar">
+        <span class="hut-roof">🛖</span>
+        <span class="hut-sign">SCRAP RADAR</span>
+        <small>Market command hut</small>
+      </a>
+
+      <a href="welcome_hall.html#builders-hall" class="hut hut-builders">
+        <span class="hut-roof">🏚️</span>
+        <span class="hut-sign">BUILDERS HALL</span>
+        <small>People who helped build the Island</small>
+      </a>
+
+      <a href="maya.html" class="hut hut-maya">
+        <span class="hut-roof">🛖</span>
+        <span class="hut-sign">MAYA'S CONTROL ROOM</span>
+        <small>Island AI station</small>
+      </a>
+
+      <a href="hall.html" class="hut hut-names">
+        <span class="hut-roof">🏚️</span>
+        <span class="hut-sign">WALL OF NAMES</span>
+        <small>Every name lives on</small>
+      </a>
+    </nav>
+
+    <div class="path-sign">WOODEN WALKWAY → HARBOR</div>
+  </section>
 </body>
 </html>
