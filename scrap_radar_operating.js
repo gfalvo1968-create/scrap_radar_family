@@ -36,44 +36,19 @@ function calculateOperating(){
   let decision='ENTER LOAD DETAILS';
   let detail='Choose a material, enter weight and confirm the price basis.';
   if(hasLoad){
-    if(net<0){
-      decision='⚠️ LOAD IS NEGATIVE AFTER ENTERED COSTS';
-      detail='The entered payout does not cover the fuel and other trip costs currently included.';
-    }else if(hourly!==null&&target!==null&&target>=0){
-      if(hourly>=target){
-        decision='✅ MEETS YOUR HOURLY TARGET';
-        detail=`Net return is ${money(hourly)}/hr against your ${money(target)}/hr target.`;
-      }else{
-        decision='🟡 BELOW YOUR HOURLY TARGET';
-        detail=`Net return is ${money(hourly)}/hr against your ${money(target)}/hr target.`;
-      }
-    }else if(net>0){
-      decision='🟢 NET POSITIVE ON ENTERED COSTS';
-      detail='Add total job minutes and an hourly target to judge whether the trip is worth your time.';
-    }else{
-      decision='⚪ BREAK EVEN ON ENTERED COSTS';
-      detail='The entered payout and entered trip costs are currently equal.';
-    }
+    if(net<0){decision='⚠️ LOAD IS NEGATIVE AFTER ENTERED COSTS';detail='The entered payout does not cover the fuel and other trip costs currently included.'}
+    else if(hourly!==null&&target!==null&&target>=0){
+      if(hourly>=target){decision='✅ MEETS YOUR HOURLY TARGET';detail=`Net return is ${money(hourly)}/hr against your ${money(target)}/hr target.`}
+      else{decision='🟡 BELOW YOUR HOURLY TARGET';detail=`Net return is ${money(hourly)}/hr against your ${money(target)}/hr target.`}
+    }else if(net>0){decision='🟢 NET POSITIVE ON ENTERED COSTS';detail='Add total job minutes and an hourly target to judge whether the trip is worth your time.'}
+    else{decision='⚪ BREAK EVEN ON ENTERED COSTS';detail='The entered payout and entered trip costs are currently equal.'}
   }
-
   if(el('op-decision'))el('op-decision').textContent=decision;
   if(el('op-detail'))el('op-detail').textContent=detail;
 }
 
-function resetEvaluator(){
-  ['calc-weight','trip-miles','trip-mpg','trip-gas','trip-other','trip-minutes','trip-target'].forEach(id=>{const node=el(id);if(node)node.value=''});
-  calculateOperating();
-}
-
-function bindEvaluator(){
-  ['calc-material','calc-weight','calc-price','trip-miles','trip-mpg','trip-gas','trip-other','trip-minutes','trip-target'].forEach(id=>{
-    const node=el(id);if(!node)return;
-    node.addEventListener('input',calculateOperating);
-    node.addEventListener('change',()=>setTimeout(calculateOperating,0));
-  });
-  el('reset-evaluator')?.addEventListener('click',resetEvaluator);
-  calculateOperating();
-}
-
-document.addEventListener('DOMContentLoaded',bindEvaluator);
+function resetEvaluator(){['calc-weight','trip-miles','trip-mpg','trip-gas','trip-other','trip-minutes','trip-target'].forEach(id=>{const node=el(id);if(node)node.value=''});calculateOperating()}
+function bindEvaluator(){['calc-material','calc-weight','calc-price','trip-miles','trip-mpg','trip-gas','trip-other','trip-minutes','trip-target'].forEach(id=>{const node=el(id);if(!node)return;node.addEventListener('input',calculateOperating);node.addEventListener('change',()=>setTimeout(calculateOperating,0))});el('reset-evaluator')?.addEventListener('click',resetEvaluator);calculateOperating()}
+function loadCockpit(){if(document.querySelector('script[data-sr-cockpit]'))return;const s=document.createElement('script');s.src='scrap_radar_cockpit.js?v=2';s.dataset.srCockpit='1';document.head.appendChild(s)}
+document.addEventListener('DOMContentLoaded',()=>{bindEvaluator();loadCockpit()});
 })();
