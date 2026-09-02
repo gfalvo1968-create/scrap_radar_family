@@ -3,6 +3,7 @@
 
 const BRIDGE='https://boardsense.scrapradarfamily.com/market-intelligence';
 const QUOTE_KEY='scrapRadarYardQuotesV1';
+const LB_PER_METRIC_TON=2204.62262185;
 const LABELS={
   precious_metals:'Precious Metals',copper:'Copper',brass:'Brass',aluminum:'Aluminum',
   stainless:'Stainless Steel',lead_zinc_nickel:'Lead / Zinc / Nickel / Tin',
@@ -52,6 +53,7 @@ function loadQuotes(){try{return JSON.parse(localStorage.getItem(QUOTE_KEY)||'{}
 function saveQuotes(){try{localStorage.setItem(QUOTE_KEY,JSON.stringify(quotes))}catch(_){}}
 function unitLabel(u){return u==='troy_oz'?'troy oz':u==='metric_ton'?'metric ton':u||''}
 function money(v){return Number.isFinite(Number(v))?'$'+Number(v).toLocaleString(undefined,{minimumFractionDigits:Number(v)<10?2:0,maximumFractionDigits:Number(v)<10?2:2}):'—'}
+function hasNumericValue(v){return v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))}
 
 function fallbackCategories(data){
   const metals=(data&&data.metals)||{};
@@ -59,11 +61,11 @@ function fallbackCategories(data){
   return Object.entries(FALLBACK).map(([id,rows])=>({id,label:LABELS[id]||id,materials:rows.map(r=>{
     const m={id:r[0],label:r[1],unit:r[2],pricing_mode:r[3],reference:r[4]||null,factor:r[5]};
     if(m.pricing_mode==='market_reference'){
-      const ref=metals[m.reference]||{};m.price=ref.available?Number(ref.price):null;m.price_unit=ref.unit||m.unit;m.price_type='market_reference';
+      const ref=metals[m.reference]||{};m.price=ref.available&&hasNumericValue(ref.price)?Number(ref.price):null;m.price_unit=ref.unit||m.unit;m.price_type='market_reference';
     }else if(m.pricing_mode==='derived_estimate'){
       const cg=copperGrades[m.id];
-      if(cg&&Number.isFinite(Number(cg.estimated_price_per_lb))){m.price=Number(cg.estimated_price_per_lb)}
-      else if(metals.copper&&Number.isFinite(Number(metals.copper.price))){m.price=Number(metals.copper.price)*Number(m.factor||0)}
+      if(cg&&hasNumericValue(cg.estimated_price_per_lb)){m.price=Number(cg.estimated_price_per_lb)}
+      else if(metals.copper&&hasNumericValue(metals.copper.price)){m.price=Number(metals.copper.price)*Number(m.factor||0)}
       else m.price=null;
       m.price_unit='lb';m.price_type='estimated_scrap_grade';
     }else{m.price=null;m.price_unit=m.unit;m.price_type='local_quote_required'}
@@ -102,17 +104,30 @@ function renderBenchmarks(){
   const box=el('benchmark-grid');if(!box)return;
   const order=[['gold','🥇 Gold'],['silver','🥈 Silver'],['copper','🥉 Copper'],['aluminum','⚪ Aluminum'],['platinum','⚪ Platinum'],['palladium','⚫ Palladium']];
   box.innerHTML=order.map(([id,label])=>{
-    const m=state.metals[id]||{};const ok=m.available&&Number.isFinite(Number(m.price));
-    let val='Waiting…',unit=unitLabel(m.unit);
-    if(ok){val=money(m.price)}
+    const m=state.metals[id]||{};const ok=m.available&&hasNumericValue(m.price);
+    let val='Waiting…',unit=unitLabel(m.unit),yardContext='';
+    if(ok){
+      val=money(m.price);
+      if(id==='aluminum'&&m.unit==='metric_ton'){
+        const perLb=Number(m.price)/LB_PER_METRIC_TON;
+        yardContext=`<div class="yard-context">≈ ${money(perLb)} / lb benchmark</div>`;
+      }
+    }
     const intel=m.intelligence||{};
-    return `<div class="market-card ${ok?'':'unavailable'}"><div class="name">${label}</div><div class="value">${val}</div><div class="unit">${ok?'USD / '+esc(unit):'benchmark unavailable'}</div><div class="trend">${esc(intel.trend||'')}</div></div>`;
+    return `<div class="market-card ${ok?'':'unavailable'}"><div class="name">${label}</div><div class="value">${val}</div><div class="unit">${ok?'USD / '+esc(unit):'benchmark unavailable'}</div>${yardContext}<div class="trend">${esc(intel.trend||'')}</div></div>`;
   }).join('');
 }
 
 function effectivePrice(m){
-  const q=Number(quotes[m.id]);if(Number.isFinite(q)&&q>=0)return {price:q,type:'local',unit:m.unit,label:'Your yard quote'};
-  const p=Number(m.price);if(Number.isFinite(p)&&p>=0)return {price:p,type:m.price_type==='market_reference'?'benchmark':'estimate',unit:m.price_unit||m.unit,label:m.price_type==='market_reference'?'Market reference':'Benchmark-derived estimate'};
+  const rawQuote=quotes[m.id];
+  if(hasNumericValue(rawQuote)){
+    const q=Number(rawQuote);
+    if(q>=0)return {price:q,type:'local',unit:m.unit,label:'Your yard quote'};
+  }
+  if(hasNumericValue(m.price)){
+    const p=Number(m.price);
+    if(p>=0)return {price:p,type:m.price_type==='market_reference'?'benchmark':'estimate',unit:m.price_unit||m.unit,label:m.price_type==='market_reference'?'Market reference':'Benchmark-derived estimate'};
+  }
   return {price:null,type:'local',unit:m.unit,label:'Local quote required'};
 }
 
@@ -125,7 +140,12 @@ function priceBlock(m){
 function benchmarkNote(m){
   if(m.pricing_mode==='derived_estimate')return `Estimated from copper benchmark${m.factor?' × '+m.factor:''}.`;
   if(m.pricing_mode==='market_reference')return 'Commodity benchmark, not a scrap-yard payout.';
-  if(m.reference&&m.benchmark_price)return `${m.reference} benchmark context available; yard price still required.`;
+  if(m.reference&&hasNumericValue(m.benchmark_price)){
+    if(m.reference==='aluminum'&&m.benchmark_unit==='metric_ton'){
+      return `Aluminum benchmark ≈ ${money(Number(m.benchmark_price)/LB_PER_METRIC_TON)}/lb; yard price still required.`;
+    }
+    return `${m.reference} benchmark context available; yard price still required.`;
+  }
   if(m.id==='catalytic_converter')return 'Price by serial number, buyer quote or assay.';
   return 'Buyer/yard quote required for real cash-out value.';
 }
@@ -146,7 +166,7 @@ function renderMaterials(){
     const id=input.dataset.quoteId;if(quotes[id]!=null)input.value=quotes[id];
     input.addEventListener('change',()=>{
       const n=Number(input.value);
-      if(Number.isFinite(n)&&n>=0)quotes[id]=n;else delete quotes[id];
+      if(input.value!==''&&Number.isFinite(n)&&n>=0)quotes[id]=n;else delete quotes[id];
       saveQuotes();renderMaterials();renderCalculator();
     });
   });
@@ -169,10 +189,10 @@ function updateCalcPrice(){
 
 function calculate(){
   const id=el('calc-material')?.value;const m=state.materials.find(x=>x.id===id);
-  const weight=Number(el('calc-weight')?.value);const price=Number(el('calc-price')?.value);
-  const value=m&&Number.isFinite(weight)&&weight>=0&&Number.isFinite(price)&&price>=0?weight*price:0;
+  const weight=Number(el('calc-weight')?.value);const rawPrice=el('calc-price')?.value;const price=Number(rawPrice);
+  const value=m&&Number.isFinite(weight)&&weight>=0&&rawPrice!==''&&Number.isFinite(price)&&price>=0?weight*price:0;
   el('calc-value').textContent=money(value);
-  el('calc-detail').textContent=m&&price>=0?`${weight||0} ${unitLabel(m.unit)} × ${money(price)} per ${unitLabel(m.unit)}`:'Choose a material and enter weight.';
+  el('calc-detail').textContent=m&&rawPrice!==''&&price>=0?`${weight||0} ${unitLabel(m.unit)} × ${money(price)} per ${unitLabel(m.unit)}`:'Choose a material and enter weight.';
 }
 
 function bind(){
