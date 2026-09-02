@@ -27,12 +27,7 @@
   </div>
 
   <section class="operating-deck" aria-label="Scrap Radar operating modules">
-    <div class="operating-deck-head">
-      <div>
-        <h2>🎛️ Operating Deck</h2>
-        <p>One cockpit. Pricing, evaluation, recovery, buyers and ROI all stay connected.</p>
-      </div>
-    </div>
+    <div class="operating-deck-head"><div><h2>🎛️ Operating Deck</h2><p>One cockpit. Pricing, evaluation, recovery, buyers and ROI all stay connected.</p></div></div>
     <div class="tool-grid">
       <a class="tool-card" href="#evaluator"><span class="tool-icon">🧮</span><b>Load + Trip Evaluator</b><small>Weight, payout, fuel, time and net value.</small><span class="tool-state live">LIVE</span></a>
       <a class="tool-card" href="#mixed-load"><span class="tool-icon">🚚</span><b>Mixed Load Builder</b><small>Combine several grades into one load total.</small><span class="tool-state live">LIVE</span></a>
@@ -54,181 +49,56 @@
     <section id="evaluator" class="sr-panel operating-evaluator">
       <h2>🧮 Load + Trip Evaluator</h2>
       <p class="panel-kicker">Use the same material and price engine as the Pricebook. Confirm the payout basis, then add the trip and time it takes to turn scrap into cash.</p>
-
       <div class="eval-grid">
-        <div class="eval-field wide">
-          <label for="calc-material">Material / Grade</label>
-          <select id="calc-material"><option value="">Choose a material…</option></select>
-        </div>
-        <div class="eval-field">
-          <label for="calc-weight">Weight / Quantity</label>
-          <input id="calc-weight" type="number" min="0" step="any" inputmode="decimal" placeholder="0">
-        </div>
-        <div class="eval-field">
-          <label for="calc-price">Payout Price <span id="calc-unit"></span></label>
-          <input id="calc-price" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00">
-        </div>
-
+        <div class="eval-field wide"><label for="calc-material">Material / Grade</label><select id="calc-material"><option value="">Choose a material…</option></select></div>
+        <div class="eval-field"><label for="calc-weight">Weight / Quantity</label><input id="calc-weight" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></div>
+        <div class="eval-field"><label for="calc-price">Payout Price <span id="calc-unit"></span></label><input id="calc-price" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
         <div class="eval-divider"><span>TRIP + TIME</span></div>
-
-        <div class="eval-field">
-          <label for="trip-miles">Miles to Buyer, One Way</label>
-          <input id="trip-miles" type="number" min="0" step="any" inputmode="decimal" placeholder="0">
-        </div>
-        <div class="eval-field">
-          <label for="trip-mpg">Vehicle MPG</label>
-          <input id="trip-mpg" type="number" min="0" step="any" inputmode="decimal" placeholder="0">
-        </div>
-        <div class="eval-field">
-          <label for="trip-gas">Fuel $ / Gallon</label>
-          <input id="trip-gas" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00">
-        </div>
-        <div class="eval-field">
-          <label for="trip-other">Tolls / Fees / Other Costs</label>
-          <input id="trip-other" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00">
-        </div>
-        <div class="eval-field">
-          <label for="trip-minutes">Total Job Minutes</label>
-          <input id="trip-minutes" type="number" min="0" step="any" inputmode="decimal" placeholder="drive + load + unload">
-        </div>
-        <div class="eval-field">
-          <label for="trip-target">Your Target $ / Hour</label>
-          <input id="trip-target" type="number" min="0" step="any" inputmode="decimal" placeholder="optional">
-        </div>
+        <div class="eval-field"><label for="trip-miles">Miles to Buyer, One Way</label><input id="trip-miles" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></div>
+        <div class="eval-field"><label for="trip-mpg">Vehicle MPG</label><input id="trip-mpg" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></div>
+        <div class="eval-field"><label for="trip-gas">Fuel $ / Gallon</label><input id="trip-gas" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
+        <div class="eval-field"><label for="trip-other">Tolls / Fees / Other Costs</label><input id="trip-other" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
+        <div class="eval-field"><label for="trip-minutes">Total Job Minutes</label><input id="trip-minutes" type="number" min="0" step="any" inputmode="decimal" placeholder="drive + load + unload"></div>
+        <div class="eval-field"><label for="trip-target">Your Target $ / Hour</label><input id="trip-target" type="number" min="0" step="any" inputmode="decimal" placeholder="optional"></div>
       </div>
-
       <div class="eval-results" aria-live="polite">
-        <div class="eval-stat"><div class="label">Gross Material</div><strong id="calc-value">$0.00</strong></div>
-        <div class="eval-stat"><div class="label">Round Trip</div><strong id="op-roundtrip">0.0 mi</strong></div>
-        <div class="eval-stat cost"><div class="label">Fuel Cost</div><strong id="op-fuel">$0.00</strong></div>
-        <div class="eval-stat cost"><div class="label">Entered Trip Costs</div><strong id="op-costs">$0.00</strong></div>
-        <div class="eval-stat net"><div class="label">Net After Entered Costs</div><strong id="op-net">$0.00</strong></div>
-        <div class="eval-stat"><div class="label">Net Value / Hour</div><strong id="op-hourly">—</strong></div>
+        <div class="eval-stat"><div class="label">Gross Material</div><strong id="calc-value">$0.00</strong></div><div class="eval-stat"><div class="label">Round Trip</div><strong id="op-roundtrip">0.0 mi</strong></div><div class="eval-stat cost"><div class="label">Fuel Cost</div><strong id="op-fuel">$0.00</strong></div><div class="eval-stat cost"><div class="label">Entered Trip Costs</div><strong id="op-costs">$0.00</strong></div><div class="eval-stat net"><div class="label">Net After Entered Costs</div><strong id="op-net">$0.00</strong></div><div class="eval-stat"><div class="label">Net Value / Hour</div><strong id="op-hourly">—</strong></div>
       </div>
       <div id="calc-detail" class="material-meta" style="margin-top:8px">Choose a material and enter weight.</div>
       <div class="eval-decision"><strong id="op-decision">ENTER LOAD DETAILS</strong><small id="op-detail">Choose a material, enter weight and confirm the price basis.</small></div>
-      <div class="eval-actions">
-        <button id="copy-trip-to-yards" class="mini-btn" type="button">Send Load to Yard Compare</button>
-        <button id="record-evaluator" class="mini-btn" type="button">Record Result in ROI</button>
-        <button id="reset-evaluator" class="mini-btn" type="button">Clear Trip Inputs</button>
-      </div>
+      <div class="eval-actions"><button id="copy-trip-to-yards" class="mini-btn" type="button">Send Load to Yard Compare</button><button id="record-evaluator" class="mini-btn" type="button">Record Result in ROI</button><button id="reset-evaluator" class="mini-btn" type="button">Clear Trip Inputs</button></div>
       <p class="disclaimer">This evaluator subtracts only the costs you enter. It does not silently invent labor, vehicle wear, taxes, processing or disposal costs.</p>
     </section>
 
     <aside id="board-recovery" class="sr-panel recovery-preview">
-      <h2>🧠 Board Recovery</h2>
-      <p class="panel-kicker">Compare recovery paths without assuming every chip is worth removing. SPIKE supplies deeper board evidence; Scrap Radar handles the economics.</p>
+      <h2>🧠 Board Recovery</h2><p class="panel-kicker">Compare recovery paths without assuming every chip is worth removing. SPIKE supplies deeper board evidence; Scrap Radar handles the economics.</p>
       <div class="recovery-path-grid">
-        <div class="recovery-path-card">
-          <b>SELL WHOLE</b>
-          <label>Current whole-board offer $<input id="br-whole" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label>
-          <strong id="br-whole-net">$0.00</strong>
-        </div>
-        <div class="recovery-path-card">
-          <b>SELECTIVE HARVEST</b>
-          <label>Recovered parts value $<input id="br-partial-value" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label>
-          <label>Remaining board value $<input id="br-residual" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label>
-          <label>Minutes<input id="br-partial-minutes" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label>
-          <label>Processing costs $<input id="br-partial-costs" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label>
-          <strong id="br-partial-net">$0.00</strong><small id="br-partial-hourly">— / hr</small>
-        </div>
-        <div class="recovery-path-card">
-          <b>DEEPER RECOVERY</b>
-          <label>Recovered material value $<input id="br-full-value" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label>
-          <label>Residual / downstream value $<input id="br-full-residual" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label>
-          <label>Minutes<input id="br-full-minutes" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label>
-          <label>Processing costs $<input id="br-full-costs" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label>
-          <strong id="br-full-net">$0.00</strong><small id="br-full-hourly">— / hr</small>
-        </div>
+        <div class="recovery-path-card"><b>SELL WHOLE</b><label>Current whole-board offer $<input id="br-whole" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><strong id="br-whole-net">$0.00</strong></div>
+        <div class="recovery-path-card"><b>SELECTIVE HARVEST</b><label>Recovered parts value $<input id="br-partial-value" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><label>Remaining board value $<input id="br-residual" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><label>Minutes<input id="br-partial-minutes" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Processing costs $<input id="br-partial-costs" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><strong id="br-partial-net">$0.00</strong><small id="br-partial-hourly">— / hr</small></div>
+        <div class="recovery-path-card"><b>DEEPER RECOVERY</b><label>Recovered material value $<input id="br-full-value" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><label>Residual / downstream value $<input id="br-full-residual" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><label>Minutes<input id="br-full-minutes" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Processing costs $<input id="br-full-costs" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><strong id="br-full-net">$0.00</strong><small id="br-full-hourly">— / hr</small></div>
       </div>
       <div class="eval-decision recovery-decision"><strong id="br-decision">ENTER BOARD VALUES</strong><small id="br-detail">Use known offers, recovered values, time and costs. Do not add value just because a component looks valuable.</small></div>
-      <div class="recovery-flow compact-flow">
-        <div class="recovery-step"><span class="num">1</span><div><b>Identify + Preserve</b><small>Check whole-board value first.</small></div></div>
-        <div class="recovery-step"><span class="num">2</span><div><b>Harvest Selectively</b><small>REMOVE FIRST • OPTIONAL • LEAVE ON BOARD • NOT WORTH THE TIME.</small></div></div>
-        <div class="recovery-step"><span class="num">3</span><div><b>Revalue</b><small>Recalculate what remains after harvesting.</small></div></div>
-        <div class="recovery-step"><span class="num">4</span><div><b>Mechanical / Downstream Path</b><small>Separate recoverable streams before shredding or refiner handoff.</small></div></div>
-      </div>
+      <div class="recovery-flow compact-flow"><div class="recovery-step"><span class="num">1</span><div><b>Identify + Preserve</b><small>Check whole-board value first.</small></div></div><div class="recovery-step"><span class="num">2</span><div><b>Harvest Selectively</b><small>REMOVE FIRST • OPTIONAL • LEAVE ON BOARD • NOT WORTH THE TIME.</small></div></div><div class="recovery-step"><span class="num">3</span><div><b>Revalue</b><small>Recalculate what remains after harvesting.</small></div></div><div class="recovery-step"><span class="num">4</span><div><b>Mechanical / Downstream Path</b><small>Separate recoverable streams before shredding or refiner handoff.</small></div></div></div>
       <div class="recovery-link"><a class="mini-btn" href="board_sense_case.html">Open Board Sense / SPIKE</a></div>
-      <p class="disclaimer">Chemical, thermal and hazardous processing should be handled only with appropriate controls, training and legal disposal. Scrap Radar can compare economics without turning the cockpit into a backyard chemistry manual.</p>
+      <p class="disclaimer">Hazardous processing should be handled only with appropriate controls, training and legal disposal. Scrap Radar can compare economics without turning the cockpit into a backyard chemistry manual.</p>
     </aside>
 
-    <section id="mixed-load" class="sr-panel mixed-load-panel">
-      <h2>🚚 Mixed Load Builder</h2>
-      <p class="panel-kicker">Build one load from several grades. Each line keeps its own material, quantity and payout price.</p>
-      <div class="load-lines-head"><span>Material</span><span>Qty</span><span>Price</span><span>Value</span><span></span></div>
-      <div id="load-lines" class="load-lines"></div>
-      <div class="eval-actions"><button id="add-load-line" class="mini-btn" type="button">+ Add Material Line</button><button id="clear-load" class="mini-btn" type="button">Clear Load</button></div>
-      <div class="mixed-summary">
-        <div><span>Lines</span><strong id="mixed-count">0</strong></div>
-        <div><span>Total Quantity*</span><strong id="mixed-weight">0</strong></div>
-        <div class="net"><span>Gross Load Value</span><strong id="mixed-gross">$0.00</strong></div>
-      </div>
-      <p class="disclaimer">*Quantities with different units are not physically added together. The displayed total quantity is useful only when all selected lines share the same unit.</p>
-    </section>
+    <section id="mixed-load" class="sr-panel mixed-load-panel"><h2>🚚 Mixed Load Builder</h2><p class="panel-kicker">Build one load from several grades. Each line keeps its own material, quantity and payout price.</p><div class="load-lines-head"><span>Material</span><span>Qty</span><span>Price</span><span>Value</span><span></span></div><div id="load-lines" class="load-lines"></div><div class="eval-actions"><button id="add-load-line" class="mini-btn" type="button">+ Add Material Line</button><button id="clear-load" class="mini-btn" type="button">Clear Load</button></div><div class="mixed-summary"><div><span>Lines</span><strong id="mixed-count">0</strong></div><div><span>Total Quantity*</span><strong id="mixed-weight">0</strong></div><div class="net"><span>Gross Load Value</span><strong id="mixed-gross">$0.00</strong></div></div><p class="disclaimer">*Quantities with different units are not physically added together. The displayed total quantity is useful only when all selected lines share the same unit.</p></section>
 
-    <section id="yard-comparison" class="sr-panel yard-panel">
-      <h2>📍 Yard / Buyer Comparison</h2>
-      <p class="panel-kicker">A higher posted price can lose after the drive. Compare up to three buyers using the same load weight and vehicle assumptions.</p>
-      <div class="yard-base-grid">
-        <div class="eval-field"><label>Load Weight / Qty</label><input id="yard-weight" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></div>
-        <div class="eval-field"><label>Vehicle MPG</label><input id="yard-mpg" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></div>
-        <div class="eval-field"><label>Fuel $ / Gallon</label><input id="yard-gas" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
-      </div>
-      <div class="yard-grid">
-        <div class="yard-card" data-yard="1"><input class="yard-name" id="yard-name-1" placeholder="Buyer / Yard A"><label>Payout $ / unit<input id="yard-price-1" type="number" min="0" step="any" inputmode="decimal"></label><label>Miles one way<input id="yard-miles-1" type="number" min="0" step="any" inputmode="decimal"></label><label>Tolls / fees $<input id="yard-fees-1" type="number" min="0" step="any" inputmode="decimal"></label><div class="yard-net"><span>Net after drive</span><strong id="yard-net-1">—</strong></div></div>
-        <div class="yard-card" data-yard="2"><input class="yard-name" id="yard-name-2" placeholder="Buyer / Yard B"><label>Payout $ / unit<input id="yard-price-2" type="number" min="0" step="any" inputmode="decimal"></label><label>Miles one way<input id="yard-miles-2" type="number" min="0" step="any" inputmode="decimal"></label><label>Tolls / fees $<input id="yard-fees-2" type="number" min="0" step="any" inputmode="decimal"></label><div class="yard-net"><span>Net after drive</span><strong id="yard-net-2">—</strong></div></div>
-        <div class="yard-card" data-yard="3"><input class="yard-name" id="yard-name-3" placeholder="Buyer / Yard C"><label>Payout $ / unit<input id="yard-price-3" type="number" min="0" step="any" inputmode="decimal"></label><label>Miles one way<input id="yard-miles-3" type="number" min="0" step="any" inputmode="decimal"></label><label>Tolls / fees $<input id="yard-fees-3" type="number" min="0" step="any" inputmode="decimal"></label><div class="yard-net"><span>Net after drive</span><strong id="yard-net-3">—</strong></div></div>
-      </div>
-      <div class="eval-decision"><strong id="yard-decision">ENTER BUYER PRICES</strong><small id="yard-detail">The best buyer is the highest net after entered fuel and fees, not automatically the highest posted price.</small></div>
-    </section>
+    <section id="yard-comparison" class="sr-panel yard-panel"><h2>📍 Yard / Buyer Comparison</h2><p class="panel-kicker">A higher posted price can lose after the drive. Compare up to three buyers using the same load weight and vehicle assumptions.</p><div class="yard-base-grid"><div class="eval-field"><label>Load Weight / Qty</label><input id="yard-weight" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></div><div class="eval-field"><label>Vehicle MPG</label><input id="yard-mpg" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></div><div class="eval-field"><label>Fuel $ / Gallon</label><input id="yard-gas" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div></div><div class="yard-grid">
+      <div class="yard-card" data-yard="1"><input class="yard-name" id="yard-name-1" placeholder="Buyer / Yard A"><label>Payout $ / unit<input id="yard-price-1" type="number" min="0" step="any" inputmode="decimal"></label><label>Miles one way<input id="yard-miles-1" type="number" min="0" step="any" inputmode="decimal"></label><label>Tolls / fees $<input id="yard-fees-1" type="number" min="0" step="any" inputmode="decimal"></label><div class="yard-net"><span>Net after drive</span><strong id="yard-net-1">—</strong></div></div>
+      <div class="yard-card" data-yard="2"><input class="yard-name" id="yard-name-2" placeholder="Buyer / Yard B"><label>Payout $ / unit<input id="yard-price-2" type="number" min="0" step="any" inputmode="decimal"></label><label>Miles one way<input id="yard-miles-2" type="number" min="0" step="any" inputmode="decimal"></label><label>Tolls / fees $<input id="yard-fees-2" type="number" min="0" step="any" inputmode="decimal"></label><div class="yard-net"><span>Net after drive</span><strong id="yard-net-2">—</strong></div></div>
+      <div class="yard-card" data-yard="3"><input class="yard-name" id="yard-name-3" placeholder="Buyer / Yard C"><label>Payout $ / unit<input id="yard-price-3" type="number" min="0" step="any" inputmode="decimal"></label><label>Miles one way<input id="yard-miles-3" type="number" min="0" step="any" inputmode="decimal"></label><label>Tolls / fees $<input id="yard-fees-3" type="number" min="0" step="any" inputmode="decimal"></label><div class="yard-net"><span>Net after drive</span><strong id="yard-net-3">—</strong></div></div>
+      </div><div class="eval-decision"><strong id="yard-decision">ENTER BUYER PRICES</strong><small id="yard-detail">The best buyer is the highest net after entered fuel and fees, not automatically the highest posted price.</small></div></section>
 
-    <section id="roi" class="sr-panel roi-panel">
-      <h2>📦 Inventory + ROI Ledger</h2>
-      <p class="panel-kicker">Potential opportunity is not realized profit. Keep the receipts separate so the dashboard can answer whether Scrap Radar actually paid for itself.</p>
-      <div class="roi-grid">
-        <div class="eval-field"><label>Realized Additional Profit $</label><input id="roi-profit" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
-        <div class="eval-field"><label>Verified Savings / Avoided Loss $</label><input id="roi-savings" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
-        <div class="eval-field"><label>Verified Recovered Value $</label><input id="roi-recovered" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
-        <div class="eval-field"><label>Costs to Capture Value $</label><input id="roi-costs" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
-        <div class="eval-field"><label>Potential Opportunity, Not Realized $</label><input id="roi-potential" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
-        <div class="eval-field"><label>Subscription / Tool Cost $</label><input id="roi-subscription" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
-      </div>
-      <div class="roi-results">
-        <div><span>Verified Benefit</span><strong id="roi-benefit">$0.00</strong></div>
-        <div><span>Net After Capture Costs</span><strong id="roi-realized-net">$0.00</strong></div>
-        <div><span>After Subscription</span><strong id="roi-after-sub">$0.00</strong></div>
-        <div class="potential"><span>Potential, Separate</span><strong id="roi-potential-show">$0.00</strong></div>
-      </div>
-      <div class="eval-decision"><strong id="roi-decision">NO REALIZED RESULTS ENTERED</strong><small id="roi-detail">Potential opportunities stay outside realized ROI until a sale, recovery or verified saving actually occurs.</small></div>
-      <div class="roi-history-head"><b>Recent Recorded Evaluator Results</b><button id="clear-roi-history" class="mini-btn" type="button">Clear History</button></div>
-      <div id="roi-history" class="roi-history"><div class="empty">No recorded evaluator results yet.</div></div>
-    </section>
+    <section id="roi" class="sr-panel roi-panel"><h2>📦 Inventory + ROI Ledger</h2><p class="panel-kicker">Potential opportunity is not realized profit. Keep the receipts separate so the dashboard can answer whether Scrap Radar actually paid for itself.</p><div class="roi-grid"><div class="eval-field"><label>Realized Additional Profit $</label><input id="roi-profit" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div><div class="eval-field"><label>Verified Savings / Avoided Loss $</label><input id="roi-savings" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div><div class="eval-field"><label>Verified Recovered Value $</label><input id="roi-recovered" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div><div class="eval-field"><label>Costs to Capture Value $</label><input id="roi-costs" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div><div class="eval-field"><label>Potential Opportunity, Not Realized $</label><input id="roi-potential" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div><div class="eval-field"><label>Subscription / Tool Cost $</label><input id="roi-subscription" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div></div><div class="roi-results"><div><span>Verified Benefit</span><strong id="roi-benefit">$0.00</strong></div><div><span>Net After Capture Costs</span><strong id="roi-realized-net">$0.00</strong></div><div><span>After Subscription</span><strong id="roi-after-sub">$0.00</strong></div><div class="potential"><span>Potential, Separate</span><strong id="roi-potential-show">$0.00</strong></div></div><div class="eval-decision"><strong id="roi-decision">NO REALIZED RESULTS ENTERED</strong><small id="roi-detail">Potential opportunities stay outside realized ROI until a sale, recovery or verified saving actually occurs.</small></div><div class="roi-history-head"><b>Recent Recorded Evaluator Results</b><button id="clear-roi-history" class="mini-btn" type="button">Clear History</button></div><div id="roi-history" class="roi-history"><div class="empty">No recorded evaluator results yet.</div></div></section>
 
-    <section id="market" class="sr-panel benchmark-panel">
-      <h2>💰 Market Benchmarks</h2>
-      <div id="benchmark-grid" class="market-grid"></div>
-      <div class="legend" aria-label="Pricing legend">
-        <span class="bench">BLUE = market benchmark</span>
-        <span class="estimate">GREEN = benchmark-derived estimate</span>
-        <span class="quote">GOLD = real yard/refiner quote needed</span>
-      </div>
-      <p class="disclaimer">Commodity benchmarks are reference prices, not guaranteed scrap-yard payouts. Scrap Radar keeps benchmark value, estimated grade value and actual cash-out quotes separate.</p>
-    </section>
-
-    <section id="pricebook" class="sr-panel material-panel">
-      <h2>♻️ Material Pricebook</h2>
-      <div class="material-toolbar">
-        <input id="material-search" type="search" placeholder="Search copper, brass, aluminum, steel, boards…" autocomplete="off">
-        <span id="material-count" class="material-count">Loading materials…</span>
-      </div>
-      <div id="material-categories"></div>
-      <p class="disclaimer">Enter a yard or refiner quote in any gold price box. Your quote is saved only on this device for now and overrides an estimate in the evaluator. A later phase can store quotes by yard, ZIP code, date and buyer.</p>
-    </section>
+    <section id="market" class="sr-panel benchmark-panel"><h2>💰 Market Benchmarks</h2><div id="benchmark-grid" class="market-grid"></div><div class="legend" aria-label="Pricing legend"><span class="bench">BLUE = market benchmark</span><span class="estimate">GREEN = benchmark-derived estimate</span><span class="quote">GOLD = real yard/refiner quote needed</span></div><p class="disclaimer">Commodity benchmarks are reference prices, not guaranteed scrap-yard payouts. Scrap Radar keeps benchmark value, estimated grade value and actual cash-out quotes separate.</p></section>
+    <section id="pricebook" class="sr-panel material-panel"><h2>♻️ Material Pricebook</h2><div class="material-toolbar"><input id="material-search" type="search" placeholder="Search copper, brass, aluminum, steel, boards…" autocomplete="off"><span id="material-count" class="material-count">Loading materials…</span></div><div id="material-categories"></div><p class="disclaimer">Enter a yard or refiner quote in any gold price box. Your quote is saved only on this device for now and overrides an estimate in the evaluator. A later phase can store quotes by yard, ZIP code, date and buyer.</p></section>
   </div>
-
   <footer class="sr-footer">SCRAP RADAR FAMILY • OPERATING SCREEN • VALUE + TIME + DISTANCE + EVIDENCE</footer>
 </main>
 <script src="scrap_radar_market.js?v=2"></script>
-<script src="scrap_radar_operating.js?v=2"></script>
+<script src="scrap_radar_operating.js?v=3"></script>
 </body>
 </html>
