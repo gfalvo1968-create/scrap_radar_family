@@ -3,14 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Scrap Radar Market Hub</title>
+<title>Scrap Radar Operating Screen</title>
 <link rel="stylesheet" href="scrap_radar_market.css?v=1">
+<link rel="stylesheet" href="scrap_radar_operating.css?v=1">
 </head>
 <body>
 <main class="sr-shell">
   <header class="sr-header">
     <h1>📡 SCRAP RADAR</h1>
-    <p>Central material pricing, yard quotes, market context and value math for the Scrap Radar Family.</p>
+    <p>Main operating screen for material value, trip economics, market intelligence, recovery and Scrap Radar Family tools.</p>
     <nav class="sr-nav" aria-label="Scrap Radar navigation">
       <a class="sr-btn" href="island_portal.html">🏝️ Island</a>
       <a class="sr-btn" href="board_sense_case.html">🧠 Board Sense</a>
@@ -25,8 +26,99 @@
     <span class="status-chip">Every dollar needs a receipt.</span>
   </div>
 
+  <section class="operating-deck" aria-label="Scrap Radar operating modules">
+    <div class="operating-deck-head">
+      <div>
+        <h2>🎛️ Operating Deck</h2>
+        <p>The pricebook is one instrument. The evaluators and recovery tools are the rest of the cockpit.</p>
+      </div>
+    </div>
+    <div class="tool-grid">
+      <a class="tool-card" href="#evaluator"><span class="tool-icon">🧮</span><b>Load + Trip Evaluator</b><small>Weight, payout, fuel, time and net value.</small><span class="tool-state live">LIVE</span></a>
+      <a class="tool-card" href="#market"><span class="tool-icon">📈</span><b>Market Intelligence</b><small>Live commodity benchmarks and market context.</small><span class="tool-state live">LIVE</span></a>
+      <a class="tool-card" href="#pricebook"><span class="tool-icon">♻️</span><b>Material Pricebook</b><small>Grades, estimates and real yard quote slots.</small><span class="tool-state live">LIVE</span></a>
+      <a class="tool-card" href="#board-recovery"><span class="tool-icon">🧠</span><b>Board Recovery</b><small>Keep whole, harvest, revalue, process, handoff.</small><span class="tool-state ready">FOUNDATION</span></a>
+      <div class="tool-card"><span class="tool-icon">📍</span><b>Yard Comparison</b><small>Compare buyer payouts against the cost of the drive.</small><span class="tool-state next">NEXT</span></div>
+      <div class="tool-card"><span class="tool-icon">📦</span><b>Inventory + ROI</b><small>History, realized value and whether Scrap Radar paid for itself.</small><span class="tool-state next">NEXT</span></div>
+    </div>
+  </section>
+
   <div class="sr-grid">
-    <section class="sr-panel benchmark-panel">
+    <section id="evaluator" class="sr-panel operating-evaluator">
+      <h2>🧮 Load + Trip Evaluator</h2>
+      <p class="panel-kicker">Use the same material and price engine as the Pricebook. Confirm the payout basis, then add the trip and time that it takes to turn scrap into cash.</p>
+
+      <div class="eval-grid">
+        <div class="eval-field wide">
+          <label for="calc-material">Material / Grade</label>
+          <select id="calc-material"><option value="">Choose a material…</option></select>
+        </div>
+        <div class="eval-field">
+          <label for="calc-weight">Weight / Quantity</label>
+          <input id="calc-weight" type="number" min="0" step="any" inputmode="decimal" placeholder="0">
+        </div>
+        <div class="eval-field">
+          <label for="calc-price">Payout Price <span id="calc-unit"></span></label>
+          <input id="calc-price" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00">
+        </div>
+
+        <div class="eval-divider"><span>TRIP + TIME</span></div>
+
+        <div class="eval-field">
+          <label for="trip-miles">Miles to Buyer, One Way</label>
+          <input id="trip-miles" type="number" min="0" step="any" inputmode="decimal" placeholder="0">
+        </div>
+        <div class="eval-field">
+          <label for="trip-mpg">Vehicle MPG</label>
+          <input id="trip-mpg" type="number" min="0" step="any" inputmode="decimal" placeholder="0">
+        </div>
+        <div class="eval-field">
+          <label for="trip-gas">Fuel $ / Gallon</label>
+          <input id="trip-gas" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00">
+        </div>
+        <div class="eval-field">
+          <label for="trip-other">Tolls / Fees / Other Costs</label>
+          <input id="trip-other" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00">
+        </div>
+        <div class="eval-field">
+          <label for="trip-minutes">Total Job Minutes</label>
+          <input id="trip-minutes" type="number" min="0" step="any" inputmode="decimal" placeholder="drive + load + unload">
+        </div>
+        <div class="eval-field">
+          <label for="trip-target">Your Target $ / Hour</label>
+          <input id="trip-target" type="number" min="0" step="any" inputmode="decimal" placeholder="optional">
+        </div>
+      </div>
+
+      <div class="eval-results" aria-live="polite">
+        <div class="eval-stat"><div class="label">Gross Material</div><strong id="calc-value">$0.00</strong></div>
+        <div class="eval-stat"><div class="label">Round Trip</div><strong id="op-roundtrip">0.0 mi</strong></div>
+        <div class="eval-stat cost"><div class="label">Fuel Cost</div><strong id="op-fuel">$0.00</strong></div>
+        <div class="eval-stat cost"><div class="label">Entered Trip Costs</div><strong id="op-costs">$0.00</strong></div>
+        <div class="eval-stat net"><div class="label">Net After Entered Costs</div><strong id="op-net">$0.00</strong></div>
+        <div class="eval-stat"><div class="label">Net Value / Hour</div><strong id="op-hourly">—</strong></div>
+      </div>
+      <div id="calc-detail" class="material-meta" style="margin-top:8px">Choose a material and enter weight.</div>
+      <div class="eval-decision"><strong id="op-decision">ENTER LOAD DETAILS</strong><small id="op-detail">Choose a material, enter weight and confirm the price basis.</small></div>
+      <div class="eval-actions"><button id="reset-evaluator" class="mini-btn" type="button">Clear Trip Inputs</button></div>
+      <p class="disclaimer">This evaluator subtracts only the costs you enter. It does not silently invent labor, vehicle wear, taxes, processing or disposal costs. Add the costs that matter to your job before treating the net result as profit.</p>
+    </section>
+
+    <aside id="board-recovery" class="sr-panel recovery-preview">
+      <h2>🧠 Board Recovery</h2>
+      <p class="panel-kicker">Scrap Radar handles the recovery economics. SPIKE and Board Sense go deeper on identification and physical evidence.</p>
+      <div class="recovery-flow">
+        <div class="recovery-step"><span class="num">1</span><div><b>Keep Whole?</b><small>Check whether the intact board is worth more before removing anything.</small></div></div>
+        <div class="recovery-step"><span class="num">2</span><div><b>Selective Harvest</b><small>Remove only components whose supported recovery value justifies the time.</small></div></div>
+        <div class="recovery-step"><span class="num">3</span><div><b>Revalue Remainder</b><small>What remains still has a condition, grade and possible buyer value.</small></div></div>
+        <div class="recovery-step"><span class="num">4</span><div><b>Separate / Process</b><small>Sort recoverable streams before mechanical reduction becomes the better path.</small></div></div>
+        <div class="recovery-step"><span class="num">5</span><div><b>Refiner / Recycler</b><small>Shredding or downstream processing is a later branch, not the opening move.</small></div></div>
+      </div>
+      <div class="recovery-link"><a class="mini-btn" href="board_sense_case.html">Open Board Sense / SPIKE</a></div>
+      <p class="disclaimer">Planned recovery output: REMOVE FIRST • OPTIONAL • LEAVE ON BOARD • NOT WORTH THE TIME, with value and time receipts at each stage.</p>
+    </aside>
+
+    <section id="market" class="sr-panel benchmark-panel">
       <h2>💰 Market Benchmarks</h2>
       <div id="benchmark-grid" class="market-grid"></div>
       <div class="legend" aria-label="Pricing legend">
@@ -37,41 +129,20 @@
       <p class="disclaimer">Commodity benchmarks are reference prices, not guaranteed scrap-yard payouts. Scrap Radar keeps benchmark value, estimated grade value and actual cash-out quotes separate.</p>
     </section>
 
-    <section class="sr-panel material-panel">
+    <section id="pricebook" class="sr-panel material-panel">
       <h2>♻️ Material Pricebook</h2>
       <div class="material-toolbar">
         <input id="material-search" type="search" placeholder="Search copper, brass, aluminum, steel, boards…" autocomplete="off">
         <span id="material-count" class="material-count">Loading materials…</span>
       </div>
       <div id="material-categories"></div>
-      <p class="disclaimer">Enter a yard or refiner quote in any gold price box. Your quote is saved only on this device for now and overrides an estimate in the calculator. A later phase can store quotes by yard, ZIP code, date and buyer.</p>
+      <p class="disclaimer">Enter a yard or refiner quote in any gold price box. Your quote is saved only on this device for now and overrides an estimate in the evaluator. A later phase can store quotes by yard, ZIP code, date and buyer.</p>
     </section>
-
-    <aside class="sr-panel calculator-panel">
-      <h2>🧮 Quick Value</h2>
-      <div class="calc-field">
-        <label for="calc-material">Material</label>
-        <select id="calc-material"><option value="">Choose a material…</option></select>
-      </div>
-      <div class="calc-field">
-        <label for="calc-weight">Weight / quantity</label>
-        <input id="calc-weight" type="number" min="0" step="any" inputmode="decimal" placeholder="0">
-      </div>
-      <div class="calc-field">
-        <label for="calc-price">Price <span id="calc-unit"></span></label>
-        <input id="calc-price" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00">
-      </div>
-      <div class="calc-result">
-        <div class="label">Estimated Gross Value</div>
-        <div id="calc-value" class="money">$0.00</div>
-        <div id="calc-detail" class="detail">Choose a material and enter weight.</div>
-      </div>
-      <p class="disclaimer">Gross material value does not include labor, fuel, transport, processing, fees or residual disposal. Those belong in the profit/ROI layer.</p>
-    </aside>
   </div>
 
-  <footer class="sr-footer">SCRAP RADAR FAMILY • MARKET HUB • BENCHMARK ≠ CASH-OUT PRICE</footer>
+  <footer class="sr-footer">SCRAP RADAR FAMILY • OPERATING SCREEN • VALUE + TIME + DISTANCE + EVIDENCE</footer>
 </main>
 <script src="scrap_radar_market.js?v=2"></script>
+<script src="scrap_radar_operating.js?v=1"></script>
 </body>
 </html>
