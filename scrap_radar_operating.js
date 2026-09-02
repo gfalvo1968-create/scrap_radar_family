@@ -25,7 +25,7 @@ function calculateOperating(){
   const net=gross-totalCosts;
   const hourly=minutes!==null&&minutes>0?net/(minutes/60):null;
 
-  if(el('op-gross'))el('op-gross').textContent=money(gross);
+  if(el('calc-value'))el('calc-value').textContent=money(gross);
   if(el('op-roundtrip'))el('op-roundtrip').textContent=fixed(roundTrip,1)+' mi';
   if(el('op-fuel'))el('op-fuel').textContent=money(fuelCost);
   if(el('op-costs'))el('op-costs').textContent=money(totalCosts);
@@ -71,11 +71,6 @@ function bindEvaluator(){
     node.addEventListener('change',()=>setTimeout(calculateOperating,0));
   });
   el('reset-evaluator')?.addEventListener('click',resetEvaluator);
-
-  const priceObserver=new MutationObserver(()=>calculateOperating());
-  const priceNode=el('calc-price');
-  if(priceNode)priceObserver.observe(priceNode,{attributes:true,childList:true,subtree:true});
-
   calculateOperating();
 }
 
