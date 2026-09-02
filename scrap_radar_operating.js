@@ -22,8 +22,8 @@ function calculateOperating(){
   const gallons=mpg!==null&&mpg>0?roundTrip/mpg:0;
   const fuelCost=gas!==null&&gas>=0&&mpg!==null&&mpg>0?gallons*gas:0;
   const totalCosts=fuelCost+other;
-  const net=gross-totalCosts;
-  const hourly=minutes!==null&&minutes>0?net/(minutes/60):null;
+  const net=hasLoad?gross-totalCosts:0;
+  const hourly=hasLoad&&minutes!==null&&minutes>0?net/(minutes/60):null;
 
   if(el('calc-value'))el('calc-value').textContent=money(gross);
   if(el('op-roundtrip'))el('op-roundtrip').textContent=fixed(roundTrip,1)+' mi';
@@ -31,6 +31,7 @@ function calculateOperating(){
   if(el('op-costs'))el('op-costs').textContent=money(totalCosts);
   if(el('op-net'))el('op-net').textContent=money(net);
   if(el('op-hourly'))el('op-hourly').textContent=hourly===null?'—':money(hourly)+'/hr';
+  if(el('gauge-single-net'))el('gauge-single-net').textContent=money(net);
 
   let decision='ENTER LOAD DETAILS';
   let detail='Choose a material, enter weight and confirm the price basis.';
