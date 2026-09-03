@@ -54,7 +54,7 @@ function ensureLogistics(){
       <div class="br-logistics-card"><b>DEEPER RECOVERY</b><label>Buyer/refiner miles one way<input id="br-full-miles" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Travel minutes<input id="br-full-travel" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Tolls / fees $<input id="br-full-fees" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><span id="br-full-log-cost" class="br-logistics-cost">Travel cost $0.00</span></div>
     </div>
     <small class="br-logistics-note">Travel minutes are entered separately so Scrap Radar never invents an average road speed. Recovery minutes + travel minutes become the total time for that path.</small>`;
-  anchor.parentNode.insertBefore(box,anchor);
+  anchor.insertAdjacentElement('afterend',box);
   syncFromEvaluator();
 }
 
