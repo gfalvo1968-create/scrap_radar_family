@@ -1,21 +1,46 @@
-/* Board Sense inspection-target handoff v0.1 */
+/* Board Sense inspection-target handoff v0.2 */
 (function(){
 'use strict';
 const KEY='scrapRadarInspectionTargetV1';
+let targetAnalyzeArmed=false;
 function E(id){return document.getElementById(id)}
-function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]))}
 function read(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(_){return null}}
 function style(){if(E('inspectionTargetStyle'))return;const s=document.createElement('style');s.id='inspectionTargetStyle';s.textContent=`
 #inspectionTargetPanel{border-color:#00d4ff;background:linear-gradient(180deg,rgba(0,212,255,.09),rgba(8,20,26,.86));box-shadow:0 0 24px rgba(0,212,255,.10)}
-.it-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.it-kicker{font-size:.72rem;font-weight:900;letter-spacing:.12em;color:#72e8ff}.it-head h2{margin:4px 0 4px;color:#eaffff}.it-source{color:#a5eefb;font-size:.9rem}.it-target{margin:12px 0;padding:13px;border-radius:12px;border:1px solid rgba(57,255,20,.35);background:#071207}.it-target span{display:block;font-size:.68rem;letter-spacing:.1em;font-weight:900;color:#39ff14}.it-target strong{display:block;margin-top:5px;font-size:1.15rem;color:#fff}.it-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.it-grid>div{padding:11px 12px;border-radius:11px;background:#080d0d;border:1px solid rgba(255,255,255,.1)}.it-grid b{display:block;margin-bottom:5px;font-size:.68rem;letter-spacing:.07em;color:#72e8ff}.it-grid p{margin:0;color:#d7e6e2;line-height:1.42;font-size:.84rem}.it-materials{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.it-chip{padding:6px 9px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:#080808;color:#eee;font-size:.75rem}.it-chip.strong{border-color:rgba(57,255,20,.5);color:#8dff7a}.it-rule{font-size:.76rem;line-height:1.4;color:#aaa}.it-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.it-actions button{border-color:#00d4ff;color:#8aeaff}.it-actions .clear{border-color:#777;color:#bbb}@media(max-width:700px){.it-head{display:block}.it-grid{grid-template-columns:1fr}.it-actions button{width:100%}}
+.it-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.it-kicker{font-size:.72rem;font-weight:900;letter-spacing:.12em;color:#72e8ff}.it-head h2{margin:4px 0 4px;color:#eaffff}.it-source{color:#a5eefb;font-size:.9rem}.it-target{margin:12px 0;padding:13px;border-radius:12px;border:1px solid rgba(57,255,20,.35);background:#071207}.it-target span{display:block;font-size:.68rem;letter-spacing:.1em;font-weight:900;color:#39ff14}.it-target strong{display:block;margin-top:5px;font-size:1.15rem;color:#fff}.it-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.it-grid>div{padding:11px 12px;border-radius:11px;background:#080d0d;border:1px solid rgba(255,255,255,.1)}.it-grid b{display:block;margin-bottom:5px;font-size:.68rem;letter-spacing:.07em;color:#72e8ff}.it-grid p{margin:0;color:#d7e6e2;line-height:1.42;font-size:.84rem}.it-materials{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.it-chip{padding:6px 9px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:#080808;color:#eee;font-size:.75rem}.it-chip.strong{border-color:rgba(57,255,20,.5);color:#8dff7a}.it-rule{font-size:.76rem;line-height:1.4;color:#aaa}.it-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.it-actions button{border-color:#00d4ff;color:#8aeaff}.it-actions .clear{border-color:#777;color:#bbb}.it-result{padding:13px 14px;margin:10px 0;border-radius:12px;border:1px solid #00d4ff;background:#07131a;color:#eaffff}.it-result.warn{border-color:#ffd54a;background:#1a1505;color:#ffe89a}.it-result b{display:block;margin-bottom:6px}.it-result p{margin:5px 0;line-height:1.45}.it-generic{margin-top:8px;font-size:.78rem;color:#aaa}.it-generic strong{color:#ddd}@media(max-width:700px){.it-head{display:block}.it-grid{grid-template-columns:1fr}.it-actions button{width:100%}}
 `;document.head.appendChild(s)}
-function clear(){localStorage.removeItem(KEY);const p=E('inspectionTargetPanel');if(p)p.remove();const status=E('spikeStatus');if(status&&/Inspection target loaded/.test(status.textContent||''))status.textContent='Recognition mode ready.'}
+function clear(){localStorage.removeItem(KEY);window.ScrapRadarInspectionTarget=null;const p=E('inspectionTargetPanel');if(p)p.remove();const status=E('spikeStatus');if(status&&/Inspection target loaded/.test(status.textContent||''))status.textContent='Recognition mode ready.'}
 function aim(packet){
  if(typeof window.openBoardSenseDashboard==='function')window.openBoardSenseDashboard();
  window.ScrapRadarInspectionTarget=packet;
  const status=E('spikeStatus');if(status)status.textContent='Inspection target loaded: '+packet.target+'. Take a clear close photo of that area, plus enough surrounding context to place it on the item.';
  const box=E('spikeBox');if(box&&/recognition candidates will appear here/i.test(box.textContent||''))box.innerHTML='<div class="type-box"><div class="type-name">🎯 '+esc(packet.target)+'</div><b>SPIKE inspection mission:</b> '+esc(packet.where)+'<p><b>Look for:</b> '+esc(packet.look)+'</p><p class="muted">Target guidance narrows the inspection area. It does not tell SPIKE what material must be present.</p></div>';
  const spike=E('spikeImage')?.closest('.spike-panel')||E('spikeImage');if(spike)setTimeout(()=>spike.scrollIntoView({behavior:'smooth',block:'start'}),120);
+}
+function patchSpikeButton(){
+ const btn=E('spikeBtn');if(!btn||btn.dataset.inspectionTargetArmer)return;btn.dataset.inspectionTargetArmer='1';
+ btn.addEventListener('click',function(){const input=E('spikeImage'),packet=read();targetAnalyzeArmed=!!(packet&&packet.target&&input&&input.files&&input.files.length);if(targetAnalyzeArmed)setTimeout(()=>{targetAnalyzeArmed=false},15000)},true);
+}
+function patchFetch(){
+ if(window.__inspectionTargetFetchPatched)return;window.__inspectionTargetFetchPatched=true;const original=window.fetch.bind(window);
+ window.fetch=async function(input,init){
+  try{
+   const url=typeof input==='string'?input:(input&&input.url)||'';
+   const isSingle=/\/analyze(?:\?|$)/.test(url)&&!/\/analyze-(?:pair|case)/.test(url);
+   if(isSingle&&targetAnalyzeArmed&&init&&init.body instanceof FormData){const packet=read();targetAnalyzeArmed=false;if(packet&&packet.target&&!init.body.has('inspection_target'))init.body.append('inspection_target',JSON.stringify(packet))}
+  }catch(_){targetAnalyzeArmed=false}
+  return original(input,init);
+ };
+}
+function targetResultHtml(data){
+ const t=data&&data.inspection_target;if(!t)return '';
+ const candidate=t.status==='target_candidate',g=t.generic_top_match||{};
+ return '<div class="it-result '+(candidate?'':'warn')+'"><b>'+ (candidate?'🎯 TARGET CANDIDATE':'🎯 TARGET NOT CONFIRMED') +': '+esc(t.target||'Inspection target')+'</b><p>'+esc(t.message||'')+'</p>'+(t.look?'<p><strong>Expected clue:</strong> '+esc(t.look)+'</p>':'')+'<div class="it-generic">Generic visual recognition: <strong>'+esc(g.label||'none')+'</strong>'+(g.confidence!=null?' • '+esc(g.confidence)+'%':'')+'. This background result does not by itself prove the saved target.</div></div>';
+}
+function patchRenderSpike(){
+ if(window.__inspectionTargetRenderPatched||typeof window.renderSpike!=='function')return;window.__inspectionTargetRenderPatched=true;const original=window.renderSpike;
+ window.renderSpike=function(data){const t=data&&data.inspection_target;if(!t)return original(data);style();const mission=targetResultHtml(data);if(t.status==='target_not_confirmed'){const quality=typeof window.renderQuality==='function'?window.renderQuality(data):'';return quality+mission+'<p class="muted">SPIKE suppressed the generic classification as the mission answer. Reframe on the saved target and try again.</p>'}return mission+original(data)};
 }
 function render(){
  const packet=read();if(!packet||!packet.target)return false;
@@ -29,6 +54,6 @@ function render(){
  E('inspectionAimSpike').onclick=()=>aim(packet);E('inspectionBackScrap').onclick=()=>{window.top.location.href='scrap_radar_operating_case.html#critical-materials'};E('inspectionClear').onclick=clear;
  return true;
 }
-function start(){let tries=0;const go=()=>{tries++;if(render()||tries>80)return;setTimeout(go,100)};go()}
+function start(){style();patchFetch();patchRenderSpike();patchSpikeButton();let tries=0;const go=()=>{tries++;patchSpikeButton();patchRenderSpike();if(render()||tries>80)return;setTimeout(go,100)};go()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
