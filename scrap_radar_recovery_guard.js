@@ -13,13 +13,25 @@ function ensureStyle(){
   s.textContent=`
   .br-logistics{margin:14px 0;padding:14px;border:1px solid rgba(65,220,255,.26);border-radius:14px;background:rgba(0,18,20,.62)}
   .br-logistics h3{margin:0 0 5px;color:#bff7ff;font-size:1rem}.br-logistics p{margin:0 0 12px;color:#7fa6a8;font-size:.82rem;line-height:1.4}
-  .br-logistics-shared{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:11px}.br-logistics-chip{border:1px solid rgba(65,220,255,.24);border-radius:999px;padding:6px 9px;color:#a9dfe3;font-size:.78rem;background:#021012}
+  .br-logistics-shared{display:grid;grid-template-columns:repeat(2,minmax(0,220px));gap:10px;margin-bottom:11px}.br-shared-field{display:block;color:#a9dfe3;font-size:.78rem}.br-shared-field input{width:100%;box-sizing:border-box;margin-top:4px;background:#010b0d;border:1px solid rgba(65,220,255,.35);color:#efffff;border-radius:9px;padding:9px;font:inherit}
   .br-logistics-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.br-logistics-card{padding:11px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:#020805}
   .br-logistics-card b{display:block;color:#d9ffe0;margin-bottom:7px}.br-logistics-card label{display:block;color:#8fb89a;font-size:.78rem;margin-top:7px}.br-logistics-card input{width:100%;box-sizing:border-box;margin-top:4px;background:#010704;border:1px solid rgba(57,255,20,.28);color:#effff2;border-radius:9px;padding:8px;font:inherit}
   .br-logistics-cost{display:block;margin-top:9px;color:#7defff;font-weight:800}.br-logistics-note{display:block;margin-top:9px;color:#6e8b75;font-size:.72rem;line-height:1.35}
-  @media(max-width:760px){.br-logistics-grid{grid-template-columns:1fr}}
+  @media(max-width:760px){.br-logistics-grid,.br-logistics-shared{grid-template-columns:1fr}}
   `;
   document.head.appendChild(s);
+}
+
+function syncFromEvaluator(){
+  const mpg=el('br-shared-mpg'),gas=el('br-shared-gas');
+  if(mpg&&el('trip-mpg')&&document.activeElement!==mpg)mpg.value=el('trip-mpg').value;
+  if(gas&&el('trip-gas')&&document.activeElement!==gas)gas.value=el('trip-gas').value;
+}
+
+function syncToEvaluator(sharedId,tripId){
+  const shared=el(sharedId),trip=el(tripId);if(!shared||!trip)return;
+  trip.value=shared.value;
+  trip.dispatchEvent(new Event('input',{bubbles:true}));
 }
 
 function ensureLogistics(){
@@ -31,8 +43,11 @@ function ensureLogistics(){
   box.id='br-logistics';box.className='br-logistics';
   box.innerHTML=`
     <h3>🚚 Recovery Logistics</h3>
-    <p>Distance and fuel can change the winning path. These numbers use the same MPG and fuel price as the Load + Trip Evaluator.</p>
-    <div class="br-logistics-shared"><span id="br-mpg-chip" class="br-logistics-chip">MPG: —</span><span id="br-gas-chip" class="br-logistics-chip">Fuel: —</span></div>
+    <p>Distance and fuel can change the winning path. MPG and fuel stay synchronized with the Load + Trip Evaluator, but you can enter them right here.</p>
+    <div class="br-logistics-shared">
+      <label class="br-shared-field">Vehicle MPG<input id="br-shared-mpg" type="number" min="0" step="any" inputmode="decimal" placeholder="Enter MPG"></label>
+      <label class="br-shared-field">Fuel $ / Gallon<input id="br-shared-gas" type="number" min="0" step="any" inputmode="decimal" placeholder="Enter fuel price"></label>
+    </div>
     <div class="br-logistics-grid">
       <div class="br-logistics-card"><b>SELL WHOLE</b><label>Buyer miles one way<input id="br-whole-miles" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Travel minutes<input id="br-whole-travel" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Tolls / fees $<input id="br-whole-fees" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><span id="br-whole-log-cost" class="br-logistics-cost">Travel cost $0.00</span></div>
       <div class="br-logistics-card"><b>SELECTIVE HARVEST</b><label>Buyer/refiner miles one way<input id="br-partial-miles" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Travel minutes<input id="br-partial-travel" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Tolls / fees $<input id="br-partial-fees" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><span id="br-partial-log-cost" class="br-logistics-cost">Travel cost $0.00</span></div>
@@ -40,6 +55,7 @@ function ensureLogistics(){
     </div>
     <small class="br-logistics-note">Travel minutes are entered separately so Scrap Radar never invents an average road speed. Recovery minutes + travel minutes become the total time for that path.</small>`;
   anchor.parentNode.insertBefore(box,anchor);
+  syncFromEvaluator();
 }
 
 function tripCost(prefix,mpg,gas){
@@ -50,7 +66,9 @@ function tripCost(prefix,mpg,gas){
 }
 
 function pathData(){
-  const mpg=num('trip-mpg'),gas=num('trip-gas'),target=num('trip-target');
+  const mpg=num('br-shared-mpg')!==null?num('br-shared-mpg'):num('trip-mpg');
+  const gas=num('br-shared-gas')!==null?num('br-shared-gas'):num('trip-gas');
+  const target=num('trip-target');
   const wholeOffer=num('br-whole');
   const partialValue=Math.max(0,num('br-partial-value')||0);
   const partialResidual=Math.max(0,num('br-residual')||0);
@@ -73,8 +91,6 @@ function pathData(){
 }
 
 function updateLogistics(d){
-  set('br-mpg-chip','MPG: '+(d.mpg!==null&&d.mpg>0?d.mpg:'—'));
-  set('br-gas-chip','Fuel: '+(d.gas!==null&&d.gas>=0?cash(d.gas)+'/gal':'—'));
   set('br-whole-log-cost','Travel cost '+cash(d.wl.total));
   set('br-partial-log-cost','Travel cost '+cash(d.pl.total));
   set('br-full-log-cost','Travel cost '+cash(d.fl.total));
@@ -140,10 +156,13 @@ function recalc(){
 function schedule(){setTimeout(recalc,0)}
 function bind(){
   ensureLogistics();
-  ['br-whole','br-partial-value','br-residual','br-partial-minutes','br-partial-costs','br-full-value','br-full-residual','br-full-minutes','br-full-costs','trip-target','trip-mpg','trip-gas','br-whole-miles','br-whole-travel','br-whole-fees','br-partial-miles','br-partial-travel','br-partial-fees','br-full-miles','br-full-travel','br-full-fees'].forEach(id=>{
+  el('br-shared-mpg')?.addEventListener('input',()=>{syncToEvaluator('br-shared-mpg','trip-mpg');schedule()});
+  el('br-shared-gas')?.addEventListener('input',()=>{syncToEvaluator('br-shared-gas','trip-gas');schedule()});
+  ['trip-mpg','trip-gas'].forEach(id=>el(id)?.addEventListener('input',()=>{syncFromEvaluator();schedule()}));
+  ['br-whole','br-partial-value','br-residual','br-partial-minutes','br-partial-costs','br-full-value','br-full-residual','br-full-minutes','br-full-costs','trip-target','br-whole-miles','br-whole-travel','br-whole-fees','br-partial-miles','br-partial-travel','br-partial-fees','br-full-miles','br-full-travel','br-full-fees'].forEach(id=>{
     const node=el(id);if(!node)return;node.addEventListener('input',schedule);node.addEventListener('change',schedule);
   });
-  setTimeout(recalc,500);
+  setTimeout(()=>{syncFromEvaluator();recalc()},500);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);else bind();
 })();
