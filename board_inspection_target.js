@@ -1,21 +1,34 @@
-/* Board Sense inspection-target handoff v0.2 */
+/* Board Sense inspection-target handoff v0.3 */
 (function(){
 'use strict';
 const KEY='scrapRadarInspectionTargetV1';
+const HANDOFF_KEY='scrapRadarSpikeRecoveryPacketV1';
 let targetAnalyzeArmed=false;
 function E(id){return document.getElementById(id)}
-function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]))}
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function read(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(_){return null}}
 function style(){if(E('inspectionTargetStyle'))return;const s=document.createElement('style');s.id='inspectionTargetStyle';s.textContent=`
 #inspectionTargetPanel{border-color:#00d4ff;background:linear-gradient(180deg,rgba(0,212,255,.09),rgba(8,20,26,.86));box-shadow:0 0 24px rgba(0,212,255,.10)}
 .it-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.it-kicker{font-size:.72rem;font-weight:900;letter-spacing:.12em;color:#72e8ff}.it-head h2{margin:4px 0 4px;color:#eaffff}.it-source{color:#a5eefb;font-size:.9rem}.it-target{margin:12px 0;padding:13px;border-radius:12px;border:1px solid rgba(57,255,20,.35);background:#071207}.it-target span{display:block;font-size:.68rem;letter-spacing:.1em;font-weight:900;color:#39ff14}.it-target strong{display:block;margin-top:5px;font-size:1.15rem;color:#fff}.it-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.it-grid>div{padding:11px 12px;border-radius:11px;background:#080d0d;border:1px solid rgba(255,255,255,.1)}.it-grid b{display:block;margin-bottom:5px;font-size:.68rem;letter-spacing:.07em;color:#72e8ff}.it-grid p{margin:0;color:#d7e6e2;line-height:1.42;font-size:.84rem}.it-materials{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.it-chip{padding:6px 9px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:#080808;color:#eee;font-size:.75rem}.it-chip.strong{border-color:rgba(57,255,20,.5);color:#8dff7a}.it-rule{font-size:.76rem;line-height:1.4;color:#aaa}.it-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.it-actions button{border-color:#00d4ff;color:#8aeaff}.it-actions .clear{border-color:#777;color:#bbb}.it-result{padding:13px 14px;margin:10px 0;border-radius:12px;border:1px solid #00d4ff;background:#07131a;color:#eaffff}.it-result.warn{border-color:#ffd54a;background:#1a1505;color:#ffe89a}.it-result b{display:block;margin-bottom:6px}.it-result p{margin:5px 0;line-height:1.45}.it-generic{margin-top:8px;font-size:.78rem;color:#aaa}.it-generic strong{color:#ddd}@media(max-width:700px){.it-head{display:block}.it-grid{grid-template-columns:1fr}.it-actions button{width:100%}}
 `;document.head.appendChild(s)}
+function parkOldBoardCase(){
+ try{localStorage.removeItem(HANDOFF_KEY)}catch(_){}
+ const s=E('spikeScrapBridgeStatus'),b=E('sendSpikeToScrap');
+ if(s)s.textContent='Previous board handoff parked for this inspection mission. Complete a new multi-photo board case to prepare another transfer.';
+ if(b)b.disabled=true;
+}
+function withholdMissionRecovery(t){
+ const lab=E('labBox');if(!lab)return;
+ const label=t&&t.target?esc(t.target):'saved inspection target';
+ lab.innerHTML='<div class="warning-box"><b>🎯 Target mission active: generic recovery routing withheld.</b><br>SPIKE is inspecting <b>'+label+'</b>. A whole-board recovery route is not treated as the recovery answer for this component mission.</div>';
+}
 function clear(){localStorage.removeItem(KEY);window.ScrapRadarInspectionTarget=null;const p=E('inspectionTargetPanel');if(p)p.remove();const status=E('spikeStatus');if(status&&/Inspection target loaded/.test(status.textContent||''))status.textContent='Recognition mode ready.'}
 function aim(packet){
  if(typeof window.openBoardSenseDashboard==='function')window.openBoardSenseDashboard();
- window.ScrapRadarInspectionTarget=packet;
+ window.ScrapRadarInspectionTarget=packet;parkOldBoardCase();
  const status=E('spikeStatus');if(status)status.textContent='Inspection target loaded: '+packet.target+'. Take a clear close photo of that area, plus enough surrounding context to place it on the item.';
  const box=E('spikeBox');if(box&&/recognition candidates will appear here/i.test(box.textContent||''))box.innerHTML='<div class="type-box"><div class="type-name">🎯 '+esc(packet.target)+'</div><b>SPIKE inspection mission:</b> '+esc(packet.where)+'<p><b>Look for:</b> '+esc(packet.look)+'</p><p class="muted">Target guidance narrows the inspection area. It does not tell SPIKE what material must be present.</p></div>';
+ const lab=E('labBox');if(lab)lab.innerHTML='<div class="warning-box"><b>🎯 Inspection mission pending.</b><br>Recovery routing will stay separate from generic board recognition while SPIKE checks this target.</div>';
  const spike=E('spikeImage')?.closest('.spike-panel')||E('spikeImage');if(spike)setTimeout(()=>spike.scrollIntoView({behavior:'smooth',block:'start'}),120);
 }
 function patchSpikeButton(){
@@ -40,7 +53,7 @@ function targetResultHtml(data){
 }
 function patchRenderSpike(){
  if(window.__inspectionTargetRenderPatched||typeof window.renderSpike!=='function')return;window.__inspectionTargetRenderPatched=true;const original=window.renderSpike;
- window.renderSpike=function(data){const t=data&&data.inspection_target;if(!t)return original(data);style();const mission=targetResultHtml(data);if(t.status==='target_not_confirmed'){const quality=typeof window.renderQuality==='function'?window.renderQuality(data):'';return quality+mission+'<p class="muted">SPIKE suppressed the generic classification as the mission answer. Reframe on the saved target and try again.</p>'}return mission+original(data)};
+ window.renderSpike=function(data){const t=data&&data.inspection_target;if(!t)return original(data);style();setTimeout(()=>withholdMissionRecovery(t),0);const mission=targetResultHtml(data);if(t.status==='target_not_confirmed'){const quality=typeof window.renderQuality==='function'?window.renderQuality(data):'';return quality+mission+'<p class="muted">SPIKE suppressed the generic classification as the mission answer. Reframe on the saved target and try again.</p>'}return mission+original(data)};
 }
 function render(){
  const packet=read();if(!packet||!packet.target)return false;
