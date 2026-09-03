@@ -4,82 +4,143 @@ function el(id){return document.getElementById(id)}
 function num(id){const x=el(id);if(!x||x.value==='')return null;const n=Number(x.value);return Number.isFinite(n)?n:null}
 function cash(v){return '$'+Number(v||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}
 function set(id,value){const x=el(id);if(x)x.textContent=value}
+function value(id){return el(id)?.value??''}
+
+function ensureStyle(){
+  if(el('br-logistics-style'))return;
+  const s=document.createElement('style');
+  s.id='br-logistics-style';
+  s.textContent=`
+  .br-logistics{margin:14px 0;padding:14px;border:1px solid rgba(65,220,255,.26);border-radius:14px;background:rgba(0,18,20,.62)}
+  .br-logistics h3{margin:0 0 5px;color:#bff7ff;font-size:1rem}.br-logistics p{margin:0 0 12px;color:#7fa6a8;font-size:.82rem;line-height:1.4}
+  .br-logistics-shared{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:11px}.br-logistics-chip{border:1px solid rgba(65,220,255,.24);border-radius:999px;padding:6px 9px;color:#a9dfe3;font-size:.78rem;background:#021012}
+  .br-logistics-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.br-logistics-card{padding:11px;border:1px solid rgba(255,255,255,.08);border-radius:11px;background:#020805}
+  .br-logistics-card b{display:block;color:#d9ffe0;margin-bottom:7px}.br-logistics-card label{display:block;color:#8fb89a;font-size:.78rem;margin-top:7px}.br-logistics-card input{width:100%;box-sizing:border-box;margin-top:4px;background:#010704;border:1px solid rgba(57,255,20,.28);color:#effff2;border-radius:9px;padding:8px;font:inherit}
+  .br-logistics-cost{display:block;margin-top:9px;color:#7defff;font-weight:800}.br-logistics-note{display:block;margin-top:9px;color:#6e8b75;font-size:.72rem;line-height:1.35}
+  @media(max-width:760px){.br-logistics-grid{grid-template-columns:1fr}}
+  `;
+  document.head.appendChild(s);
+}
+
+function ensureLogistics(){
+  if(el('br-logistics'))return;
+  const anchor=document.querySelector('#board-recovery .recovery-decision');
+  if(!anchor)return;
+  ensureStyle();
+  const box=document.createElement('div');
+  box.id='br-logistics';box.className='br-logistics';
+  box.innerHTML=`
+    <h3>🚚 Recovery Logistics</h3>
+    <p>Distance and fuel can change the winning path. These numbers use the same MPG and fuel price as the Load + Trip Evaluator.</p>
+    <div class="br-logistics-shared"><span id="br-mpg-chip" class="br-logistics-chip">MPG: —</span><span id="br-gas-chip" class="br-logistics-chip">Fuel: —</span></div>
+    <div class="br-logistics-grid">
+      <div class="br-logistics-card"><b>SELL WHOLE</b><label>Buyer miles one way<input id="br-whole-miles" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Travel minutes<input id="br-whole-travel" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Tolls / fees $<input id="br-whole-fees" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><span id="br-whole-log-cost" class="br-logistics-cost">Travel cost $0.00</span></div>
+      <div class="br-logistics-card"><b>SELECTIVE HARVEST</b><label>Buyer/refiner miles one way<input id="br-partial-miles" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Travel minutes<input id="br-partial-travel" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Tolls / fees $<input id="br-partial-fees" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><span id="br-partial-log-cost" class="br-logistics-cost">Travel cost $0.00</span></div>
+      <div class="br-logistics-card"><b>DEEPER RECOVERY</b><label>Buyer/refiner miles one way<input id="br-full-miles" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Travel minutes<input id="br-full-travel" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Tolls / fees $<input id="br-full-fees" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><span id="br-full-log-cost" class="br-logistics-cost">Travel cost $0.00</span></div>
+    </div>
+    <small class="br-logistics-note">Travel minutes are entered separately so Scrap Radar never invents an average road speed. Recovery minutes + travel minutes become the total time for that path.</small>`;
+  anchor.parentNode.insertBefore(box,anchor);
+}
+
+function tripCost(prefix,mpg,gas){
+  const miles=Math.max(0,num('br-'+prefix+'-miles')||0);
+  const fees=Math.max(0,num('br-'+prefix+'-fees')||0);
+  const fuel=mpg!==null&&mpg>0&&gas!==null&&gas>=0?(miles*2/mpg)*gas:0;
+  return {miles,fees,fuel,total:fuel+fees,travel:Math.max(0,num('br-'+prefix+'-travel')||0)};
+}
 
 function pathData(){
-  const whole=num('br-whole');
+  const mpg=num('trip-mpg'),gas=num('trip-gas'),target=num('trip-target');
+  const wholeOffer=num('br-whole');
   const partialValue=Math.max(0,num('br-partial-value')||0);
   const partialResidual=Math.max(0,num('br-residual')||0);
   const partialCosts=Math.max(0,num('br-partial-costs')||0);
-  const partialMinutes=num('br-partial-minutes');
+  const partialWork=Math.max(0,num('br-partial-minutes')||0);
   const fullValue=Math.max(0,num('br-full-value')||0);
   const fullResidual=Math.max(0,num('br-full-residual')||0);
   const fullCosts=Math.max(0,num('br-full-costs')||0);
-  const fullMinutes=num('br-full-minutes');
-  const partialEntered=['br-partial-value','br-residual','br-partial-costs'].some(id=>el(id)?.value!=='');
-  const fullEntered=['br-full-value','br-full-residual','br-full-costs'].some(id=>el(id)?.value!=='');
-  const partial=partialEntered?partialValue+partialResidual-partialCosts:null;
-  const full=fullEntered?fullValue+fullResidual-fullCosts:null;
-  const partialRate=partial!==null&&partialMinutes!==null&&partialMinutes>0?((whole!==null?partial-whole:partial)/(partialMinutes/60)):null;
-  const fullRate=full!==null&&fullMinutes!==null&&fullMinutes>0?((whole!==null?full-whole:full)/(fullMinutes/60)):null;
-  return {whole,partial,full,partialMinutes,fullMinutes,partialRate,fullRate,target:num('trip-target')};
+  const fullWork=Math.max(0,num('br-full-minutes')||0);
+  const partialEntered=['br-partial-value','br-residual','br-partial-costs'].some(id=>value(id)!=='');
+  const fullEntered=['br-full-value','br-full-residual','br-full-costs'].some(id=>value(id)!=='');
+  const wl=tripCost('whole',mpg,gas),pl=tripCost('partial',mpg,gas),fl=tripCost('full',mpg,gas);
+  const whole=wholeOffer===null?null:wholeOffer-wl.total;
+  const partial=partialEntered?partialValue+partialResidual-partialCosts-pl.total:null;
+  const full=fullEntered?fullValue+fullResidual-fullCosts-fl.total:null;
+  const wholeMinutes=wl.travel;
+  const partialMinutes=partialWork+pl.travel;
+  const fullMinutes=fullWork+fl.travel;
+  return {mpg,gas,target,wholeOffer,whole,partial,full,wholeMinutes,partialMinutes,fullMinutes,wl,pl,fl};
 }
 
-function refreshRates(d){
-  if(d.partialRate===null)set('br-partial-hourly','— / hr');
-  else set('br-partial-hourly',cash(d.partialRate)+'/hr '+(d.whole!==null?'incremental vs whole':'entered value rate'));
-  if(d.fullRate===null)set('br-full-hourly','— / hr');
-  else set('br-full-hourly',cash(d.fullRate)+'/hr '+(d.whole!==null?'incremental vs whole':'entered value rate'));
+function updateLogistics(d){
+  set('br-mpg-chip','MPG: '+(d.mpg!==null&&d.mpg>0?d.mpg:'—'));
+  set('br-gas-chip','Fuel: '+(d.gas!==null&&d.gas>=0?cash(d.gas)+'/gal':'—'));
+  set('br-whole-log-cost','Travel cost '+cash(d.wl.total));
+  set('br-partial-log-cost','Travel cost '+cash(d.pl.total));
+  set('br-full-log-cost','Travel cost '+cash(d.fl.total));
+  set('br-whole-net',d.whole===null?'$0.00':cash(d.whole));
+  set('br-partial-net',d.partial===null?'$0.00':cash(d.partial));
+  set('br-full-net',d.full===null?'$0.00':cash(d.full));
+}
+
+function compareRate(path,whole){
+  if(!whole)return null;
+  const extraNet=path.net-whole.net;
+  const extraMinutes=path.minutes-whole.minutes;
+  if(extraNet>0&&extraMinutes<=0)return {rate:Infinity,extraNet,extraMinutes,dominates:true};
+  if(extraNet>0&&extraMinutes>0)return {rate:extraNet/(extraMinutes/60),extraNet,extraMinutes,dominates:false};
+  return {rate:null,extraNet,extraMinutes,dominates:false};
 }
 
 function recalc(){
+  ensureLogistics();
   if(!el('br-decision'))return;
   const d=pathData();
-  refreshRates(d);
+  updateLogistics(d);
   const paths=[];
-  if(d.whole!==null)paths.push({name:'SELL WHOLE',net:d.whole,rate:null,minutes:0});
-  if(d.partial!==null)paths.push({name:'SELECTIVE HARVEST',net:d.partial,rate:d.partialRate,minutes:d.partialMinutes});
-  if(d.full!==null)paths.push({name:'DEEPER RECOVERY',net:d.full,rate:d.fullRate,minutes:d.fullMinutes});
-  if(!paths.length){
-    set('br-decision','ENTER BOARD VALUES');
-    set('br-detail','Use known offers, recovered values, time and costs. Do not add value just because a component looks valuable.');
-    return;
-  }
+  if(d.whole!==null)paths.push({name:'SELL WHOLE',net:d.whole,minutes:d.wholeMinutes,kind:'whole'});
+  if(d.partial!==null)paths.push({name:'SELECTIVE HARVEST',net:d.partial,minutes:d.partialMinutes,kind:'partial'});
+  if(d.full!==null)paths.push({name:'DEEPER RECOVERY',net:d.full,minutes:d.fullMinutes,kind:'full'});
+  if(!paths.length){set('br-decision','ENTER BOARD VALUES');set('br-detail','Use known offers, recovered values, time, distance and costs.');return}
+
+  const whole=paths.find(p=>p.kind==='whole')||null;
+  const partial=paths.find(p=>p.kind==='partial')||null;
+  const full=paths.find(p=>p.kind==='full')||null;
+  const pr=partial&&whole?compareRate(partial,whole):null;
+  const fr=full&&whole?compareRate(full,whole):null;
+  if(partial)set('br-partial-hourly',pr&&pr.rate===Infinity?'Faster + higher net vs whole':pr&&pr.rate!==null?cash(pr.rate)+'/hr incremental vs whole':'— / hr incremental vs whole');
+  if(full)set('br-full-hourly',fr&&fr.rate===Infinity?'Faster + higher net vs whole':fr&&fr.rate!==null?cash(fr.rate)+'/hr incremental vs whole':'— / hr incremental vs whole');
 
   const highest=[...paths].sort((a,b)=>b.net-a.net)[0];
-  const timed=paths.filter(p=>p.name!=='SELL WHOLE'&&p.rate!==null&&Number.isFinite(p.rate));
-  const positiveTimed=timed.filter(p=>d.whole===null?p.net>0:p.net>d.whole);
-  const bestTime=[...positiveTimed].sort((a,b)=>b.rate-a.rate)[0]||null;
   const hasTarget=d.target!==null&&d.target>=0;
-
-  if(d.whole!==null&&timed.length&&hasTarget){
-    const clears=[...positiveTimed].filter(p=>p.rate>=d.target).sort((a,b)=>b.rate-a.rate);
-    if(!clears.length){
-      set('br-decision','✅ TIME-VALUE RECOMMENDATION: SELL WHOLE');
-      const timeText=bestTime?bestTime.name+' has the best entered recovery time rate at '+cash(bestTime.rate)+'/hr incremental, but that is below your '+cash(d.target)+'/hr target. ':'No entered recovery path currently improves on selling whole at a verified time rate. ';
-      set('br-detail','Highest entered net is '+highest.name+' at '+cash(highest.net)+'. '+timeText+'Selling whole preserves your time unless additional verified value changes the math.');
-      return;
-    }
-    const best=clears[0];
-    set('br-decision','⏱️ BEST TIME-VALUE ABOVE TARGET: '+best.name);
-    set('br-detail',best.name+' adds '+cash(best.net-d.whole)+' over selling whole at '+cash(best.rate)+'/hr incremental, clearing your '+cash(d.target)+'/hr target. Highest entered net is '+highest.name+' at '+cash(highest.net)+'.');
+  if(hasTarget){
+    paths.forEach(p=>p.score=p.net-(p.minutes/60)*d.target);
+    const best=[...paths].sort((a,b)=>b.score-a.score)[0];
+    set('br-decision','⏱️ ECONOMIC RECOMMENDATION: '+best.name);
+    const highText='Highest entered net is '+highest.name+' at '+cash(highest.net)+'. ';
+    const travelText='Fuel is '+(d.gas!==null?cash(d.gas)+'/gal':'not entered')+' and the entered path distances are included. ';
+    const timeText=best.minutes>0?'At your '+cash(d.target)+'/hr target, '+best.name+' has the strongest net-after-time score using '+best.minutes.toFixed(0)+' total entered minutes. ':'At your '+cash(d.target)+'/hr target, '+best.name+' preserves the most value after entered logistics and time.';
+    set('br-detail',highText+travelText+timeText);
     return;
   }
 
-  if(bestTime){
-    set('br-decision','⏱️ BEST ENTERED TIME-VALUE: '+bestTime.name);
-    const gain=d.whole!==null?' It adds '+cash(bestTime.net-d.whole)+' over selling whole.':'';
-    const targetHint=hasTarget?' Your current target is '+cash(d.target)+'/hr.':' Enter an hourly target to judge whether the extra work clears your threshold.';
-    set('br-detail',bestTime.name+' has the strongest entered time rate at '+cash(bestTime.rate)+'/hr.'+gain+' Highest entered net is '+highest.name+' at '+cash(highest.net)+'.'+targetHint);
+  const timed=[partial,full].filter(Boolean).map(p=>({path:p,cmp:whole?compareRate(p,whole):null})).filter(x=>x.cmp&&(x.cmp.rate===Infinity||x.cmp.rate!==null));
+  if(timed.length){
+    timed.sort((a,b)=>{const ar=a.cmp.rate===Infinity?Number.MAX_VALUE:a.cmp.rate;const br=b.cmp.rate===Infinity?Number.MAX_VALUE:b.cmp.rate;return br-ar});
+    const best=timed[0];
+    set('br-decision','⏱️ BEST ENTERED TIME-VALUE: '+best.path.name);
+    set('br-detail','Highest entered net is '+highest.name+' at '+cash(highest.net)+'. '+best.path.name+' has the strongest entered incremental time-value after travel costs. Enter an hourly target for a full economic recommendation.');
     return;
   }
 
   set('br-decision','📌 HIGHEST ENTERED NET: '+highest.name);
-  set('br-detail',highest.name+' currently shows '+cash(highest.net)+' net. Add recovery minutes and an hourly target to compare the value of your time, not just total dollars.');
+  set('br-detail',highest.name+' currently shows '+cash(highest.net)+' after entered travel costs. Add travel minutes and an hourly target to compare the value of your time as well as fuel and distance.');
 }
 
 function schedule(){setTimeout(recalc,0)}
 function bind(){
-  ['br-whole','br-partial-value','br-residual','br-partial-minutes','br-partial-costs','br-full-value','br-full-residual','br-full-minutes','br-full-costs','trip-target'].forEach(id=>{
+  ensureLogistics();
+  ['br-whole','br-partial-value','br-residual','br-partial-minutes','br-partial-costs','br-full-value','br-full-residual','br-full-minutes','br-full-costs','trip-target','trip-mpg','trip-gas','br-whole-miles','br-whole-travel','br-whole-fees','br-partial-miles','br-partial-travel','br-partial-fees','br-full-miles','br-full-travel','br-full-fees'].forEach(id=>{
     const node=el(id);if(!node)return;node.addEventListener('input',schedule);node.addEventListener('change',schedule);
   });
   setTimeout(recalc,500);
