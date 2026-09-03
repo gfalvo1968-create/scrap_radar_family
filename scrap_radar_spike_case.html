@@ -7,14 +7,18 @@
 <style>html,body,#sr{margin:0;width:100%;height:100%;border:0;background:#020803}body{overflow:hidden}#sr{display:block}</style>
 </head>
 <body>
-<iframe id="sr" src="scrap_radar.html?build=9&source=spike#board-recovery" title="Scrap Radar SPIKE Recovery Handoff"></iframe>
+<iframe id="sr" src="scrap_radar.html?build=11&source=spike#board-recovery" title="Scrap Radar SPIKE Recovery Handoff"></iframe>
 <script>
 (function(){
   var frame=document.getElementById('sr');
+  function add(d,id,src){if(d.getElementById(id))return;var s=d.createElement('script');s.id=id;s.src=src;s.async=false;d.body.appendChild(s)}
   frame.addEventListener('load',function(){
     try{
-      var d=frame.contentDocument;if(!d||d.getElementById('spikeScrapImporterLoader'))return;
-      var s=d.createElement('script');s.id='spikeScrapImporterLoader';s.src='scrap_radar_spike_bridge.js?v=1';s.async=false;d.body.appendChild(s);
+      var d=frame.contentDocument;if(!d)return;
+      add(d,'srCriticalDirect','scrap_radar_critical.js?v=1');
+      add(d,'srCriticalHelpDirect','scrap_radar_critical_help.js?v=2');
+      add(d,'srSourceFinderDirect','scrap_radar_source_finder.js?v=1');
+      add(d,'spikeScrapImporterLoader','scrap_radar_spike_bridge.js?v=2');
     }catch(e){console.error('SPIKE Scrap Radar handoff injection failed',e)}
   });
 })();
