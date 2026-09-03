@@ -333,6 +333,72 @@ The system should evaluate each stream independently instead of assigning one ge
 
 ---
 
+## Farm Radar — Future Program Branch
+
+The Scrap Radar cockpit has revealed a reusable core: it is not only a scrap calculator, it is a **value + logistics + buyer-comparison + inventory decision engine**. With a farming-specific data layer and terminology, the same architecture could support a future **Farm Radar** program without duplicating the entire codebase.
+
+Working principle:
+
+**One economic engine, different field rules.**
+
+The reusable cockpit concepts map naturally:
+- Material / Grade → Crop / Product / Grade
+- Weight / Quantity → Bushels, tons, bales, head, gallons, or other agricultural units
+- Yard / Buyer → Grain elevator, processor, auction, co-op, feed mill, direct buyer, or other destination
+- Scrap price → Cash bid / commodity price / contract price
+- Market benchmark → Commodity benchmark or futures/reference market context
+- Trip evaluator → Hauling cost to buyer
+- Mixed Load Builder → Multiple crops/products or sale lots
+- Inventory → Stored grain, hay, livestock, feed, fertilizer, seed, or other farm inventory
+- Yard Comparison → Buyer / elevator comparison after transportation and fees
+- ROI Ledger → Realized farm benefit, verified savings, costs, and unrealized opportunity kept separate
+- Decision Center → Sell / store / haul / wait / process based on entered evidence
+
+### Farmer-specific inputs to evaluate
+
+Potential future fields include:
+- Moisture percentage
+- Dockage
+- Grade premiums and discounts
+- Drying cost
+- Storage cost
+- Storage duration
+- Spoilage / shrink risk
+- Harvest cost
+- Yield per acre
+- Truck/load capacity
+- Freight/hauling cost
+- Elevator or processor fees
+- Contract terms
+- Basis / local cash bid where appropriate
+- Sale timing
+
+Possible decision question:
+
+**“Elevator A pays more per bushel, but it is farther away and charges more drying. Which sale produces the higher actual net?”**
+
+This is the agricultural equivalent of Scrap Radar's buyer comparison: **the highest posted price is not automatically the best economic choice.**
+
+Farm Radar should keep the same truth rules already established for Scrap Radar:
+- Benchmarks are not guaranteed cash-out prices.
+- Actual local buyer terms outrank generic estimates when available.
+- Transportation, drying, storage, fees, time, and other entered costs belong in the decision.
+- Potential opportunity stays separate from realized profit.
+- Every important dollar should retain a traceable basis.
+- Do not promise future commodity prices, yields, or earnings.
+
+### Architecture direction
+
+Do not fork the entire Scrap Radar cockpit into a separate unrelated codebase if a shared core can serve both products. Long term, separate the reusable economics engine from the product-specific vocabulary, units, market feeds, and domain rules.
+
+Conceptually:
+
+**Shared Decision Engine → Scrap Radar configuration / Farm Radar configuration / future domain configurations**
+
+This could allow improvements to buyer comparison, trip economics, inventory, ROI, and decision logic to benefit multiple programs while each application retains its own specialized expertise and interface.
+
+---
+
 ## Long-Term Scrap Radar Family Direction
 
 Keep specialized programs focused while sharing the same decision philosophy:
@@ -341,5 +407,6 @@ Keep specialized programs focused while sharing the same decision philosophy:
 - **Board Sense / SPIKE:** board identification, condition, recovery intelligence, and buy/sell/harvest decisions
 - **Battery Sense:** battery diagnosis, safe reuse/repair/repurpose/recycle decisions
 - **Reuse or Recycle:** general second-life decision engine for electronics and recovered components
+- **Farm Radar:** agricultural buyer comparison, hauling economics, inventory, storage/drying costs, and sell/store/haul decision support using the shared economic engine
 
 Future programs should share a common economics layer wherever practical so each can compare **reuse, repair, repurpose, sale, harvest, recovery, stockpile, and disposal** using time and net value rather than scrap price alone.
