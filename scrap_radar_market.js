@@ -3,6 +3,7 @@
 
 const BRIDGE='https://boardsense.scrapradarfamily.com/market-intelligence';
 const QUOTE_KEY='scrapRadarYardQuotesV1';
+const EVAL_PRICE_LOCK_KEY='scrapRadarEvaluatorPriceLockV1';
 const LB_PER_METRIC_TON=2204.62262185;
 const LABELS={
   precious_metals:'Precious Metals',copper:'Copper',brass:'Brass',aluminum:'Aluminum',
@@ -51,6 +52,12 @@ function el(id){return document.getElementById(id)}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function loadQuotes(){try{return JSON.parse(localStorage.getItem(QUOTE_KEY)||'{}')||{}}catch(_){return {}}}
 function saveQuotes(){try{localStorage.setItem(QUOTE_KEY,JSON.stringify(quotes))}catch(_){}}
+function loadEvalLock(){try{return JSON.parse(sessionStorage.getItem(EVAL_PRICE_LOCK_KEY)||'null')}catch(_){return null}}
+function saveEvalLock(materialId,price){
+  if(!materialId||!hasNumericValue(price)){clearEvalLock();return}
+  try{sessionStorage.setItem(EVAL_PRICE_LOCK_KEY,JSON.stringify({materialId,price:Number(price),savedAt:new Date().toISOString()}))}catch(_){}
+}
+function clearEvalLock(){try{sessionStorage.removeItem(EVAL_PRICE_LOCK_KEY)}catch(_){}}
 function unitLabel(u){return u==='troy_oz'?'troy oz':u==='metric_ton'?'metric ton':u||''}
 function money(v){return Number.isFinite(Number(v))?'$'+Number(v).toLocaleString(undefined,{minimumFractionDigits:Number(v)<10?2:0,maximumFractionDigits:Number(v)<10?2:2}):'—'}
 function hasNumericValue(v){return v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))}
@@ -182,8 +189,13 @@ function renderCalculator(){
 
 function updateCalcPrice(){
   const id=el('calc-material')?.value;const m=state.materials.find(x=>x.id===id);if(!m)return;
-  const e=effectivePrice(m);const p=el('calc-price');
-  if(e.price!==null)p.value=Number(e.price).toFixed(2);else p.value='';
+  const p=el('calc-price');const lock=loadEvalLock();
+  if(lock&&lock.materialId===id&&hasNumericValue(lock.price)){
+    p.value=Number(lock.price).toFixed(2);
+  }else{
+    const e=effectivePrice(m);
+    if(e.price!==null)p.value=Number(e.price).toFixed(2);else p.value='';
+  }
   el('calc-unit').textContent='per '+unitLabel(m.unit);
 }
 
@@ -198,9 +210,17 @@ function calculate(){
 function bind(){
   el('material-search')?.addEventListener('input',renderMaterials);
   el('refresh-prices')?.addEventListener('click',loadData);
-  el('calc-material')?.addEventListener('change',()=>{updateCalcPrice();calculate()});
+  el('calc-material')?.addEventListener('change',()=>{
+    const id=el('calc-material')?.value;const lock=loadEvalLock();
+    if(!lock||lock.materialId!==id)clearEvalLock();
+    updateCalcPrice();calculate();
+  });
   el('calc-weight')?.addEventListener('input',calculate);
-  el('calc-price')?.addEventListener('input',calculate);
+  el('calc-price')?.addEventListener('input',()=>{
+    const id=el('calc-material')?.value;const raw=el('calc-price')?.value;
+    if(id&&hasNumericValue(raw))saveEvalLock(id,raw);else clearEvalLock();
+    calculate();
+  });
 }
 
 document.addEventListener('DOMContentLoaded',()=>{bind();loadData()});
