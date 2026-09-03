@@ -1,12 +1,13 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Board Sense</title><style>html,body,#bs{margin:0;width:100%;height:100%;border:0;background:#050505}body{overflow:hidden}#bs{display:block}</style></head><body><iframe id="bs" src="board_sense.html?v=case13" title="Board Sense"></iframe><script>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Board Sense</title><style>html,body,#bs{margin:0;width:100%;height:100%;border:0;background:#050505}body{overflow:hidden}#bs{display:block}</style></head><body><iframe id="bs" src="board_sense.html?v=case14" title="Board Sense"></iframe><script>
 (function(){
   var frame=document.getElementById('bs');
   function add(d,id,src,onload){if(d.getElementById(id)){if(onload)onload();return}var s=d.createElement('script');s.id=id;s.src=src;s.async=false;if(onload)s.onload=onload;d.body.appendChild(s)}
   function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=9')}
+  function loadTargetArea(d){add(d,'targetAreaDisplayLoader','board_target_area_patch.js?v=1')}
   frame.addEventListener('load',function(){
     try{
       var d=this.contentDocument;if(!d)return;
-      add(d,'inspectionTargetLoader','board_inspection_target.js?v=3');
+      add(d,'inspectionTargetLoader','board_inspection_target.js?v=3',function(){loadTargetArea(d)});
       if(d.getElementById('spikeScrapBridgeLoader')){loadTray(d);return}
       var b=d.createElement('script');b.id='spikeScrapBridgeLoader';b.src='board_scrap_bridge.js?v=1';b.async=false;b.onload=function(){loadTray(d)};b.onerror=function(){console.error('SPIKE Scrap Radar bridge failed to load');loadTray(d)};d.body.appendChild(b);
     }catch(e){console.error('SPIKE Case Tray injection failed',e)}
