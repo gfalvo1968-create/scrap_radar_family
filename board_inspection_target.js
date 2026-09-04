@@ -1,4 +1,4 @@
-/* Board Sense inspection-target handoff v0.3 */
+/* Board Sense inspection-target handoff v0.4 */
 (function(){
 'use strict';
 const KEY='scrapRadarInspectionTargetV1';
@@ -7,6 +7,7 @@ let targetAnalyzeArmed=false;
 function E(id){return document.getElementById(id)}
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function read(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(_){return null}}
+function list(a){return Array.isArray(a)&&a.length?'<ul class="signal-list">'+a.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':''}
 function style(){if(E('inspectionTargetStyle'))return;const s=document.createElement('style');s.id='inspectionTargetStyle';s.textContent=`
 #inspectionTargetPanel{border-color:#00d4ff;background:linear-gradient(180deg,rgba(0,212,255,.09),rgba(8,20,26,.86));box-shadow:0 0 24px rgba(0,212,255,.10)}
 .it-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.it-kicker{font-size:.72rem;font-weight:900;letter-spacing:.12em;color:#72e8ff}.it-head h2{margin:4px 0 4px;color:#eaffff}.it-source{color:#a5eefb;font-size:.9rem}.it-target{margin:12px 0;padding:13px;border-radius:12px;border:1px solid rgba(57,255,20,.35);background:#071207}.it-target span{display:block;font-size:.68rem;letter-spacing:.1em;font-weight:900;color:#39ff14}.it-target strong{display:block;margin-top:5px;font-size:1.15rem;color:#fff}.it-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.it-grid>div{padding:11px 12px;border-radius:11px;background:#080d0d;border:1px solid rgba(255,255,255,.1)}.it-grid b{display:block;margin-bottom:5px;font-size:.68rem;letter-spacing:.07em;color:#72e8ff}.it-grid p{margin:0;color:#d7e6e2;line-height:1.42;font-size:.84rem}.it-materials{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.it-chip{padding:6px 9px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:#080808;color:#eee;font-size:.75rem}.it-chip.strong{border-color:rgba(57,255,20,.5);color:#8dff7a}.it-rule{font-size:.76rem;line-height:1.4;color:#aaa}.it-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.it-actions button{border-color:#00d4ff;color:#8aeaff}.it-actions .clear{border-color:#777;color:#bbb}.it-result{padding:13px 14px;margin:10px 0;border-radius:12px;border:1px solid #00d4ff;background:#07131a;color:#eaffff}.it-result.warn{border-color:#ffd54a;background:#1a1505;color:#ffe89a}.it-result b{display:block;margin-bottom:6px}.it-result p{margin:5px 0;line-height:1.45}.it-generic{margin-top:8px;font-size:.78rem;color:#aaa}.it-generic strong{color:#ddd}@media(max-width:700px){.it-head{display:block}.it-grid{grid-template-columns:1fr}.it-actions button{width:100%}}
@@ -48,12 +49,12 @@ function patchFetch(){
 }
 function targetResultHtml(data){
  const t=data&&data.inspection_target;if(!t)return '';
- const candidate=t.status==='target_candidate',g=t.generic_top_match||{};
- return '<div class="it-result '+(candidate?'':'warn')+'"><b>'+ (candidate?'🎯 TARGET CANDIDATE':'🎯 TARGET NOT CONFIRMED') +': '+esc(t.target||'Inspection target')+'</b><p>'+esc(t.message||'')+'</p>'+(t.look?'<p><strong>Expected clue:</strong> '+esc(t.look)+'</p>':'')+'<div class="it-generic">Generic visual recognition: <strong>'+esc(g.label||'none')+'</strong>'+(g.confidence!=null?' • '+esc(g.confidence)+'%':'')+'. This background result does not by itself prove the saved target.</div></div>';
+ const candidate=t.status==='target_candidate',g=t.generic_top_match||{},vt=t.visual_target||{};
+ return '<div class="it-result '+(candidate?'':'warn')+'"><b>'+ (candidate?'🎯 TARGET CANDIDATE':'🎯 TARGET NOT CONFIRMED') +': '+esc(t.target||'Inspection target')+'</b><p>'+esc(t.message||'')+'</p>'+(candidate&&vt.confidence!=null?'<p><strong>Component-target confidence:</strong> '+esc(vt.confidence)+'%</p>':'')+(candidate?list(vt.evidence):'')+(t.look?'<p><strong>'+(candidate?'Identity guard':'Expected clue')+':</strong> '+esc(t.look)+'</p>':'')+'<div class="it-generic">Generic visual recognition: <strong>'+esc(g.label||'none')+'</strong>'+(g.confidence!=null?' • '+esc(g.confidence)+'%':'')+'. Kept as background only; it does not prove the saved target or material chemistry.</div></div>';
 }
 function patchRenderSpike(){
  if(window.__inspectionTargetRenderPatched||typeof window.renderSpike!=='function')return;window.__inspectionTargetRenderPatched=true;const original=window.renderSpike;
- window.renderSpike=function(data){const t=data&&data.inspection_target;if(!t)return original(data);style();setTimeout(()=>withholdMissionRecovery(t),0);const mission=targetResultHtml(data);if(t.status==='target_not_confirmed'){const quality=typeof window.renderQuality==='function'?window.renderQuality(data):'';return quality+mission+'<p class="muted">SPIKE suppressed the generic classification as the mission answer. Reframe on the saved target and try again.</p>'}return mission+original(data)};
+ window.renderSpike=function(data){const t=data&&data.inspection_target;if(!t)return original(data);style();setTimeout(()=>withholdMissionRecovery(t),0);const mission=targetResultHtml(data),quality=typeof window.renderQuality==='function'?window.renderQuality(data):'';if(t.status==='target_not_confirmed')return quality+mission+'<p class="muted">SPIKE suppressed the generic classification as the mission answer. Reframe on the saved target and try again.</p>';if(t.status==='target_candidate')return quality+mission+'<p class="muted">SPIKE found component-level evidence for the saved target. Material chemistry, recoverable mass and cash value still require separate evidence.</p>';return mission+original(data)};
 }
 function render(){
  const packet=read();if(!packet||!packet.target)return false;
