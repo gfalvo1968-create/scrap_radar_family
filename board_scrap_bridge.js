@@ -1,15 +1,19 @@
-/* Board Sense -> Scrap Radar local handoff v1.0
+/* Board Sense -> Scrap Radar local handoff v1.1
    Captures a completed SPIKE multi-photo case and stores a small, versioned
-   recovery packet in this browser only. Identity/evidence never creates dollars. */
+   recovery packet in this browser only. Identity/evidence never creates dollars.
+   An active Scrap Radar inspection mission quarantines prior whole-board handoffs. */
 (function(){
 'use strict';
 const KEY='scrapRadarSpikeRecoveryPacketV1';
+const INSPECTION_KEY='scrapRadarInspectionTargetV1';
 const DEST='scrap_radar_spike_case.html?source=spike#board-recovery';
 let latest=null;
 function E(id){return document.getElementById(id)}
 function N(id){const x=E(id);if(!x||x.value==='')return null;const n=Number(x.value);return Number.isFinite(n)?n:null}
 function safe(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function readSaved(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(_){return null}}
+function readInspection(){try{return JSON.parse(localStorage.getItem(INSPECTION_KEY)||'null')}catch(_){return null}}
+function inspectionActive(){const p=readInspection();return !!(p&&p.target)}
 function isBlocked(p,d){const g=d&&d.same_board_verification||{};return !d||p&&p.mode==='multi_photo_identity_blocked'||d.status==='case_identity_failed'||g.block_reconciliation===true}
 function normalize(p){
   const d=p&&p.combined;if(isBlocked(p,d))return null;
@@ -55,7 +59,15 @@ function ensureCard(){
   E('clearSpikeHandoff').onclick=function(){localStorage.removeItem(KEY);latest=null;render(null)};
   return card;
 }
+function parkForInspection(){
+  try{localStorage.removeItem(KEY)}catch(_){}
+  latest=null;ensureCard();
+  const s=E('spikeScrapBridgeStatus'),b=E('sendSpikeToScrap');
+  if(s)s.innerHTML='<b>INSPECTION MISSION ACTIVE:</b> prior whole-board handoff parked.<br><span class="muted">Finish or clear the Scrap Radar target mission before preparing another board transfer.</span>';
+  if(b)b.disabled=true;
+}
 function render(packet,blocked){
+  if(inspectionActive()){parkForInspection();return}
   ensureCard();const s=E('spikeScrapBridgeStatus'),b=E('sendSpikeToScrap');if(!s||!b)return;
   if(blocked){s.innerHTML='<b>HANDOFF BLOCKED:</b> SPIKE did not verify these photos as one physical board. Split the case first.';b.disabled=true;return}
   if(!packet){s.textContent='Analyze a multi-photo board case to prepare a recovery handoff.';b.disabled=true;return}
@@ -63,13 +75,18 @@ function render(packet,blocked){
   s.innerHTML='<b>Case ready:</b> '+safe(i.boardType)+' • Grade '+safe(r.grade)+(r.score!=null?' • Recovery '+safe(r.score):'')+(r.condition?' • '+safe(r.condition):'')+'<br><b>Verified inputs ready to transfer:</b> '+(e.sellWholeValue!=null?'whole offer $'+safe(e.sellWholeValue):'no whole offer')+' • '+(e.fullRecoveryValue!=null?'recovery value $'+safe(e.fullRecoveryValue):'no recovery dollars')+' • '+(e.fullMinutes!=null?safe(e.fullMinutes)+' min':'no time')+'<br><span class="muted">Evidence travels with the case. It does not manufacture value.</span>';
   b.disabled=false;
 }
-function save(packet){latest=packet;localStorage.setItem(KEY,JSON.stringify(packet));render(packet,false)}
+function save(packet){
+  if(inspectionActive()){parkForInspection();return}
+  latest=packet;localStorage.setItem(KEY,JSON.stringify(packet));render(packet,false)
+}
 function capture(payload){
+  if(inspectionActive()){parkForInspection();return}
   const d=payload&&payload.combined;
   if(isBlocked(payload,d)){latest=null;render(null,true);return}
   const packet=normalize(payload);if(packet)save(packet);
 }
 function send(){
+  if(inspectionActive()){parkForInspection();return}
   const packet=latest||readSaved();if(!packet){render(null,false);return}
   localStorage.setItem(KEY,JSON.stringify(packet));
   window.top.location.href=DEST;
@@ -86,6 +103,12 @@ function patchFetch(){
     return response;
   };
 }
-function init(){patchFetch();ensureCard();const saved=readSaved();if(saved){latest=saved;render(saved,false)}}
+function init(){
+  patchFetch();ensureCard();
+  if(inspectionActive()){parkForInspection();return}
+  const saved=readSaved();if(saved){latest=saved;render(saved,false)}
+}
+window.addEventListener('storage',function(e){if(e.key===INSPECTION_KEY||e.key===KEY){if(inspectionActive())parkForInspection();else render(readSaved(),false)}});
+window.addEventListener('boardSenseInspectionMission',function(){if(inspectionActive())parkForInspection();else render(readSaved(),false)});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
