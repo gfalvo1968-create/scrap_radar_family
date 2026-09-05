@@ -1,8 +1,10 @@
-/* SPIKE Case Tray v0.7 - batch workflow + Same-Board Verification + Three Answers UI. */
+/* SPIKE Case Tray v0.8 - batch workflow + Same-Board Verification + Three Answers UI + Mission Reset Guard. */
 (function(){
 var caseFiles=[];
+var TARGET_KEY='scrapRadarInspectionTargetV1';
+var HANDOFF_KEY='scrapRadarSpikeRecoveryPacketV1';
 function E(id){return document.getElementById(id)}
-function safe(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function safe(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]})}
 function num(id){var e=E(id),v=e&&e.value;if(v==null||v==='')return null;var n=Number(v);return isFinite(n)?n:null}
 function addField(fd,n,v){if(v!=null)fd.append(n,String(v))}
 function money(v){return v==null?'N/A':'$'+Number(v).toFixed(2)}
@@ -97,16 +99,35 @@ async function run(){
     E('uploadStatus').textContent=blocked?'Case stopped: multiple-board evidence detected. Start separate board cases.':'Board identity checked. Three-answer board case complete.'
   }catch(e){E('uploadStatus').textContent='Case analysis failed: '+e.message}finally{btn.disabled=false}
 }
+function clearMissionState(){
+  try{localStorage.removeItem(TARGET_KEY);localStorage.removeItem(HANDOFF_KEY)}catch(_){}
+  try{window.ScrapRadarInspectionTarget=null}catch(_){}
+  var panel=E('inspectionTargetPanel');if(panel)panel.remove();
+  ['spikeImage','spikeImageCloseup'].forEach(function(id){var i=E(id);if(i)i.value=''});
+  if(E('spikeStatus'))E('spikeStatus').textContent='Recognition mode ready. No inspection mission active.';
+  if(E('spikeBox'))E('spikeBox').textContent='Spike Glass recognition candidates will appear here.';
+  if(E('blueprintBox'))E('blueprintBox').innerHTML='<p class="muted">Analyze a board to generate its visual map.</p>';
+  if(E('labBox'))E('labBox').textContent='Scan an item to route it into the right recovery labs.';
+  if(E('reasoningBox'))E('reasoningBox').textContent='Weighted hypotheses will appear here.';
+  if(E('recoveryBox'))E('recoveryBox').textContent='Recovery information will appear here.';
+  if(E('lessonBox'))E('lessonBox').textContent='Reference-sheet guidance will appear here.';
+  if(E('economicsBox'))E('economicsBox').textContent='Add values above to compare selling whole against recovery labor.';
+  if(E('spikeScrapBridgeStatus'))E('spikeScrapBridgeStatus').textContent='No active inspection mission. New board/object ready.';
+  if(E('sendSpikeToScrap'))E('sendSpikeToScrap').disabled=true;
+  try{window.dispatchEvent(new CustomEvent('boardSenseNewObject',{detail:{clearedInspectionTarget:true}}))}catch(_){}
+}
 function reset(){
   caseFiles=[];['casePhoto','casePhotos'].forEach(function(id){var i=E(id);if(i)i.value=''});tray();
-  E('uploadStatus').textContent='Ready. Add 2–6 photos of one board.';
+  clearMissionState();
+  if(E('sellValue'))E('sellValue').value='0';if(E('recoveredValue'))E('recoveredValue').value='0';if(E('laborMinutes'))E('laborMinutes').value='10';
+  E('uploadStatus').textContent='New board/object ready. Prior inspection mission cleared. Add 2–6 photos of one board.';
   if(E('predictionBox'))E('predictionBox').textContent='Waiting for scan...'
 }
 function install(){
   var a=E('boardImageA');if(!a)return;var s=a.closest('section');if(!s)return;
   s.innerHTML='<h2>📷 SPIKE Multi-Photo Board Case</h2><p><b>One physical board, several views.</b> SPIKE verifies case identity first, then gives three separate answers: identity, recovery, and economics.</p><div class="side-box"><b>Fast batch:</b> Select 2–6 saved photos together.<br><input type="file" id="casePhotos" accept="image/*" multiple><button type="button" id="addCasePhotosBtn">＋ Add Selected Photos</button><br><br><b>Single-photo fallback:</b><br><input type="file" id="casePhoto" accept="image/*"><button type="button" id="addCasePhotoBtn">＋ Add One Photo</button><div id="caseTray" style="margin-top:12px"></div></div><div class="scan-actions"><button type="button" id="analyzeCaseBtn">Verify & Analyze Board Case</button><button type="button" id="resetCaseBtn">Start New Board</button></div><p id="uploadStatus">Ready. Add 2–6 photos of one board.</p>';
   E('addCasePhotosBtn').onclick=addBatch;E('addCasePhotoBtn').onclick=addSingle;E('analyzeCaseBtn').onclick=run;E('resetCaseBtn').onclick=reset;tray();
-  var v=document.querySelector('.version-stamp');if(v)v.textContent='Harbor Rich Dashboard • SPIKE Case Tray v0.7'
+  var v=document.querySelector('.version-stamp');if(v)v.textContent='Harbor Rich Dashboard • SPIKE Case Tray v0.8 • Mission Reset Guard'
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
