@@ -4,7 +4,7 @@ var caseFiles=[];
 var TARGET_KEY='scrapRadarInspectionTargetV1';
 var HANDOFF_KEY='scrapRadarSpikeRecoveryPacketV1';
 function E(id){return document.getElementById(id)}
-function safe(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]})}
+function safe(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function num(id){var e=E(id),v=e&&e.value;if(v==null||v==='')return null;var n=Number(v);return isFinite(n)?n:null}
 function addField(fd,n,v){if(v!=null)fd.append(n,String(v))}
 function money(v){return v==null?'N/A':'$'+Number(v).toFixed(2)}
