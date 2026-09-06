@@ -2,7 +2,20 @@
 (function(){
   var frame=document.getElementById('bs');
   function add(d,id,src,onload){if(d.getElementById(id)){if(onload)onload();return}var s=d.createElement('script');s.id=id;s.src=src;s.async=false;if(onload)s.onload=onload;d.body.appendChild(s)}
-  function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=9')}
+  function installLimitMessage(d){
+    if(d.getElementById('boardSenseLimitMessagePatch'))return;
+    var marker=d.createElement('script');marker.id='boardSenseLimitMessagePatch';marker.type='application/json';marker.text='{}';d.body.appendChild(marker);
+    var status=d.getElementById('uploadStatus');
+    if(!status)return;
+    var friendly='📡 Today’s free Board Sense scan has already been used. Come back tomorrow for another free board analysis.';
+    function clean(){
+      var t=(status.textContent||'').trim();
+      if(t==='Case analysis failed: HTTP 429'||t.indexOf('HTTP 429')!==-1){status.textContent=friendly;}
+    }
+    clean();
+    new MutationObserver(clean).observe(status,{childList:true,subtree:true,characterData:true});
+  }
+  function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=9',function(){installLimitMessage(d)})}
   function loadSpikeDual(d){add(d,'spikeDualLoader','board_spike_dual.js?v=2')}
   function loadTargetArea(d){add(d,'targetAreaDisplayLoader','board_target_area_patch.js?v=2',function(){loadSpikeDual(d)})}
   frame.addEventListener('load',function(){
