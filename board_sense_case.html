@@ -1,7 +1,44 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Board Sense</title><style>html,body,#bs{margin:0;width:100%;height:100%;border:0;background:#050505}body{overflow:hidden}#bs{display:block}</style></head><body><iframe id="bs" src="board_sense.html?v=case19" title="Board Sense"></iframe><script>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Board Sense</title><style>html,body,#bs{margin:0;width:100%;height:100%;border:0;background:#050505}body{overflow:hidden}#bs{display:block}</style></head><body><iframe id="bs" src="board_sense.html?v=case20" title="Board Sense"></iframe><script>
 (function(){
   var frame=document.getElementById('bs');
+  var TESTER_STORAGE_KEY='boardSenseTesterKeyV1';
   function add(d,id,src,onload){if(d.getElementById(id)){if(onload)onload();return}var s=d.createElement('script');s.id=id;s.src=src;s.async=false;if(onload)s.onload=onload;d.body.appendChild(s)}
+  function installTesterAccess(d){
+    var w=d.defaultView;if(!w)return;
+    if(!w.__boardSenseTesterFetchPatched){
+      var originalFetch=w.fetch.bind(w);
+      w.fetch=function(input,init){
+        init=init||{};
+        var key='';
+        try{key=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}
+        if(key){
+          var headers=new w.Headers(init.headers||{});
+          headers.set('x-board-sense-tester-key',key);
+          init.headers=headers;
+        }
+        return originalFetch(input,init);
+      };
+      w.__boardSenseTesterFetchPatched=true;
+    }
+    var showTester=/[?&]tester=1(?:&|$)/.test(window.location.search);
+    if(!showTester||d.getElementById('boardSenseTesterAccessBtn'))return;
+    var btn=d.createElement('button');
+    btn.id='boardSenseTesterAccessBtn';
+    btn.type='button';
+    btn.textContent='🛠 Tester Access';
+    btn.style.cssText='position:fixed;right:12px;bottom:12px;z-index:99999;padding:10px 14px;border-radius:12px;border:1px solid #39ff14;background:#111;color:#39ff14;font-weight:700;box-shadow:0 0 14px rgba(57,255,20,.35)';
+    btn.onclick=function(){
+      var existing='';try{existing=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}
+      var entered=w.prompt('Board Sense tester key. Leave blank to disable tester access.',existing?'Key already saved. Replace it here':'');
+      if(entered===null)return;
+      entered=String(entered).trim();
+      try{
+        if(entered){w.localStorage.setItem(TESTER_STORAGE_KEY,entered);btn.textContent='✅ Tester Access Saved';}
+        else{w.localStorage.removeItem(TESTER_STORAGE_KEY);btn.textContent='🛠 Tester Access';}
+      }catch(_){w.alert('Tester key could not be saved on this browser.');}
+    };
+    d.body.appendChild(btn);
+  }
   function installLimitMessage(d){
     if(d.getElementById('boardSenseLimitMessagePatch'))return;
     var marker=d.createElement('script');marker.id='boardSenseLimitMessagePatch';marker.type='application/json';marker.text='{}';d.body.appendChild(marker);
@@ -21,6 +58,7 @@
   frame.addEventListener('load',function(){
     try{
       var d=this.contentDocument;if(!d)return;
+      installTesterAccess(d);
       add(d,'inspectionTargetLoader','board_inspection_target.js?v=4',function(){loadTargetArea(d)});
       if(d.getElementById('spikeScrapBridgeLoader')){loadTray(d);return}
       var b=d.createElement('script');b.id='spikeScrapBridgeLoader';b.src='board_scrap_bridge.js?v=2';b.async=false;b.onload=function(){loadTray(d)};b.onerror=function(){console.error('SPIKE Scrap Radar bridge failed to load');loadTray(d)};d.body.appendChild(b);
