@@ -12,7 +12,7 @@
 <a href="island_portal.html" class="portal island-btn">🌴 ENTER THE ISLAND</a>
 <a href="maya.html" class="portal maya-btn">🤖 MAYA AI CONTROL ROOM</a>
 <a href="board_sense_case.html" class="portal boardsense-btn">🧠 BOARD SENSE</a>
-<a href="board_sense_case.html?tester=1" class="portal boardsense-btn">🔐 BOARD SENSE TESTER DOOR</a>
+<a id="mainTesterDoor" href="board_sense_case.html?tester=1" class="portal boardsense-btn" hidden>🔐 BOARD SENSE TESTER DOOR</a>
 <a href="scrap_radar.html" class="portal radar-btn">📡 OPEN SCRAP RADAR</a>
 </div>
 <section class="hero">
@@ -43,5 +43,12 @@ hard work, curiosity, and long nights learning.</p>
 <div id="signalWall"></div>
 </section>
 <script src="script.js"></script>
+<script>
+try{
+  if(localStorage.getItem('boardSenseTesterKeyV1')){
+    document.getElementById('mainTesterDoor').hidden=false;
+  }
+}catch(_){}
+</script>
 </body>
 </html>
