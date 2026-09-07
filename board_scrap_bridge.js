@@ -1,4 +1,4 @@
-/* Board Sense -> Scrap Radar local handoff v1.1
+/* Board Sense -> Scrap Radar local handoff v1.2
    Captures a completed SPIKE multi-photo case and stores a small, versioned
    recovery packet in this browser only. Identity/evidence never creates dollars.
    An active Scrap Radar inspection mission quarantines prior whole-board handoffs. */
@@ -14,7 +14,21 @@ function safe(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;'
 function readSaved(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(_){return null}}
 function readInspection(){try{return JSON.parse(localStorage.getItem(INSPECTION_KEY)||'null')}catch(_){return null}}
 function inspectionActive(){const p=readInspection();return !!(p&&p.target)}
-function isBlocked(p,d){const g=d&&d.same_board_verification||{};return !d||p&&p.mode==='multi_photo_identity_blocked'||d.status==='case_identity_failed'||g.block_reconciliation===true}
+function upper(v){return String(v==null?'':v).trim().toUpperCase()}
+function isConfirmedPCB(d){
+  if(!d)return false;
+  const t=d.three_answers||{},ti=t.identity||{},tr=t.recovery||{};
+  const gate=d.object_gate||d.input_gate||d.pcb_gate||(d.case_analysis||{}).object_gate||{};
+  const type=upper(d.board_type||ti.answer),grade=upper(d.grade||tr.grade);
+  const signals=[].concat(d.recovery_signals||[],gate.reasons||[],d.warnings||[]).map(upper).join(' | ');
+  if(gate.block===true||gate.block_downstream===true||gate.confirmed_pcb===false)return false;
+  if(['REJECTED','BLOCKED','NON_PCB','NOT_A_PCB','UNKNOWN_OBJECT'].includes(upper(gate.status)))return false;
+  if(!type||type==='UNKNOWN'||type==='UNKNOWN OBJECT'||type.includes('NON-PCB')||type.includes('NOT A BOARD'))return false;
+  if(!grade||['N/A','NA','WITHHELD','UNKNOWN','UNRESOLVED'].includes(grade))return false;
+  if(signals.includes('INSUFFICIENT BOARD EVIDENCE')||signals.includes('NOT ENOUGH EVIDENCE'))return false;
+  return true;
+}
+function isBlocked(p,d){const g=d&&d.same_board_verification||{};return !isConfirmedPCB(d)||p&&p.mode==='multi_photo_identity_blocked'||d&&d.status==='case_identity_failed'||g.block_reconciliation===true}
 function normalize(p){
   const d=p&&p.combined;if(isBlocked(p,d))return null;
   const t=d.three_answers||{},ti=t.identity||{},tr=t.recovery||{},cond=d.condition_and_harvest||(d.spike_evidence||{}).condition_and_harvest||{},same=d.same_board_verification||{};
@@ -69,7 +83,7 @@ function parkForInspection(){
 function render(packet,blocked){
   if(inspectionActive()){parkForInspection();return}
   ensureCard();const s=E('spikeScrapBridgeStatus'),b=E('sendSpikeToScrap');if(!s||!b)return;
-  if(blocked){s.innerHTML='<b>HANDOFF BLOCKED:</b> SPIKE did not verify these photos as one physical board. Split the case first.';b.disabled=true;return}
+  if(blocked){s.innerHTML='<b>HANDOFF BLOCKED:</b> SPIKE did not confirm a valid single-board PCB case. Board grading, recovery economics, and Scrap Radar transfer were withheld.';b.disabled=true;return}
   if(!packet){s.textContent='Analyze a multi-photo board case to prepare a recovery handoff.';b.disabled=true;return}
   const i=packet.identity||{},r=packet.recovery||{},e=packet.economics||{};
   s.innerHTML='<b>Case ready:</b> '+safe(i.boardType)+' • Grade '+safe(r.grade)+(r.score!=null?' • Recovery '+safe(r.score):'')+(r.condition?' • '+safe(r.condition):'')+'<br><b>Verified inputs ready to transfer:</b> '+(e.sellWholeValue!=null?'whole offer $'+safe(e.sellWholeValue):'no whole offer')+' • '+(e.fullRecoveryValue!=null?'recovery value $'+safe(e.fullRecoveryValue):'no recovery dollars')+' • '+(e.fullMinutes!=null?safe(e.fullMinutes)+' min':'no time')+'<br><span class="muted">Evidence travels with the case. It does not manufacture value.</span>';
@@ -82,7 +96,7 @@ function save(packet){
 function capture(payload){
   if(inspectionActive()){parkForInspection();return}
   const d=payload&&payload.combined;
-  if(isBlocked(payload,d)){latest=null;render(null,true);return}
+  if(isBlocked(payload,d)){try{localStorage.removeItem(KEY)}catch(_){}latest=null;render(null,true);return}
   const packet=normalize(payload);if(packet)save(packet);
 }
 function send(){
@@ -108,6 +122,7 @@ function init(){
   if(inspectionActive()){parkForInspection();return}
   const saved=readSaved();if(saved){latest=saved;render(saved,false)}
 }
+window.addEventListener('boardSenseObjectGateBlocked',function(){try{localStorage.removeItem(KEY)}catch(_){}latest=null;render(null,true)});
 window.addEventListener('storage',function(e){if(e.key===INSPECTION_KEY||e.key===KEY){if(inspectionActive())parkForInspection();else render(readSaved(),false)}});
 window.addEventListener('boardSenseInspectionMission',function(){if(inspectionActive())parkForInspection();else render(readSaved(),false)});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
