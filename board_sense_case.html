@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Board Sense</title><style>html,body,#bs{margin:0;width:100%;height:100%;border:0;background:#050505}body{overflow:hidden}#bs{display:block}</style></head><body><iframe id="bs" src="board_sense.html?v=case21" title="Board Sense"></iframe><script>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Board Sense</title><style>html,body,#bs{margin:0;width:100%;height:100%;border:0;background:#050505}body{overflow:hidden}#bs{display:block}</style></head><body><iframe id="bs" src="board_sense.html?v=case22" title="Board Sense"></iframe><script>
 (function(){
   var frame=document.getElementById('bs');
   var TESTER_STORAGE_KEY='boardSenseTesterKeyV1';
@@ -52,7 +52,7 @@
     clean();
     new MutationObserver(clean).observe(status,{childList:true,subtree:true,characterData:true});
   }
-  function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=10',function(){installLimitMessage(d)})}
+  function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=11',function(){installLimitMessage(d)})}
   function loadSpikeDual(d){add(d,'spikeDualLoader','board_spike_dual.js?v=2')}
   function loadTargetArea(d){add(d,'targetAreaDisplayLoader','board_target_area_patch.js?v=2',function(){loadSpikeDual(d)})}
   frame.addEventListener('load',function(){
