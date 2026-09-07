@@ -47,7 +47,7 @@
         <small>Market command hut</small>
       </a>
 
-      <a href="board_sense_case.html?tester=1" class="tester-door">
+      <a id="islandTesterDoor" href="board_sense_case.html?tester=1" class="tester-door" hidden>
         <strong>🔐 BOARD SENSE TESTER DOOR</strong>
         <small>Authorized testing entrance</small>
       </a>
@@ -91,5 +91,12 @@
 
     <div class="path-sign">WOODEN WALKWAY → HARBOR</div>
   </section>
+  <script>
+  try{
+    if(localStorage.getItem('boardSenseTesterKeyV1')){
+      document.getElementById('islandTesterDoor').hidden=false;
+    }
+  }catch(_){}
+  </script>
 </body>
 </html>
