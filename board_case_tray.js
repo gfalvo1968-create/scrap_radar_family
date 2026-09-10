@@ -1,4 +1,4 @@
-/* SPIKE Case Tray v0.9 - public-proof object gate + batch workflow + mission reset guard. */
+/* SPIKE Case Tray v1.0 - PCB confirmation separated from case identity/recovery grade. */
 (function(){
 var caseFiles=[];
 var TARGET_KEY='scrapRadarInspectionTargetV1';
@@ -17,9 +17,8 @@ function pcbGate(d){
   var signals=[].concat(d.recovery_signals||[],g.reasons||[],d.warnings||[]).map(upper).join(' | ');
   var explicitBlock=g.block===true||g.block_downstream===true||g.confirmed_pcb===false||['REJECTED','BLOCKED','NON_PCB','NOT_A_PCB','UNKNOWN_OBJECT'].indexOf(upper(g.status))>=0;
   var unknownType=!type||type==='UNKNOWN'||type==='UNKNOWN OBJECT'||type.indexOf('NON-PCB')>=0||type.indexOf('NOT A BOARD')>=0;
-  var withheldGrade=!grade||['N/A','NA','WITHHELD','UNKNOWN','UNRESOLVED'].indexOf(grade)>=0;
   var insufficient=signals.indexOf('INSUFFICIENT BOARD EVIDENCE')>=0||signals.indexOf('NOT ENOUGH EVIDENCE')>=0;
-  return {confirmed:!(explicitBlock||unknownType||withheldGrade||insufficient),type:type,grade:grade};
+  return {confirmed:!(explicitBlock||unknownType||insufficient),type:type,grade:grade};
 }
 function objectGateStopHTML(d){
   var t=d&&d.three_answers||{},i=t.identity||{},confidence=d&&d.confidence!=null?d.confidence:i.confidence;
@@ -152,7 +151,7 @@ function install(){
   var a=E('boardImageA');if(!a)return;var s=a.closest('section');if(!s)return;
   s.innerHTML='<h2>📷 SPIKE Multi-Photo Board Case</h2><p><b>One physical board, several views.</b> SPIKE verifies case identity first, then gives three separate answers: identity, recovery, and economics.</p><div class="side-box"><b>Fast batch:</b> Select 2–6 saved photos together.<br><input type="file" id="casePhotos" accept="image/*" multiple><button type="button" id="addCasePhotosBtn">＋ Add Selected Photos</button><br><br><b>Single-photo fallback:</b><br><input type="file" id="casePhoto" accept="image/*"><button type="button" id="addCasePhotoBtn">＋ Add One Photo</button><div id="caseTray" style="margin-top:12px"></div></div><div class="scan-actions"><button type="button" id="analyzeCaseBtn">Verify & Analyze Board Case</button><button type="button" id="resetCaseBtn">Start New Board</button></div><p id="uploadStatus">Ready. Add 2–6 photos of one board.</p>';
   E('addCasePhotosBtn').onclick=addBatch;E('addCasePhotoBtn').onclick=addSingle;E('analyzeCaseBtn').onclick=run;E('resetCaseBtn').onclick=reset;tray();
-  var v=document.querySelector('.version-stamp');if(v)v.textContent='Harbor Rich Dashboard • SPIKE Case Tray v0.9 • Public-Proof Object Gate'
+  var v=document.querySelector('.version-stamp');if(v)v.textContent='Harbor Rich Dashboard • SPIKE Case Tray v1.0 • PCB / Identity Separation'
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
