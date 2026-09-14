@@ -1,0 +1,33 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Board Sense Staging</title><style>html,body,#bs{margin:0;width:100%;height:100%;border:0;background:#050505}body{overflow:hidden}#bs{display:block}</style></head><body><iframe id="bs" src="board_sense.html?v=case23" title="Board Sense Staging"></iframe><script>
+(function(){
+  var frame=document.getElementById('bs');
+  var STAGING_API='https://boardsense-stageing.up.railway.app';
+  var TESTER_STORAGE_KEY='boardSenseTesterKeyV1';
+  function add(d,id,src,onload){if(d.getElementById(id)){if(onload)onload();return}var s=d.createElement('script');s.id=id;s.src=src;s.async=false;if(onload)s.onload=onload;d.body.appendChild(s)}
+  function installTesterAccess(d){
+    var w=d.defaultView;if(!w)return;
+    w.API=STAGING_API;
+    if(!w.__boardSenseTesterFetchPatched){
+      var originalFetch=w.fetch.bind(w);
+      w.fetch=function(input,init){
+        init=init||{};
+        var key='';try{key=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}
+        if(key){var headers=new w.Headers(init.headers||{});headers.set('x-board-sense-tester-key',key);init.headers=headers;}
+        return originalFetch(input,init);
+      };
+      w.__boardSenseTesterFetchPatched=true;
+    }
+    if(d.getElementById('boardSenseTesterAccessBtn'))return;
+    var btn=d.createElement('button');btn.id='boardSenseTesterAccessBtn';btn.type='button';
+    var saved='';try{saved=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}
+    btn.textContent=saved?'✅ STAGING • Tester Access Saved':'🧪 STAGING • Tester Access';
+    btn.style.cssText='position:fixed;right:12px;bottom:12px;z-index:99999;padding:10px 14px;border-radius:12px;border:1px solid #ffd700;background:#111;color:#ffd700;font-weight:700;box-shadow:0 0 14px rgba(255,215,0,.35)';
+    btn.onclick=function(){var existing='';try{existing=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}var entered=w.prompt(existing?'Tester access is already saved. Enter a NEW key to replace it. Leave blank to keep it. Type CLEAR to disable.':'Enter the Board Sense tester key.','');if(entered===null)return;entered=String(entered).trim();try{if(existing&&!entered){btn.textContent='✅ STAGING • Tester Access Saved';return}if(entered.toUpperCase()==='CLEAR'){w.localStorage.removeItem(TESTER_STORAGE_KEY);btn.textContent='🧪 STAGING • Tester Access';return}if(entered){w.localStorage.setItem(TESTER_STORAGE_KEY,entered);btn.textContent='✅ STAGING • Tester Access Saved'}}catch(_){w.alert('Tester key could not be saved on this browser.')}};
+    d.body.appendChild(btn);
+  }
+  function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=12')}
+  function loadSpikeDual(d){add(d,'spikeDualLoader','board_spike_dual.js?v=2')}
+  function loadTargetArea(d){add(d,'targetAreaDisplayLoader','board_target_area_patch.js?v=2',function(){loadSpikeDual(d)})}
+  frame.addEventListener('load',function(){try{var d=this.contentDocument;if(!d)return;installTesterAccess(d);add(d,'inspectionTargetLoader','board_inspection_target.js?v=4',function(){loadTargetArea(d)});if(d.getElementById('spikeScrapBridgeLoader')){loadTray(d);return}var b=d.createElement('script');b.id='spikeScrapBridgeLoader';b.src='board_scrap_bridge.js?v=3';b.async=false;b.onload=function(){loadTray(d)};b.onerror=function(){loadTray(d)};d.body.appendChild(b)}catch(e){console.error('Board Sense staging injection failed',e)}});
+})();
+</script></body></html>
