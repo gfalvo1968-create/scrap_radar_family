@@ -4,6 +4,29 @@
   var STAGING_API='https://boardsense-stageing.up.railway.app';
   var TESTER_STORAGE_KEY='boardSenseTesterKeyV1';
   function add(d,id,src,onload){if(d.getElementById(id)){if(onload)onload();return}var s=d.createElement('script');s.id=id;s.src=src;s.async=false;if(onload)s.onload=onload;d.body.appendChild(s)}
+  function diagnosticGate(data){
+    var d=(data&&data.combined)||data||{};
+    return d.same_board_verification||(d.case_analysis&&d.case_analysis.identity_gate)||d.identity||null;
+  }
+  function showDiagnostics(d,data){
+    var old=d.getElementById('stagingFrameDiagnostics');if(old)old.remove();
+    var gate=diagnosticGate(data);if(!gate)return;
+    var blocks=gate.frame_blocks||[];
+    var panel=d.createElement('div');panel.id='stagingFrameDiagnostics';
+    panel.style.cssText='position:fixed;left:10px;right:10px;bottom:62px;z-index:99998;max-height:42vh;overflow:auto;background:#080808;color:#e8e8e8;border:1px solid #ffd700;border-radius:12px;padding:10px 12px;font:12px/1.4 monospace;box-shadow:0 0 18px rgba(255,215,0,.25)';
+    var html='<div style="display:flex;justify-content:space-between;gap:10px"><b style="color:#ffd700">🔬 STAGING FRAME DIAGNOSTICS</b><button id="stagingDiagClose" type="button">×</button></div>';
+    html+='<div>Status: '+String(gate.status||'checked')+' • blocked: '+String(!!gate.block_reconciliation)+'</div>';
+    if(!blocks.length){html+='<div>No blocked frame diagnostics were returned.</div>'}
+    blocks.forEach(function(b,n){
+      var fg=b.frame_identity_gate||b.gate||b||{},m=fg.metrics||{},ev=fg.evidence||[];
+      html+='<hr><b>Photo '+String((b.view!=null?b.view:n+1))+'</b> • '+String(fg.status||'flagged')+' • detector '+String(fg.version||fg.detector_version||'n/a');
+      html+='<br><b>TRIGGERS</b> two-region='+String(!!m.base_two_region_trigger)+' | bottleneck='+String(!!m.bottleneck_split_trigger)+' | multiscale='+String(!!m.multiscale_split_trigger);
+      if(m.multiscale_split_kernel!=null)html+=' (kernel '+String(m.multiscale_split_kernel)+')';
+      html+='<br><b>MEASUREMENTS</b><pre style="white-space:pre-wrap;margin:4px 0">'+JSON.stringify(m,null,2).replace(/</g,'&lt;')+'</pre>';
+      if(ev.length)html+='<b>EVIDENCE</b><br>'+ev.map(function(x){return '• '+String(x).replace(/</g,'&lt;')}).join('<br>');
+    });
+    panel.innerHTML=html;d.body.appendChild(panel);var x=d.getElementById('stagingDiagClose');if(x)x.onclick=function(){panel.remove()};
+  }
   function installTesterAccess(d){
     var w=d.defaultView;if(!w)return;
     w.API=STAGING_API;
@@ -13,7 +36,12 @@
         init=init||{};
         var key='';try{key=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}
         if(key){var headers=new w.Headers(init.headers||{});headers.set('x-board-sense-tester-key',key);init.headers=headers;}
-        return originalFetch(input,init);
+        var requestUrl=typeof input==='string'?input:(input&&input.url)||'';
+        return originalFetch(input,init).then(function(res){
+          if(String(requestUrl).indexOf('/analyze-case')>=0){try{res.clone().json().then(function(data){showDiagnostics(d,data)}).catch(function(){})}catch(_){}
+          }
+          return res;
+        });
       };
       w.__boardSenseTesterFetchPatched=true;
     }
