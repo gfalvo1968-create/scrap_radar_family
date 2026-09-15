@@ -25,6 +25,29 @@
       html+='<br><b>MEASUREMENTS</b><pre style="white-space:pre-wrap;margin:4px 0">'+JSON.stringify(m,null,2).replace(/</g,'&lt;')+'</pre>';
       if(ev.length)html+='<b>EVIDENCE</b><br>'+ev.map(function(x){return '• '+String(x).replace(/</g,'&lt;')}).join('<br>');
     });
+    var combined=(data&&data.combined)||{},tool=combined.spike_tool_use||null,views=(data&&data.views)||[];
+    if(views.length){
+      html+='<hr><b style="color:#7dff7d">PHYSICAL FINGERPRINTS</b>';
+      views.forEach(function(v,i){
+        var fp=v.physical_fingerprint||{};
+        html+='<br><b>Photo '+String(v.view_number||i+1)+'</b> coverage='+String(fp.coverage||'n/a')+' quality='+String(fp.geometry_quality||'n/a')+' aspect='+String(fp.board_aspect==null?'n/a':fp.board_aspect)+' holes='+String(fp.hole_count==null?'n/a':fp.hole_count)+' landmarks='+String(fp.landmark_count==null?'n/a':fp.landmark_count);
+      });
+    }
+    if(tool){
+      html+='<hr><b style="color:#00d4ff">SPIKE TOOL USE</b><br>Status: '+String(tool.status||'n/a')+'<br>Used: '+String((tool.tools_used||[]).join(', ')||'none')+'<br>Identity override: '+String(!!tool.identity_override);
+      var searches=tool.web_reference_searches||[];
+      searches.forEach(function(s,i){
+        html+='<br><br><b>Web search photo '+String(s.view||i+1)+'</b> • '+String(s.status||'n/a');
+        if(s.query)html+='<br>Query: '+String(s.query).replace(/</g,'&lt;');
+        var matches=s.matches||[];
+        matches.slice(0,3).forEach(function(m){html+='<br>• '+String(m.title||'untitled').replace(/</g,'&lt;')+(m.source?' ['+String(m.source).replace(/</g,'&lt;')+']':'')});
+        if(s.error)html+='<br>Error: '+String(s.error).replace(/</g,'&lt;');
+      });
+      if(tool.reference_consensus){
+        html+='<br><br><b>Reference consensus:</b> '+String(tool.reference_consensus.support||tool.reference_consensus.status||'n/a');
+        if((tool.reference_consensus.common_tokens||[]).length)html+='<br>Common terms: '+String(tool.reference_consensus.common_tokens.join(', ')).replace(/</g,'&lt;');
+      }
+    }
     panel.innerHTML=html;d.body.appendChild(panel);var x=d.getElementById('stagingDiagClose');if(x)x.onclick=function(){panel.remove()};
   }
   function installTesterAccess(d){
