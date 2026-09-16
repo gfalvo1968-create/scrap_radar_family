@@ -11,11 +11,25 @@
   function showDiagnostics(d,data){
     var old=d.getElementById('stagingFrameDiagnostics');if(old)old.remove();
     var gate=diagnosticGate(data);if(!gate)return;
+    if(gate.status==='IDENTITY_CLARIFICATION_NEEDED'){
+      var request=(gate.requested_photos&&gate.requested_photos[0])||{};
+      var instruction=request.instruction||gate.identity_next_step||'Add the targeted identity photo SPIKE requested.';
+      setTimeout(function(){
+        var u=d.getElementById('uploadStatus');
+        if(u)u.textContent='Identity clarification needed. '+instruction;
+        var p=d.getElementById('predictionBox');
+        if(p)p.innerHTML='<div class="decision-box"><h3>📸 SPIKE NEEDS ONE BETTER VIEW</h3><b>No multiple-board claim yet.</b><br>SPIKE found a narrow-neck shape ambiguity, but not enough independent evidence to call this two boards.<br><br><b>Next photo:</b> '+String(instruction).replace(/[&<>]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]})+'<br><br><span class="muted">Board grading stays paused until identity is settled.</span></div>';
+      },250);
+    }
     var blocks=gate.frame_blocks||[];
     var panel=d.createElement('div');panel.id='stagingFrameDiagnostics';
     panel.style.cssText='position:fixed;left:10px;right:10px;bottom:62px;z-index:99998;max-height:42vh;overflow:auto;background:#080808;color:#e8e8e8;border:1px solid #ffd700;border-radius:12px;padding:10px 12px;font:12px/1.4 monospace;box-shadow:0 0 18px rgba(255,215,0,.25)';
     var html='<div style="display:flex;justify-content:space-between;gap:10px"><b style="color:#ffd700">🔬 STAGING FRAME DIAGNOSTICS</b><button id="stagingDiagClose" type="button">×</button></div>';
     html+='<div>Status: '+String(gate.status||'checked')+' • blocked: '+String(!!gate.block_reconciliation)+'</div>';
+    if(gate.status==='IDENTITY_CLARIFICATION_NEEDED'){
+      html+='<div style="margin-top:6px;color:#ffd700"><b>CLARIFICATION REQUEST</b></div>';
+      (gate.requested_photos||[]).forEach(function(r){html+='<div>Photo '+String(r.flagged_view||'?')+': '+String(r.instruction||'Add targeted continuity photo.').replace(/</g,'&lt;')+'</div>'});
+    }
     if(!blocks.length){html+='<div>No blocked frame diagnostics were returned.</div>'}
     blocks.forEach(function(b,n){
       var fg=b.frame_identity_gate||b.gate||b||{},m=fg.metrics||{},ev=fg.evidence||[];
