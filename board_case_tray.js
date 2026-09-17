@@ -1,4 +1,4 @@
-/* SPIKE Case Tray v1.0 - PCB confirmation separated from case identity/recovery grade. */
+/* SPIKE Case Tray v1.1 - PCB confirmation separated from case identity/recovery grade. */
 (function(){
 var caseFiles=[];
 var TARGET_KEY='scrapRadarInspectionTargetV1';
@@ -82,10 +82,19 @@ function renderEconomics(d){
   if(economicsWinner(e))h+='<div class="decision-box"><b>BEST MOVE:</b> '+safe(economicsWinner(e))+'</div>';
   box.innerHTML=h
 }
+function identityBlockKind(g){
+  var s=upper(g&&g.status);
+  if(['MULTIPLE_BOARDS_SUSPECTED','MULTIPLE_BOARDS_IN_FRAME_SUSPECTED','MULTIPLE_BOARDS_OR_OVERLAP_SUSPECTED'].indexOf(s)>=0)return 'multiple';
+  if(['IDENTITY_UNCERTAIN','IDENTITY_CLARIFICATION_NEEDED'].indexOf(s)>=0)return 'clarification';
+  return 'blocked';
+}
 function identityHTML(d){
   var g=d.same_board_verification||(d.case_analysis||{}).identity_gate;if(!g)return '';
   var reasons=(g.reasons||[]).map(function(x){return '<div>• '+safe(x)+'</div>'}).join(''),next=g.identity_next_step?'<div><b>Next step:</b> '+safe(g.identity_next_step)+'</div>':'';
-  if(g.block_reconciliation||g.status==='MULTIPLE_BOARDS_SUSPECTED')return '<div class="decision-box"><h3>⚠️ MULTIPLE BOARDS DETECTED</h3><b>SPIKE stopped the case before combining evidence.</b><br>These photos do not appear safe to treat as one physical board. Separate them into individual cases and analyze again.'+reasons+next+'</div>';
+  if(g.block_reconciliation){
+    if(identityBlockKind(g)==='multiple')return '<div class="decision-box"><h3>⚠️ MULTIPLE BOARDS DETECTED</h3><b>SPIKE stopped the case before combining evidence.</b><br>Physical evidence indicates more than one board may be present. Separate them into individual cases and analyze again.'+reasons+next+'</div>';
+    return '<div class="decision-box"><h3>🔎 IDENTITY EVIDENCE NEEDED</h3><b>SPIKE stopped the case before combining evidence.</b><br>These photos do not provide enough whole-board geometry to prove that every view shows the same physical board. No multiple-board verdict is being claimed.'+reasons+next+'</div>';
+  }
   return '<div class="lab-card"><b>🔎 Same-Board Verification:</b> '+safe(g.status||'checked')+' ('+safe(g.confidence||0)+'%)'+(g.whole_view_count!=null?'<br><b>Whole-board views:</b> '+safe(g.whole_view_count):'')+reasons+next+'</div>'
 }
 function threeAnswersHTML(d){
@@ -108,7 +117,7 @@ async function run(){
     if(minutes!=null&&minutes>=0)addField(fd,'full_minutes',minutes);
     var r=await fetch(API+'/analyze-case',{method:'POST',body:fd});if(!r.ok)throw new Error('HTTP '+r.status);
     var p=await r.json();if(p.status==='error')throw new Error(p.message||'Case analysis failed.');
-    var d=p.combined||{},identityBlocked=d.status==='case_identity_failed'||(d.same_board_verification||{}).block_reconciliation,objectBlocked=!pcbGate(d).confirmed,blocked=identityBlocked||objectBlocked;
+    var d=p.combined||{},idg=d.same_board_verification||{},identityBlocked=d.status==='case_identity_failed'||d.status==='case_identity_clarification'||idg.block_reconciliation,objectBlocked=!pcbGate(d).confirmed,blocked=identityBlocked||objectBlocked;
     if(objectBlocked){
       try{localStorage.removeItem(HANDOFF_KEY)}catch(_){}
       if(E('predictionBox'))E('predictionBox').innerHTML=objectGateStopHTML(d);
@@ -117,9 +126,12 @@ async function run(){
       try{window.dispatchEvent(new CustomEvent('boardSenseObjectGateBlocked',{detail:{reason:'pcb_not_confirmed'}}))}catch(_){}
     }else{
       if(typeof renderBoardData==='function'&&!blocked)renderBoardData(d);
-      renderEconomics(d);
+      if(identityBlocked){
+        try{localStorage.removeItem(HANDOFF_KEY)}catch(_){}
+        if(E('economicsBox'))E('economicsBox').innerHTML='<b>Economics withheld:</b> Board identity must be verified before value paths are compared.';
+      }else renderEconomics(d);
       if(E('predictionBox'))E('predictionBox').innerHTML=(identityBlocked?identityHTML(d):'<h3>📸 SPIKE MULTI-PHOTO BOARD CASE</h3>'+identityHTML(d)+'<div class="type-box"><div class="type-name">'+safe(d.board_type||'Unknown')+'</div><b>Photos compared:</b> '+safe(p.photo_count||caseFiles.length)+'<br><b>Grade:</b> '+safe(d.grade||'N/A')+'<br><b>Confidence:</b> '+safe(d.confidence||0)+'%<br><b>Recovery Score:</b> '+safe(d.score||0)+'<br><b>Recommendation:</b> '+safe(d.recommendation||'Manual review required.')+'<br><b>Engine:</b> '+safe(d.model||'Board Sense')+'</div>')+threeAnswersHTML(d);
-      E('uploadStatus').textContent=identityBlocked?'Case stopped: multiple-board evidence detected. Start separate board cases.':'Board identity checked. Three-answer board case complete.';
+      E('uploadStatus').textContent=identityBlocked?(identityBlockKind(idg)==='multiple'?'Case stopped: multiple-board evidence detected. Start separate board cases.':'Case stopped: identity evidence is incomplete. Add the requested full-board photo.'):'Board identity checked. Three-answer board case complete.';
     }
   }catch(e){E('uploadStatus').textContent='Case analysis failed: '+e.message}finally{btn.disabled=false}
 }
@@ -151,7 +163,7 @@ function install(){
   var a=E('boardImageA');if(!a)return;var s=a.closest('section');if(!s)return;
   s.innerHTML='<h2>📷 SPIKE Multi-Photo Board Case</h2><p><b>One physical board, several views.</b> SPIKE verifies case identity first, then gives three separate answers: identity, recovery, and economics.</p><div class="side-box"><b>Fast batch:</b> Select 2–6 saved photos together.<br><input type="file" id="casePhotos" accept="image/*" multiple><button type="button" id="addCasePhotosBtn">＋ Add Selected Photos</button><br><br><b>Single-photo fallback:</b><br><input type="file" id="casePhoto" accept="image/*"><button type="button" id="addCasePhotoBtn">＋ Add One Photo</button><div id="caseTray" style="margin-top:12px"></div></div><div class="scan-actions"><button type="button" id="analyzeCaseBtn">Verify & Analyze Board Case</button><button type="button" id="resetCaseBtn">Start New Board</button></div><p id="uploadStatus">Ready. Add 2–6 photos of one board.</p>';
   E('addCasePhotosBtn').onclick=addBatch;E('addCasePhotoBtn').onclick=addSingle;E('analyzeCaseBtn').onclick=run;E('resetCaseBtn').onclick=reset;tray();
-  var v=document.querySelector('.version-stamp');if(v)v.textContent='Harbor Rich Dashboard • SPIKE Case Tray v1.0 • PCB / Identity Separation'
+  var v=document.querySelector('.version-stamp');if(v)v.textContent='Harbor Rich Dashboard • SPIKE Case Tray v1.1 • PCB / Identity Separation'
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
