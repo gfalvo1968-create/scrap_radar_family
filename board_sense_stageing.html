@@ -125,7 +125,7 @@
     if(tray){new MutationObserver(function(){paint()}).observe(tray,{childList:true,subtree:true});}
     paint();
   }
-  function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=12',function(){installTrayPreviews(d)})}
+  function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=13',function(){installTrayPreviews(d)})}
   function loadSpikeDual(d){add(d,'spikeDualLoader','board_spike_dual.js?v=2')}
   function loadTargetArea(d){add(d,'targetAreaDisplayLoader','board_target_area_patch.js?v=2',function(){loadSpikeDual(d)})}
   frame.addEventListener('load',function(){try{var d=this.contentDocument;if(!d)return;installTesterAccess(d);add(d,'inspectionTargetLoader','board_inspection_target.js?v=4',function(){loadTargetArea(d)});if(d.getElementById('spikeScrapBridgeLoader')){loadTray(d);return}var b=d.createElement('script');b.id='spikeScrapBridgeLoader';b.src='board_scrap_bridge.js?v=3';b.async=false;b.onload=function(){loadTray(d)};b.onerror=function(){loadTray(d)};d.body.appendChild(b)}catch(e){console.error('Board Sense staging injection failed',e)}});
