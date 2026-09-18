@@ -33,14 +33,28 @@ function ensureBreakdownPanel(){
   sec.parentNode.insertBefore(panel,sec.nextSibling);
   return E('componentBreakdownBox');
 }
-function renderComponentBreakdown(d){
+function selectBreakdownBlueprint(d,p){
+  var combined=d&&d.board_blueprint||{};
+  if(combined.available&&Array.isArray(combined.component_index)&&combined.component_index.length){
+    return {blueprint:combined,sourceView:combined.case_blueprint_source_view||null};
+  }
+  var views=p&&Array.isArray(p.views)?p.views:[],best=null;
+  views.forEach(function(view,i){
+    var bp=view&&view.board_blueprint||{},items=Array.isArray(bp.component_index)?bp.component_index:[];
+    if(!bp.available||!items.length)return;
+    var quality=view.photo_quality||{},score=items.length*100+(quality.usable===false?0:25)+Number(quality.score||0);
+    if(!best||score>best.score)best={blueprint:bp,sourceView:view.view_number||i+1,score:score};
+  });
+  return best||{blueprint:combined,sourceView:null};
+}
+function renderComponentBreakdown(d,p){
   var box=ensureBreakdownPanel();if(!box)return;
-  var bp=d&&d.board_blueprint||{},items=Array.isArray(bp.component_index)?bp.component_index:[];
+  var selected=selectBreakdownBlueprint(d,p),bp=selected.blueprint||{},items=Array.isArray(bp.component_index)?bp.component_index:[];
   if(!bp.available||!items.length){
-    box.innerHTML='<div class="warning-box">Component breakdown unavailable until a safe blueprint view is selected.</div>';
+    box.innerHTML='<div class="warning-box">Component breakdown unavailable: none of the verified same-board photos produced detector-supported component regions. Try one clear, straight-on component-side photo.</div>';
     return;
   }
-  var src=bp.case_blueprint_source_view?'<p><b>Blueprint source:</b> Photo '+safe(bp.case_blueprint_source_view)+'</p>':'';
+  var src=selected.sourceView?'<p><b>Blueprint source:</b> Photo '+safe(selected.sourceView)+' (best safe component view)</p>':'';
   var h=src+'<div class="blueprint-index">';
   items.forEach(function(item){
     h+='<div class="blueprint-item"><span class="blueprint-number">'+safe(item.number||'?')+'</span><span class="blueprint-title">'+safe(item.label||'Detected region')+'</span>'+
@@ -196,7 +210,7 @@ async function run(){
       try{window.dispatchEvent(new CustomEvent('boardSenseObjectGateBlocked',{detail:{reason:'pcb_not_confirmed'}}))}catch(_){}
     }else{
       if(typeof renderBoardData==='function'&&!blocked)renderBoardData(d);
-      if(!blocked)renderComponentBreakdown(d);
+      if(!blocked)renderComponentBreakdown(d,p);
       if(identityBlocked){
         try{localStorage.removeItem(HANDOFF_KEY)}catch(_){}
         if(E('economicsBox')){
