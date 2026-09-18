@@ -29,7 +29,7 @@ function ensureBreakdownPanel(){
   var panel=document.createElement('section');
   panel.className='panel';
   panel.id='componentBreakdownPanel';
-  panel.innerHTML='<h2>🔧 Close-Up Component Breakdown</h2><p class="muted">Numbered components from the selected safe blueprint view are broken out separately so the buyer can see what is actually present on the board.</p><div id="componentBreakdownBox"><p class="muted">Analyze a board to build the component breakdown.</p></div>';
+  panel.innerHTML='<h2>🔧 Close-Up Component Breakdown <small style="font-size:.48em;color:#ffd700">STAGING v17</small></h2><p class="muted">Numbered components from the selected safe blueprint view are broken out separately so the buyer can see what is actually present on the board.</p><div id="componentBreakdownBox"><p class="muted">Analyze a board to build the component breakdown.</p></div>';
   if(!E('componentBreakdownStyle')){var st=document.createElement('style');st.id='componentBreakdownStyle';st.textContent='.component-crop{height:150px;position:relative;overflow:hidden;border:1px solid #d6ff00;border-radius:9px;background:#050505;margin-bottom:9px}.component-crop img{position:absolute;max-width:none!important}.component-crop-note{color:#aaa;font-size:.78rem;margin-top:5px}';document.head.appendChild(st)}
   sec.parentNode.insertBefore(panel,sec.nextSibling);
   return E('componentBreakdownBox');
