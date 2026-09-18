@@ -30,6 +30,7 @@ function ensureBreakdownPanel(){
   panel.className='panel';
   panel.id='componentBreakdownPanel';
   panel.innerHTML='<h2>🔧 Close-Up Component Breakdown</h2><p class="muted">Numbered components from the selected safe blueprint view are broken out separately so the buyer can see what is actually present on the board.</p><div id="componentBreakdownBox"><p class="muted">Analyze a board to build the component breakdown.</p></div>';
+  if(!E('componentBreakdownStyle')){var st=document.createElement('style');st.id='componentBreakdownStyle';st.textContent='.component-crop{height:150px;position:relative;overflow:hidden;border:1px solid #d6ff00;border-radius:9px;background:#050505;margin-bottom:9px}.component-crop img{position:absolute;max-width:none!important}.component-crop-note{color:#aaa;font-size:.78rem;margin-top:5px}';document.head.appendChild(st)}
   sec.parentNode.insertBefore(panel,sec.nextSibling);
   return E('componentBreakdownBox');
 }
@@ -55,14 +56,24 @@ function renderComponentBreakdown(d,p){
     return;
   }
   var src=selected.sourceView?'<p><b>Blueprint source:</b> Photo '+safe(selected.sourceView)+' (best safe component view)</p>':'';
+  var imageUrl=bp.image_url?(API+bp.image_url+'?t='+Date.now()):'';
   var h=src+'<div class="blueprint-index">';
   items.forEach(function(item){
-    h+='<div class="blueprint-item"><span class="blueprint-number">'+safe(item.number||'?')+'</span><span class="blueprint-title">'+safe(item.label||'Detected region')+'</span>'+
+    var q=item.box||{},crop=imageUrl?'<div class="component-crop" data-x="'+safe(q.x||0)+'" data-y="'+safe(q.y||0)+'" data-w="'+safe(q.w||1)+'" data-h="'+safe(q.h||1)+'"><img src="'+safe(imageUrl)+'" alt="Component '+safe(item.number||'?')+' close-up"></div>':'';
+    h+='<div class="blueprint-item">'+crop+'<span class="blueprint-number">'+safe(item.number||'?')+'</span><span class="blueprint-title">'+safe(item.label||'Detected region')+'</span>'+
       (item.confidence!=null?'<span class="blueprint-confidence">Detector confidence: '+safe(item.confidence)+'%</span>':'')+
       '<span class="blueprint-tip">'+safe(breakdownNote(item))+'</span></div>';
   });
   h+='</div><p class="muted">This is a component-presence breakdown, not an assay. Missing parts and remaining pay dirt are evaluated separately.</p>';
   box.innerHTML=h;
+  Array.prototype.forEach.call(box.querySelectorAll('.component-crop'),function(crop){
+    var img=crop.querySelector('img');if(!img)return;
+    img.onload=function(){
+      var nw=img.naturalWidth||1,nh=img.naturalHeight||1,x=Number(crop.getAttribute('data-x'))||0,y=Number(crop.getAttribute('data-y'))||0,rw=Math.max(1,Number(crop.getAttribute('data-w'))||1),rh=Math.max(1,Number(crop.getAttribute('data-h'))||1);
+      var pad=Math.max(20,Math.round(Math.max(rw,rh)*.45)),x0=Math.max(0,x-pad),y0=Math.max(0,y-pad),cw=Math.min(nw-x0,rw+pad*2),ch=Math.min(nh-y0,rh+pad*2),scale=Math.max(crop.clientWidth/cw,crop.clientHeight/ch);
+      img.style.width=(nw*scale)+'px';img.style.height=(nh*scale)+'px';img.style.left=((crop.clientWidth-cw*scale)/2-x0*scale)+'px';img.style.top=((crop.clientHeight-ch*scale)/2-y0*scale)+'px';
+    };
+  });
 }
 function pcbGate(d){
   d=d||{};
