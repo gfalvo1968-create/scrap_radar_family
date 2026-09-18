@@ -29,7 +29,7 @@ function ensureBreakdownPanel(){
   var panel=document.createElement('section');
   panel.className='panel';
   panel.id='componentBreakdownPanel';
-  panel.innerHTML='<h2>🔧 Close-Up Component Breakdown <small style="font-size:.48em;color:#ffd700">STAGING v17</small></h2><p class="muted">Numbered components from the selected safe blueprint view are broken out separately so the buyer can see what is actually present on the board.</p><div id="componentBreakdownBox"><p class="muted">Analyze a board to build the component breakdown.</p></div>';
+  panel.innerHTML='<h2>🔧 Close-Up Component Breakdown <small style="font-size:.48em;color:#ffd700">STAGING v18</small></h2><p class="muted">Numbered components from the selected safe blueprint view are broken out separately so the buyer can see what is actually present on the board.</p><div id="componentBreakdownBox"><p class="muted">Analyze a board to build the component breakdown.</p></div>';
   if(!E('componentBreakdownStyle')){var st=document.createElement('style');st.id='componentBreakdownStyle';st.textContent='.component-crop{height:150px;position:relative;overflow:hidden;border:1px solid #d6ff00;border-radius:9px;background:#050505;margin-bottom:9px}.component-crop img{position:absolute;max-width:none!important}.component-crop-note{color:#aaa;font-size:.78rem;margin-top:5px}';document.head.appendChild(st)}
   sec.parentNode.insertBefore(panel,sec.nextSibling);
   return E('componentBreakdownBox');
@@ -56,7 +56,8 @@ function renderComponentBreakdown(d,p){
     return;
   }
   var src=selected.sourceView?'<p><b>Blueprint source:</b> Photo '+safe(selected.sourceView)+' (best safe component view)</p>':'';
-  var imageUrl=bp.image_url?(API+bp.image_url+'?t='+Date.now()):'';
+  var sourceView=Number(selected.sourceView)||0,sourceResult=sourceView&&p&&Array.isArray(p.views)?p.views[sourceView-1]:null,sourceName=sourceResult&&sourceResult.board||'',previewUrls=window.__boardSenseStagingPreviewUrls||{};
+  var imageUrl=sourceName&&previewUrls[sourceName]?previewUrls[sourceName]:(bp.image_url?(API+bp.image_url+'?t='+Date.now()):'');
   var h=src+'<div class="blueprint-index">';
   items.forEach(function(item){
     var q=item.box||{},crop=imageUrl?'<div class="component-crop" data-x="'+safe(q.x||0)+'" data-y="'+safe(q.y||0)+'" data-w="'+safe(q.w||1)+'" data-h="'+safe(q.h||1)+'"><img src="'+safe(imageUrl)+'" alt="Component '+safe(item.number||'?')+' close-up"></div>':'';
