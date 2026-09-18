@@ -9,6 +9,47 @@ function num(id){var e=E(id),v=e&&e.value;if(v==null||v==='')return null;var n=N
 function addField(fd,n,v){if(v!=null)fd.append(n,String(v))}
 function money(v){return v==null?'N/A':'$'+Number(v).toFixed(2)}
 function upper(v){return String(v==null?'':v).trim().toUpperCase()}
+function stagingBreakdownEnabled(){
+  try{return window.parent!==window&&String(document.referrer||'').indexOf('board_sense_stageing.html')>=0}catch(_){return false}
+}
+function breakdownNote(item){
+  var l=String(item&&item.label||'').toLowerCase();
+  if(l.indexOf('ic')>=0||l.indexOf('logic')>=0)return 'Logic/control package. Confirm markings and package type before assigning recovery value.';
+  if(l.indexOf('connector')>=0||l.indexOf('slot')>=0)return 'Connector/contact area. Useful for identity and recovery inspection.';
+  if(l.indexOf('copper')>=0||l.indexOf('magnet')>=0||l.indexOf('transformer')>=0)return 'Copper-bearing or magnetic candidate. Inspect before assigning recoverable value.';
+  if(l.indexOf('capacitor')>=0)return 'Power/passive component candidate. Recovery value depends on actual part family and board context.';
+  if(l.indexOf('gold')>=0||l.indexOf('plated')>=0)return 'Contact/plating candidate. Confirm actual contact geometry before valuing.';
+  return 'Board-defining component or region. Use the numbered blueprint marker to inspect it in context.';
+}
+function ensureBreakdownPanel(){
+  if(!stagingBreakdownEnabled())return null;
+  var existing=E('componentBreakdownBox');if(existing)return existing;
+  var bp=E('blueprintBox');if(!bp)return null;
+  var sec=bp.closest('section');if(!sec||!sec.parentNode)return null;
+  var panel=document.createElement('section');
+  panel.className='panel';
+  panel.id='componentBreakdownPanel';
+  panel.innerHTML='<h2>🔧 Close-Up Component Breakdown</h2><p class="muted">Numbered components from the selected safe blueprint view are broken out separately so the buyer can see what is actually present on the board.</p><div id="componentBreakdownBox"><p class="muted">Analyze a board to build the component breakdown.</p></div>';
+  sec.parentNode.insertBefore(panel,sec.nextSibling);
+  return E('componentBreakdownBox');
+}
+function renderComponentBreakdown(d){
+  var box=ensureBreakdownPanel();if(!box)return;
+  var bp=d&&d.board_blueprint||{},items=Array.isArray(bp.component_index)?bp.component_index:[];
+  if(!bp.available||!items.length){
+    box.innerHTML='<div class="warning-box">Component breakdown unavailable until a safe blueprint view is selected.</div>';
+    return;
+  }
+  var src=bp.case_blueprint_source_view?'<p><b>Blueprint source:</b> Photo '+safe(bp.case_blueprint_source_view)+'</p>':'';
+  var h=src+'<div class="blueprint-index">';
+  items.forEach(function(item){
+    h+='<div class="blueprint-item"><span class="blueprint-number">'+safe(item.number||'?')+'</span><span class="blueprint-title">'+safe(item.label||'Detected region')+'</span>'+
+      (item.confidence!=null?'<span class="blueprint-confidence">Detector confidence: '+safe(item.confidence)+'%</span>':'')+
+      '<span class="blueprint-tip">'+safe(breakdownNote(item))+'</span></div>';
+  });
+  h+='</div><p class="muted">This is a component-presence breakdown, not an assay. Missing parts and remaining pay dirt are evaluated separately.</p>';
+  box.innerHTML=h;
+}
 function pcbGate(d){
   d=d||{};
   var t=d.three_answers||{},i=t.identity||{},r=t.recovery||{};
@@ -155,6 +196,7 @@ async function run(){
       try{window.dispatchEvent(new CustomEvent('boardSenseObjectGateBlocked',{detail:{reason:'pcb_not_confirmed'}}))}catch(_){}
     }else{
       if(typeof renderBoardData==='function'&&!blocked)renderBoardData(d);
+      if(!blocked)renderComponentBreakdown(d);
       if(identityBlocked){
         try{localStorage.removeItem(HANDOFF_KEY)}catch(_){}
         if(E('economicsBox')){
@@ -193,9 +235,11 @@ function reset(){
   if(E('sellValue'))E('sellValue').value='0';if(E('recoveredValue'))E('recoveredValue').value='0';if(E('laborMinutes'))E('laborMinutes').value='10';
   E('uploadStatus').textContent='New board/object ready. Prior inspection mission cleared. Add 2–6 photos of one board.';
   if(E('predictionBox'))E('predictionBox').textContent='Waiting for scan...'
+  if(E('componentBreakdownBox'))E('componentBreakdownBox').innerHTML='<p class="muted">Analyze a board to build the component breakdown.</p>';
 }
 function install(){
   var a=E('boardImageA');if(!a)return;var s=a.closest('section');if(!s)return;
+  ensureBreakdownPanel();
   s.innerHTML='<h2>📷 SPIKE Multi-Photo Board Case</h2><p><b>One physical board, several views.</b> SPIKE verifies case identity first, then gives three separate answers: identity, recovery, and economics.</p><div class="side-box"><b>Fast batch:</b> Select 2–6 saved photos together.<br><input type="file" id="casePhotos" accept="image/*" multiple><button type="button" id="addCasePhotosBtn">＋ Add Selected Photos</button><br><br><b>Single-photo fallback:</b><br><input type="file" id="casePhoto" accept="image/*"><button type="button" id="addCasePhotoBtn">＋ Add One Photo</button><div id="caseTray" style="margin-top:12px"></div></div><div class="scan-actions"><button type="button" id="analyzeCaseBtn">Verify & Analyze Board Case</button><button type="button" id="resetCaseBtn">Start New Board</button></div><p id="uploadStatus">Ready. Add 2–6 photos of one board.</p>';
   E('addCasePhotosBtn').onclick=addBatch;E('addCasePhotoBtn').onclick=addSingle;E('analyzeCaseBtn').onclick=run;E('resetCaseBtn').onclick=reset;tray();
   var v=document.querySelector('.version-stamp');if(v)v.textContent='Harbor Rich Dashboard • SPIKE Case Tray v1.2 • Stop Merge / Keep Investigating'
