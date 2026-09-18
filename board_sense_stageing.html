@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Board Sense Staging</title><style>html,body,#bs{margin:0;width:100%;height:100%;border:0;background:#050505}body{overflow:hidden}#bs{display:block}</style></head><body><iframe id="bs" src="board_sense.html?v=case24" title="Board Sense Staging"></iframe><script>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Board Sense Staging</title><style>html,body,#bs{margin:0;width:100%;height:100%;border:0;background:#050505}body{overflow:hidden}#bs{display:block}</style></head><body><iframe id="bs" src="board_sense.html?v=case25" title="Board Sense Staging"></iframe><script>
 (function(){
   var frame=document.getElementById('bs');
   var STAGING_API='https://boardsense-stageing.up.railway.app';
@@ -64,6 +64,47 @@
     if(d.getElementById('boardSenseTesterAccessBtn'))return;
     var btn=d.createElement('button');btn.id='boardSenseTesterAccessBtn';btn.type='button';var saved='';try{saved=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}btn.textContent=saved?'✅ STAGING • Tester Access Saved':'🧪 STAGING • Tester Access';btn.style.cssText='position:fixed;right:12px;bottom:12px;z-index:99999;padding:10px 14px;border-radius:12px;border:1px solid #ffd700;background:#111;color:#ffd700;font-weight:700;box-shadow:0 0 14px rgba(255,215,0,.35)';btn.onclick=function(){var existing='';try{existing=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}var entered=w.prompt(existing?'Tester access is already saved. Enter a NEW key to replace it. Leave blank to keep it. Type CLEAR to disable.':'Enter the Board Sense tester key.','');if(entered===null)return;entered=String(entered).trim();try{if(existing&&!entered){btn.textContent='✅ STAGING • Tester Access Saved';return}if(entered.toUpperCase()==='CLEAR'){w.localStorage.removeItem(TESTER_STORAGE_KEY);btn.textContent='🧪 STAGING • Tester Access';return}if(entered){w.localStorage.setItem(TESTER_STORAGE_KEY,entered);btn.textContent='✅ STAGING • Tester Access Saved'}}catch(_){w.alert('Tester key could not be saved on this browser.')}};d.body.appendChild(btn)
   }
+  function installBoardBreakdown(d){
+    if(d.__boardBreakdownInstalled)return;d.__boardBreakdownInstalled=true;
+    var w=d.defaultView;if(!w)return;
+    var blueprint=d.getElementById('blueprintBox');
+    var panel=blueprint&&blueprint.closest('section');
+    if(!panel)return;
+    var section=d.createElement('section');
+    section.className='panel blueprint-panel';
+    section.id='boardBreakdownPanel';
+    section.innerHTML='<h2>🔎 Close-Up Component Breakdown</h2><p>SPIKE separates the major detected parts into numbered close-ups so the buyer can see what is actually present on the board.</p><div id="boardBreakdownBox"><p class="muted">Analyze a board to generate its component breakdown.</p></div>';
+    panel.insertAdjacentElement('afterend',section);
+    var style=d.createElement('style');
+    style.textContent='.board-breakdown-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.board-breakdown-card{border:1px solid #596900;border-radius:12px;padding:10px;background:#0b0d0d}.board-breakdown-crop{position:relative;overflow:hidden;border:1px solid #cfff00;border-radius:9px;background:#050505;margin-bottom:9px}.board-breakdown-crop img{position:absolute;max-width:none!important}.board-breakdown-title{font-weight:800;font-size:1.02rem;margin-bottom:5px}.board-breakdown-number{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#d7ff00;color:#050505;margin-right:7px;font-weight:900}.board-breakdown-note{color:#e2cf7a;line-height:1.35}.board-breakdown-guard{margin-top:6px;color:#aaa;font-size:.9rem}';
+    d.head.appendChild(style);
+    function render(data){
+      var box=d.getElementById('boardBreakdownBox');if(!box)return;
+      var b=data&&data.board_blueprint||{},items=Array.isArray(b.component_index)?b.component_index:[];
+      if(!b.available||!items.length){
+        box.innerHTML='<div class="warning-box">Component breakdown unavailable until SPIKE has one safe board view with detector-supported component regions.</div>';return;
+      }
+      var iw=Number(b.image_width)||0,ih=Number(b.image_height)||0,url=(w.API||STAGING_API)+(b.image_url||'')+'?t='+Date.now();
+      var shown=items.slice(0,9);
+      box.innerHTML='<div class="board-breakdown-grid">'+shown.map(function(item){
+        var q=item.box||{},x=Math.max(0,Number(q.x)||0),y=Math.max(0,Number(q.y)||0),rw=Math.max(1,Number(q.w)||1),rh=Math.max(1,Number(q.h)||1);
+        var crop='';
+        if(iw>0&&ih>0){
+          var pad=Math.max(18,Math.round(Math.max(rw,rh)*.45)),cx=Math.max(0,x-pad),cy=Math.max(0,y-pad),cw=Math.min(iw-cx,rw+pad*2),ch=Math.min(ih-cy,rh+pad*2);
+          var imgW=iw/cw*100,left=-cx/cw*100,top=-cy/ch*100;
+          crop='<div class="board-breakdown-crop" style="aspect-ratio:'+cw+'/'+ch+'"><img src="'+esc(url)+'" alt="Component '+esc(item.number)+' close-up" style="width:'+imgW+'%;left:'+left+'%;top:'+top+'%"></div>';
+        }
+        var note=(typeof w.blueprintTip==='function'?w.blueprintTip(item.label):'Inspect this detected region before assigning recovery value.');
+        var guard=item.geometry_guard||item.context_guard||'';
+        return '<div class="board-breakdown-card">'+crop+'<div class="board-breakdown-title"><span class="board-breakdown-number">'+esc(item.number)+'</span>'+esc(item.label||'Detected component')+'</div>'+(item.confidence!=null?'<div>Detector confidence: '+esc(item.confidence)+'%</div>':'')+'<div class="board-breakdown-note">'+esc(note)+'</div>'+(guard?'<div class="board-breakdown-guard">'+esc(guard)+'</div>':'')+'</div>';
+      }).join('')+'</div><p class="muted">Close-ups are inspection aids from the selected safe blueprint view. They do not create new identity evidence or manufacture value.</p>';
+    }
+    var original=w.renderBoardData;
+    if(typeof original==='function'){
+      w.renderBoardData=function(data){var out=original.apply(this,arguments);try{render(data)}catch(e){console.error('Board breakdown render failed',e)}return out};
+    }
+    w.renderBoardBreakdown=render;
+  }
   function installTrayPreviews(d){
     if(d.__stagingTrayPreviewsInstalled)return;d.__stagingTrayPreviewsInstalled=true;var urls={};
     function remember(input){Array.prototype.forEach.call((input&&input.files)||[],function(file){try{if(urls[file.name])URL.revokeObjectURL(urls[file.name]);urls[file.name]=URL.createObjectURL(file)}catch(_){}})}
@@ -73,6 +114,6 @@
   function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=14',function(){installTrayPreviews(d)})}
   function loadSpikeDual(d){add(d,'spikeDualLoader','board_spike_dual.js?v=2')}
   function loadTargetArea(d){add(d,'targetAreaDisplayLoader','board_target_area_patch.js?v=2',function(){loadSpikeDual(d)})}
-  frame.addEventListener('load',function(){try{var d=this.contentDocument;if(!d)return;installTesterAccess(d);add(d,'inspectionTargetLoader','board_inspection_target.js?v=4',function(){loadTargetArea(d)});if(d.getElementById('spikeScrapBridgeLoader')){loadTray(d);return}var b=d.createElement('script');b.id='spikeScrapBridgeLoader';b.src='board_scrap_bridge.js?v=3';b.async=false;b.onload=function(){loadTray(d)};b.onerror=function(){loadTray(d)};d.body.appendChild(b)}catch(e){console.error('Board Sense staging injection failed',e)}});
+  frame.addEventListener('load',function(){try{var d=this.contentDocument;if(!d)return;installTesterAccess(d);installBoardBreakdown(d);add(d,'inspectionTargetLoader','board_inspection_target.js?v=4',function(){loadTargetArea(d)});if(d.getElementById('spikeScrapBridgeLoader')){loadTray(d);return}var b=d.createElement('script');b.id='spikeScrapBridgeLoader';b.src='board_scrap_bridge.js?v=3';b.async=false;b.onload=function(){loadTray(d)};b.onerror=function(){loadTray(d)};d.body.appendChild(b)}catch(e){console.error('Board Sense staging injection failed',e)}});
 })();
 </script></body></html>
