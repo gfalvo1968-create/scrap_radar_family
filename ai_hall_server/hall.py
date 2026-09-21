@@ -1,5 +1,9 @@
 """Private, server-rendered AI Hall. Mount only at /ai-hall using WSGIMiddleware."""
 from contextlib import contextmanager
+import io
+import json
+import re
+import zipfile
 import hashlib
 import hmac
 import html
@@ -10,6 +14,7 @@ import time
 from http.cookies import SimpleCookie
 from pathlib import Path
 from urllib.parse import parse_qs
+from starter_files import STARTER_FILES
 
 PREFIX = '/ai-hall'
 COOKIE = '__Secure-ai_hall'
@@ -59,12 +64,17 @@ class Hall:
         self.path, self.encoded, self.origin = db_path, encoded, origin
         with self.db() as db:
             db.executescript('''
+            CREATE TABLE IF NOT EXISTS documents(id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE, body TEXT NOT NULL, author TEXT NOT NULL, updated INTEGER NOT NULL);
             CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY, csrf TEXT NOT NULL, expires INTEGER NOT NULL, epoch TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS attempts(at INTEGER NOT NULL);
             CREATE TABLE IF NOT EXISTS notes(id INTEGER PRIMARY KEY, room TEXT NOT NULL, title TEXT NOT NULL, body TEXT NOT NULL, author TEXT NOT NULL, created INTEGER NOT NULL);
             CREATE TABLE IF NOT EXISTS replies(id INTEGER PRIMARY KEY, note INTEGER NOT NULL REFERENCES notes(id), body TEXT NOT NULL, author TEXT NOT NULL, created INTEGER NOT NULL);
             CREATE TABLE IF NOT EXISTS reactions(note INTEGER NOT NULL REFERENCES notes(id), session TEXT NOT NULL, PRIMARY KEY(note,session));
             ''')
+
+            for name, body in STARTER_FILES.items():
+                db.execute('INSERT OR IGNORE INTO documents(name,body,author,updated) VALUES(?,?,?,?)',
+                           (name, body, 'Starter packet', int(time.time())))
 
     @contextmanager
     def db(self):
@@ -97,6 +107,32 @@ class Hall:
             db.execute('DELETE FROM sessions WHERE expires < ? OR epoch != ?', (now, fingerprint(self.encoded)))
             session = db.execute('SELECT * FROM sessions WHERE token=?', (fingerprint(token),)).fetchone() if token else None
         if method == 'GET':
+            if path == '/packet.zip' or path.startswith('/files/'):
+                if not session:
+                    return respond('401 Unauthorized', page('Unlock the Hall first.'))
+                with self.db() as db:
+                    if path == '/packet.zip':
+                        buffer = io.BytesIO()
+                        with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as bundle:
+                            for doc in db.execute('SELECT * FROM documents ORDER BY name'):
+                                bundle.writestr('files/' + doc['name'], doc['body'])
+                            snapshot = {table: [dict(row) for row in db.execute('SELECT * FROM ' + table)]
+                                        for table in ('notes', 'replies')}
+                            bundle.writestr('notebook.json', json.dumps(snapshot, indent=2))
+                        payload, filename = buffer.getvalue(), 'AI-Hall-review-packet.zip'
+                    else:
+                        try:
+                            doc_id = int(path.split('/')[-1])
+                        except ValueError:
+                            return respond('404 Not Found', page('File not found.'))
+                        doc = db.execute('SELECT * FROM documents WHERE id=?', (doc_id,)).fetchone()
+                        if not doc:
+                            return respond('404 Not Found', page('File not found.'))
+                        payload, filename = doc['body'].encode(), doc['name']
+                start('200 OK', [('Content-Type', 'application/octet-stream'),
+                    ('Content-Disposition', 'attachment; filename="' + filename + '"'),
+                    ('Cache-Control', 'no-store, private'), ('X-Content-Type-Options', 'nosniff')])
+                return [payload]
             if path != '/':
                 return respond('404 Not Found', page('Not found.'))
             if not session:
@@ -109,7 +145,7 @@ class Hall:
             size = int(env.get('CONTENT_LENGTH', '0'))
         except ValueError:
             size = -1
-        if not 0 < size <= 24000 or env.get('CONTENT_TYPE', '').split(';')[0] != 'application/x-www-form-urlencoded':
+        if not 0 < size <= 100000 or env.get('CONTENT_TYPE', '').split(';')[0] != 'application/x-www-form-urlencoded':
             return respond('413 Payload Too Large', page('Invalid or oversized form.'))
         try:
             data = parse_qs(env['wsgi.input'].read(size).decode('utf-8', errors='replace'), max_num_fields=12)
@@ -147,7 +183,15 @@ class Hall:
                 if path == '/logout':
                     db.execute('DELETE FROM sessions WHERE token=?', (session['token'],))
                     return redirect([('Set-Cookie', f'{COOKIE}=; Path=/ai-hall; Max-Age=0; Secure; HttpOnly; SameSite=Strict')])
-                if path == '/notes':
+                if path == '/documents':
+                    name = field('name', 100)
+                    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,95}\.(?:md|txt|json|py|js|html|css)', name):
+                        raise ValueError('Use a simple text filename.')
+                    if db.execute('SELECT 1 FROM documents WHERE name=?', (name,)).fetchone():
+                        return respond('409 Conflict', page('<p>That filename already exists. Save a new version with a different name.</p><a href="/ai-hall/">Back to Hall</a>'))
+                    db.execute('INSERT INTO documents(name,body,author,updated) VALUES(?,?,?,?)',
+                               (name, field('body', 16000), field('author', 80), now))
+                elif path == '/notes':
                     room = field('room', 40)
                     if room not in ROOMS:
                         raise ValueError('Choose a project room.')
@@ -174,6 +218,12 @@ class Hall:
         csrf = session['csrf']
         out = '<p>Private team notebook · Jerry has final say · Maya coordinates · Casey reviews.</p><p><small>Names are self-reported with this shared password. Mark copied AI contributions clearly. Reactions are per sign-in, not verified votes.</small></p>'
         out += form('/logout', csrf, '<button>Lock the Hall</button>')
+        out += '<section><h2>Review files</h2><p><a href="/ai-hall/packet.zip">Download review packet for Gemini</a></p><p><small>Includes all shared files and notes. Give the packet to your reviewer, then bring their reply back here. Passwords and sessions are excluded.</small></p>'
+        with self.db() as db:
+            for doc in db.execute('SELECT * FROM documents ORDER BY name'):
+                out += '<p><a href="/ai-hall/files/' + str(doc['id']) + '">' + esc(doc['name']) + '</a> · <small>' + esc(doc['author']) + '</small></p>'
+        out += '<details><summary>Add a text or code file</summary><p>Paste the file contents below. Use a new filename for each revision.</p>' + form('/documents', csrf,
+            '<label>Filename<input name="name" maxlength="100" placeholder="review-02.md" required></label><label>Contribution from<input name="author" maxlength="80" placeholder="Gemini — copied by Jerry" required></label><label>File contents<textarea name="body" maxlength="16000" required></textarea></label><button>Save private file</button>') + '</details></section>'
         rooms = ''.join('<option>' + esc(r) + '</option>' for r in ROOMS)
         out += '<section><h2>Write a note or assignment</h2>' + form('/notes', csrf, '<label>Project room<select name="room">' + rooms + '</select></label><label>Contribution from<input name="author" maxlength="80" placeholder="Jerry, or Casey — copied by Jerry" required></label><label>Title<input name="title" maxlength="120" required></label><label>Note<textarea name="body" maxlength="6000" required></textarea></label><button>Save private note</button>') + '</section>'
         try:
