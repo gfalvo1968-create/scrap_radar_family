@@ -1,0 +1,7 @@
+[build]
+builder = "RAILPACK"
+[deploy]
+startCommand = "gunicorn app:application --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 30"
+healthcheckPath = "/health"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
