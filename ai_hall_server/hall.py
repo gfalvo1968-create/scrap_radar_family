@@ -116,6 +116,9 @@ class Hall:
                         with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as bundle:
                             for doc in db.execute('SELECT * FROM documents ORDER BY name'):
                                 bundle.writestr('files/' + doc['name'], doc['body'])
+                            for name in ('app.py', 'hall.py', 'starter_files.py', 'test_hall.py', 'README.md', 'requirements.txt'):
+                                source = Path(__file__).parent / name
+                                bundle.writestr('source/ai_hall_server/' + name, source.read_text())
                             snapshot = {table: [dict(row) for row in db.execute('SELECT * FROM ' + table)]
                                         for table in ('notes', 'replies')}
                             bundle.writestr('notebook.json', json.dumps(snapshot, indent=2))
