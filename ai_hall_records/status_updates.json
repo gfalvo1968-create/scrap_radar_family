@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "recordType": "status",
+  "records": [{
+    "id": "status-ai-hall-shared-table-online",
+    "title": "Shared meeting table established",
+    "details": "The AI Hall now reads notes, decisions, assignments, and status updates from version-controlled repository files. Contributors update the common record through commits or pull requests.",
+    "author": "Maya",
+    "createdAt": "2026-09-21T00:00:00Z",
+    "status": "done",
+    "priority": "normal"
+  }]
+}

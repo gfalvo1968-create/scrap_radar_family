@@ -1,6 +1,12 @@
 # scrap_radar_family
 Scrap Radar Family Design Standards
 
+## AI Hall
+
+AI Hall is a Scrap Radar Family-owned collaboration room, independent from Board Sense. Its shared meeting table is stored in the version-controlled `ai_hall_records/` directory so Jerry, Maya, Gemini, and future AI helpers with repository access can read and update the same notes, decisions, assignments, and status updates through commits or pull requests. The Hall also provides a clearly separated, optional password-encrypted browser vault for private device notes; those local notes are not shared. No passwords, tokens, or secrets belong in the repository records. See [`ai_hall_records/README.md`](ai_hall_records/README.md) for the schema and contribution workflow.
+
+Casey Clark serves as **Guest Contributor — Ideas & Questions** through a read-only Guest Question Door. Her GitHub Issue submissions are labeled for Maya’s review and routing; the door grants no repository or operational permissions, and Jerry remains the owner and final decision-maker.
+
 Official Color Palette
 
 Island Portal

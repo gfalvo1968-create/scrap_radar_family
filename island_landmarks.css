@@ -1,5 +1,25 @@
 /* SCRAP RADAR FAMILY ISLAND LANDMARKS */
 
+.ai-mountain{
+  position:absolute;
+  z-index:12;
+  top:18%;
+  left:50%;
+  translate:-50% 0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  color:#effff8;
+  text-decoration:none;
+  filter:drop-shadow(0 12px 14px rgba(0,0,0,.3));
+}
+
+.mountain-peak{font-size:clamp(5rem,12vw,8.5rem);line-height:.85}
+.ai-mountain strong{margin-top:-8px;padding:7px 14px;border:2px solid #345d57;border-radius:7px;background:#16352f;color:#baffdf;font-size:.78rem;letter-spacing:.12em;box-shadow:0 0 18px rgba(0,255,153,.25)}
+.ai-mountain small{margin-top:5px;padding:3px 7px;border-radius:5px;background:rgba(5,22,22,.8);font-size:.58rem;font-weight:800;letter-spacing:.04em}
+.ai-mountain:hover,.ai-mountain:focus-visible{filter:drop-shadow(0 0 18px rgba(0,255,153,.7));transform:translateY(-3px)}
+.ai-mountain:focus-visible{outline:3px solid #00ff99;outline-offset:8px}
+
 .builders-landmark{
   position:absolute;
   z-index:14;
@@ -147,6 +167,8 @@
 }
 
 @media(max-width:720px){
+  .ai-mountain{top:18.5%}
+  .mountain-peak{font-size:5rem}
   .builders-landmark{
     top:47%;
     right:-3%;
