@@ -9,7 +9,7 @@ class HallTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.path = self.tmp.name + '/hall.sqlite3'
-        self.password = 'test-password-long-enough'
+        self.password = __import__('secrets').token_urlsafe(24)
         self.hash = password_hash(self.password)
         self.app = Hall(self.path,self.hash,'https://hall.test')
         self.cookie = ''
