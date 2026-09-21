@@ -15,3 +15,10 @@ Missing password/origin/volume configuration returns 503 and denies all access. 
 Protections: scrypt password hashing, eight-hour random server-side sessions, hashed session identifiers at rest, Secure/HttpOnly/SameSite=Strict cookies, CSRF token plus exact Origin checks, no-store responses, escaped text, SQLite parameter binding, bounded forms, and ten login attempts globally per fifteen minutes. A global limiter intentionally favors privacy over availability; someone can temporarily exhaust it. Sessions and notes survive process restarts on the volume. Reaction counts are per sign-in, not verified person counts.
 
 Run tests from this directory: python -m unittest test_hall.py -v. Tests use temporary storage and passwords, never production secrets. Real deployment and browser QA are still required.
+
+## Private review files
+The authenticated Hall includes five starter documents, text/code file creation,
+and a ZIP review packet with documents plus notes/replies. File downloads require
+an active session. Files are versioned by name; duplicates are rejected rather than
+overwritten. Use the packet to share context manually with Gemini, then paste its
+review back into a reply or a new file. No model connection is implied.
