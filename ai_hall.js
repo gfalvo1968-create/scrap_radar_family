@@ -53,8 +53,26 @@ async function decryptVault(container, password) {
   const key = await deriveKey(password, salt, container.iterations);
   const clear = await crypto.subtle.decrypt({ name: "AES-GCM", iv: base64ToBytes(container.iv) }, key, base64ToBytes(container.ciphertext));
   const vault = JSON.parse(decoder.decode(clear));
-  if (!vault || !Array.isArray(vault.records)) throw new Error("Invalid vault content");
+  validatePrivateVault(vault);
   return { vault, key };
+}
+
+function validatePrivateVault(vault) {
+  if (!vault || vault.owner !== "Scrap Radar Family" || typeof vault.createdAt !== "string" || !Array.isArray(vault.records)) throw new Error("Invalid vault content");
+  const allowedTypes = new Set(["note", "decision", "assignment", "status"]);
+  const allowedStatuses = new Set(["open", "in-progress", "blocked", "done"]);
+  const allowedPriorities = new Set(["low", "normal", "high"]);
+  const ids = new Set();
+  vault.records.forEach(record => {
+    if (!record || typeof record !== "object" || typeof record.id !== "string" || !record.id || ids.has(record.id)) throw new Error("Invalid private record ID");
+    ids.add(record.id);
+    if (!allowedTypes.has(record.type) || !allowedStatuses.has(record.status) || !allowedPriorities.has(record.priority)) throw new Error("Invalid private record category");
+    ["title", "author", "details", "createdAt"].forEach(field => {
+      if (typeof record[field] !== "string" || !record[field].trim()) throw new Error(`Invalid private record ${field}`);
+    });
+    if (record.assignee !== undefined && typeof record.assignee !== "string") throw new Error("Invalid private record assignee");
+    if (record.updatedAt !== undefined && typeof record.updatedAt !== "string") throw new Error("Invalid private record update time");
+  });
 }
 
 function validateContainer(container) {
@@ -190,6 +208,7 @@ function buildSharedRecordCard(record) {
 }
 
 function lockHall() {
+  purgePrivateWorkspace();
   state.key = null;
   state.vault = null;
   clearTimeout(state.timer);
@@ -199,6 +218,22 @@ function lockHall() {
   setStatus($("gateStatus"), "Hall locked. Decrypted records were cleared from this session.");
   configureGate();
   $("passwordInput").focus();
+}
+
+function purgePrivateWorkspace() {
+  $("recordList").replaceChildren();
+  $("recordForm").reset();
+  $("recordTitle").value = "";
+  $("recordAuthor").value = "";
+  $("recordAssignee").value = "";
+  $("recordDetails").value = "";
+  $("searchRecords").value = "";
+  $("filterType").value = "all";
+  $("allCount").textContent = "0";
+  $("openCount").textContent = "0";
+  $("emptyState").hidden = false;
+  setStatus($("saveStatus"), "");
+  setStatus($("vaultStatus"), "");
 }
 
 function resetLockTimer() {
@@ -318,11 +353,33 @@ async function importVault(event) {
   try {
     const imported = JSON.parse(await file.text());
     validateContainer(imported);
+    const password = prompt("Enter the password for this backup. The current vault will not be changed unless the backup decrypts and validates successfully.");
+    if (password === null) return;
+    const verified = await decryptVault(imported, password);
     if (!confirm("Replace this device’s current encrypted hall with the imported backup?")) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(imported));
-    lockHall();
-    setStatus($("gateStatus"), "Backup imported. Enter its password to unlock the records.");
-  } catch (_) { setStatus($("vaultStatus"), "That file is not a valid AI Hall backup.", true); }
+    installVerifiedImport(imported, verified);
+    setStatus($("vaultStatus"), "Backup authenticated, validated, and imported. The previous vault was preserved until this backup unlocked successfully.");
+  } catch (_) { setStatus($("vaultStatus"), "Import rejected. The backup could not be decrypted and validated; your current vault was not changed.", true); }
+}
+
+function installVerifiedImport(container, verified) {
+  validateContainer(container);
+  validatePrivateVault(verified.vault);
+  if (!verified.key) throw new Error("Imported vault is not unlocked");
+  const previous = localStorage.getItem(STORAGE_KEY);
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(container));
+    state.key = verified.key;
+    state.vault = verified.vault;
+    openHall();
+  } catch (error) {
+    if (previous === null) localStorage.removeItem(STORAGE_KEY);
+    else localStorage.setItem(STORAGE_KEY, previous);
+    state.key = null;
+    state.vault = null;
+    purgePrivateWorkspace();
+    throw error;
+  }
 }
 
 function resetVault() {

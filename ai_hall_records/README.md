@@ -34,3 +34,7 @@ Do not put passwords, API keys, tokens, personal secrets, or encrypted private-d
 ## Guest contributor boundary
 
 Casey Clark is listed as **Guest Contributor — Ideas & Questions**. Her read-only Guest Question Door routes questions, ideas, and reactions to `.github/ISSUE_TEMPLATE/casey-guest-question.yml` for Maya’s review. Guest submissions do not edit these records or grant access to code, private notes, passwords, administration, Railway, billing, approvals, or merging. Jerry remains owner and final decision-maker.
+
+## Private-vault security checks
+
+Run `node tests/test_ai_hall_security.js` to verify that locking purges decrypted private records and unfinished composer text from both memory and the DOM, and that an imported backup cannot replace the current vault until its password, authenticated ciphertext, and record data have all been verified.
