@@ -72,3 +72,26 @@ class HallTests(unittest.TestCase):
         self.assertNotIn('Write a note',self.request()['body'])
 
 if __name__=='__main__':unittest.main()
+
+class FileTests(HallTests):
+    def test_private_files_and_packet(self):
+        import zipfile
+        self.assertEqual(self.request('/files/1')['status'],401)
+        self.assertEqual(self.request('/packet.zip')['status'],401)
+        csrf=self.login()
+        self.assertIn('01-START-HERE.md',self.request()['body'])
+        payload={'csrf':csrf,'name':'review.md','body':'Reviewer evidence','author':'Gemini — copied by Jerry'}
+        self.assertEqual(self.request('/documents',payload)['status'],303)
+        self.assertEqual(self.request('/documents',payload)['status'],409)
+        self.assertEqual(self.request('/documents',{**payload,'name':'../bad.md'})['status'],400)
+        self.assertEqual(self.request('/documents',{**payload,'name':'next.md','csrf':'bad'})['status'],403)
+        self.app=Hall(self.path,self.hash,'https://hall.test')
+        self.assertIn('review.md',self.request()['body'])
+        self.assertEqual(self.request('/files/6')['body'],'Reviewer evidence')
+        result={}
+        raw=b''.join(self.app({'PATH_INFO':'/packet.zip','REQUEST_METHOD':'GET','HTTP_COOKIE':self.cookie},lambda status,headers:result.update(status=status,headers=dict(headers))))
+        self.assertEqual(result['status'],'200 OK')
+        with zipfile.ZipFile(io.BytesIO(raw)) as packet:
+            self.assertEqual(packet.read('files/review.md').decode(),'Reviewer evidence')
+            self.assertNotIn('sessions',packet.namelist())
+            self.assertNotIn(self.password, str([packet.read(n) for n in packet.namelist()]))
