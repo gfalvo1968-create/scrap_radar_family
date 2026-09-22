@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Casey Clark’s Guest Question Door | AI Hall</title>
+  <link rel="stylesheet" href="ai_hall.css">
+</head>
+<body class="guest-door-page">
+  <main class="guest-door-shell">
+    <a class="island-mark" href="island_portal.html" aria-label="Return to Scrap Radar Family Island">SRF</a>
+    <section class="panel guest-door-panel" aria-labelledby="guestDoorTitle">
+      <div class="guest-door-icon" aria-hidden="true">🚪</div>
+      <p class="room-label">AI HALL • READ-ONLY ENTRANCE</p>
+      <h1 id="guestDoorTitle">Casey Clark’s Guest Question Door</h1>
+      <p class="guest-role">Guest Contributor — Ideas &amp; Questions</p>
+      <p>This door sends a question, idea, or reaction to the repository’s GitHub Issue form for review. It does not open the AI Hall, change a shared record, or grant repository access.</p>
+
+      <div class="review-route">
+        <strong>Review route</strong>
+        <span>Casey submits → “Casey Clark — awaiting review” → Maya reviews and routes → Jerry makes the final decision.</span>
+      </div>
+
+      <section class="boundary-box" aria-labelledby="boundariesTitle">
+        <h2 id="boundariesTitle">Guest access boundaries</h2>
+        <p>Casey can submit only questions, ideas, and reactions through the Issue form.</p>
+        <ul>
+          <li>No private device notes or passwords</li>
+          <li>No administration or repository changes</li>
+          <li>No Railway, billing, or deployment access</li>
+          <li>No approvals, merging, or final decisions</li>
+        </ul>
+      </section>
+
+      <a id="guestIssueLink" class="primary-button guest-submit-link" href="#" rel="noopener noreferrer">Submit through GitHub Issue form</a>
+      <p id="guestDoorStatus" class="form-status" role="status" aria-live="polite"></p>
+      <p class="guest-privacy">GitHub may require a GitHub account to submit. Do not include passwords, tokens, financial information, private notes, or other secrets.</p>
+      <a class="quiet-return" href="ai_hall.html">Return to the AI Hall door</a>
+    </section>
+  </main>
+  <script src="guest_question_door.js"></script>
+</body>
+</html>

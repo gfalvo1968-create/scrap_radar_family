@@ -1,0 +1,45 @@
+name: Casey Clark Guest Question
+description: Read-only guest channel for Casey’s questions, ideas, and reactions
+title: "Casey Clark — awaiting review: "
+labels:
+  - guest-submission
+  - awaiting-review
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Guest Contributor — Ideas & Questions
+        This form creates a review request only. It does not grant access to code, shared Hall records, private notes, passwords, administration, Railway, billing, approvals, or merging. Maya reviews and routes the submission; Jerry remains owner and final decision-maker. Do not submit secrets.
+  - type: dropdown
+    id: submission_type
+    attributes:
+      label: Submission type
+      options:
+        - Question
+        - Idea
+        - Reaction
+    validations:
+      required: true
+  - type: input
+    id: subject
+    attributes:
+      label: Subject
+      placeholder: A short summary for Maya to review
+    validations:
+      required: true
+  - type: textarea
+    id: message
+    attributes:
+      label: Question, idea, or reaction
+      description: Share the context and what you would like the Hall to consider. Do not include private or sensitive information.
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Guest boundary acknowledgement
+      options:
+        - label: I understand this is a review request only and does not give me repository or administrative access.
+          required: true
+        - label: I have not included passwords, tokens, billing information, private notes, or other secrets.
+          required: true
