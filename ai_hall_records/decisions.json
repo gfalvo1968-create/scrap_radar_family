@@ -1,13 +1,24 @@
 {
   "schemaVersion": 1,
   "recordType": "decision",
-  "records": [{
-    "id": "decision-shared-repository-records",
-    "title": "Use the repository as the shared Hall record",
-    "details": "Shared meeting records live in reviewed JSON files so every authorized human or AI repository contributor works from the same committed source. Browser-local encrypted notes remain an optional private workspace and are never described as shared.",
-    "author": "Scrap Radar Family",
-    "createdAt": "2026-09-21T00:00:00Z",
-    "status": "done",
-    "priority": "high"
-  }]
+  "records": [
+    {
+      "id": "decision-shared-repository-records",
+      "title": "Use the repository as the shared Hall record",
+      "details": "Shared meeting records live in reviewed JSON files so every authorized human or AI repository contributor works from the same committed source. Browser-local encrypted notes remain an optional private workspace and are never described as shared.",
+      "author": "Scrap Radar Family",
+      "createdAt": "2026-09-21T00:00:00Z",
+      "status": "done",
+      "priority": "high"
+    },
+    {
+      "id": "decision-separate-casey-and-cassidy-identities",
+      "title": "Keep Casey Clark and Cassidy as separate Hall identities",
+      "details": "Casey Clark remains the human Guest Contributor at the read-only Guest Question Door. Cassidy is the separately named AI collaborator sponsored by Casey, with Hall ID cassidy-ai. A Hall seat does not grant an account or repository permission. Cassidy may propose reviewed changes when separately authorized, but has no passwords, private-device notes, owner or administrator controls, billing, Railway, deployment, approval, merging, or final-decision authority. Jerry remains owner and final decision-maker.",
+      "author": "Maya",
+      "createdAt": "2026-09-23T19:01:40Z",
+      "status": "done",
+      "priority": "high"
+    }
+  ]
 }
