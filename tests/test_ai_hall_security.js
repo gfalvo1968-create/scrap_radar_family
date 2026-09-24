@@ -72,7 +72,7 @@ function makeHarness() {
     URL
   };
   vm.createContext(context);
-  const source = fs.readFileSync("ai_hall.js", "utf8") + `\n;globalThis.testApi={state,lockHall,encryptVault,deriveKey,decryptVault,importVault,installVerifiedImport};`;
+  const source = fs.readFileSync("ai_hall.js", "utf8") + `\n;globalThis.testApi={state,configureGate,lockHall,encryptVault,deriveKey,decryptVault,importVault,installVerifiedImport,resetForgottenVault};`;
   vm.runInContext(source, context);
   return { context, elements, storage, api: context.testApi };
 }
@@ -141,7 +141,31 @@ async function encryptedContainer(api, password, vault) {
   assert.strictEqual(api.state.vault.records[0].title, "New");
   api.lockHall();
 
-  console.log("AI Hall security tests passed: lock purge and authenticated rollback-safe import.");
+  const locked = await encryptedContainer(api, "forgotten-password", privateVault("Forgotten"));
+  storage.set("scrapRadarFamilyAiHallVaultV1", JSON.stringify(locked.container));
+  api.configureGate();
+  assert.strictEqual(elements.forgotPasswordPanel.hidden, false);
+
+  context.confirm = () => false;
+  api.resetForgottenVault();
+  assert.strictEqual(storage.has("scrapRadarFamilyAiHallVaultV1"), true, "First warning must be cancellable");
+
+  const cancelledFinalConfirmation = [true, false];
+  context.confirm = () => cancelledFinalConfirmation.shift();
+  api.resetForgottenVault();
+  assert.strictEqual(storage.has("scrapRadarFamilyAiHallVaultV1"), true, "Final warning must be cancellable");
+
+  elements.passwordInput.value = "incorrect password attempt";
+  const confirmations = [true, true];
+  context.confirm = () => confirmations.shift();
+  api.resetForgottenVault();
+  assert.strictEqual(storage.has("scrapRadarFamilyAiHallVaultV1"), false);
+  assert.strictEqual(elements.forgotPasswordPanel.hidden, true);
+  assert.strictEqual(elements.confirmInput.hidden, false);
+  assert.strictEqual(elements.passwordInput.value, "");
+  assert.match(elements.gateStatus.textContent, /shared records and review requests were not changed/);
+
+  console.log("AI Hall security tests passed: lock purge, authenticated rollback-safe import, and confirmed local-only password reset.");
 })().catch(error => {
   console.error(error);
   process.exitCode = 1;
