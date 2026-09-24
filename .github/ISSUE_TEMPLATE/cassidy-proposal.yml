@@ -1,0 +1,55 @@
+name: Cassidy AI Proposal
+description: Proposal-only review channel for Cassidy’s questions, ideas, research, and suggested changes
+title: "Cassidy — awaiting review: "
+labels:
+  - awaiting-review
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Cassidy — AI Collaborator Proposal
+        This public form creates a review request only. It does not connect an AI account or grant access to code, Shared Hall Records, private notes, passwords, administration, Railway, billing, deployments, approvals, or merging. Maya reviews and routes the proposal; Jerry remains owner and final decision-maker. Do not submit secrets.
+  - type: dropdown
+    id: proposal_type
+    attributes:
+      label: Proposal type
+      options:
+        - Question
+        - Idea
+        - Research finding
+        - Suggested change
+        - Security or risk observation
+    validations:
+      required: true
+  - type: input
+    id: subject
+    attributes:
+      label: Subject
+      placeholder: A short summary for Maya to review
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Cassidy’s proposal
+      description: Explain the question, idea, evidence, or suggested change. Do not include private or sensitive information.
+    validations:
+      required: true
+  - type: textarea
+    id: expected_benefit
+    attributes:
+      label: Expected benefit or reason
+      description: Explain how this could help Scrap Radar Family or what risk it could reduce.
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Collaborator boundary acknowledgement
+      options:
+        - label: I understand this is a proposal for review only and is not approval to change, deploy, or merge anything.
+          required: true
+        - label: I understand Cassidy and Casey Clark are separate identities and must not share credentials or authority.
+          required: true
+        - label: I have not included passwords, tokens, API keys, billing information, private notes, personal secrets, or other sensitive information.
+          required: true
