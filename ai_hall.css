@@ -15,6 +15,9 @@
 /* Read-only GitHub review board */
 .review-board{margin-bottom:1rem;border-color:rgba(99,201,255,.4)}
 .review-board .quiet-button:disabled{cursor:wait;opacity:.55}
+.forgot-password-panel{margin-top:1rem;padding:1rem;border:1px solid rgba(255,125,134,.28);border-radius:12px;background:rgba(255,125,134,.06);text-align:left}
+.forgot-password-panel p{margin:0 0 .75rem;color:var(--muted);font-size:.83rem}
+.forgot-password-panel .danger-button{width:100%}
 .review-lanes{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
 .review-lane{display:flex;flex-direction:column;min-width:0;padding:1rem;border:1px solid var(--line);border-radius:14px;background:rgba(3,13,16,.72)}
 .casey-review-lane{border-color:rgba(189,140,255,.42)}
