@@ -38,6 +38,10 @@
         <button id="unlockButton" class="primary-button" type="submit">Unlock AI Hall</button>
         <p id="gateStatus" class="form-status" role="status" aria-live="polite"></p>
       </form>
+      <div id="forgotPasswordPanel" class="forgot-password-panel" hidden>
+        <p><strong>Forgot the device password?</strong> Resetting erases only this browser’s encrypted Private Device Notes. Shared Hall Records and GitHub review requests stay safe.</p>
+        <button id="forgotPasswordButton" class="danger-button" type="button">Reset this device’s Hall</button>
+      </div>
       <div class="security-note"><strong>Two clear spaces:</strong> repository-backed Shared Hall Records are loaded from this site after entry. Optional Private Device Notes remain AES-GCM encrypted in this browser and are never presented as shared.</div>
       <div class="entry-links" aria-label="Review-only entrances">
         <a class="guest-door-link" href="guest_question_door.html">🚪 Casey Clark’s Guest Question Door</a>

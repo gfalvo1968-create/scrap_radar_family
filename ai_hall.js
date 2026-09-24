@@ -111,6 +111,7 @@ function configureGate() {
   $("confirmInput").hidden = exists;
   $("confirmInput").required = !exists;
   $("setupHelp").hidden = exists;
+  $("forgotPasswordPanel").hidden = !exists;
   $("gateTitle").textContent = exists ? "The hall is locked" : "Secure the AI Hall";
   $("gateMessage").textContent = exists
     ? "Enter the device password to open the Hall. It protects only this browser’s optional private notes; shared records come from the repository."
@@ -511,9 +512,23 @@ function installVerifiedImport(container, verified) {
 function resetVault() {
   if (!confirm("Erase every AI Hall record stored on this device? Export a backup first if needed.")) return;
   if (!confirm("This cannot be undone. Erase the local hall now?")) return;
+  eraseLocalHall("Local hall erased. Choose a new password to begin again.");
+}
+
+function resetForgottenVault() {
+  if (!confirm("Reset this device’s AI Hall password? This permanently erases the encrypted Private Device Notes stored only in this browser. Shared Hall Records and GitHub review requests will not change.")) return;
+  if (!confirm("Final confirmation: erase this browser’s local AI Hall now? This cannot be undone.")) return;
+  eraseLocalHall("This browser’s local hall was reset. Create a new device password; shared records and review requests were not changed.");
+}
+
+function eraseLocalHall(message) {
   localStorage.removeItem(STORAGE_KEY);
   lockHall();
-  setStatus($("gateStatus"), "Local hall erased. Choose a new password to begin again.");
+  state.failures = 0;
+  state.blockedUntil = 0;
+  $("passwordInput").value = "";
+  $("confirmInput").value = "";
+  setStatus($("gateStatus"), message);
 }
 
 $("unlockForm").addEventListener("submit", event => { handleUnlock(event).catch(() => setStatus($("gateStatus"), "The secure vault is unavailable in this browser.", true)); });
@@ -531,6 +546,7 @@ $("searchRecords").addEventListener("input", renderRecords);
 $("exportButton").addEventListener("click", exportVault);
 $("importInput").addEventListener("change", importVault);
 $("resetButton").addEventListener("click", resetVault);
+$("forgotPasswordButton").addEventListener("click", resetForgottenVault);
 $("refreshReviewQueue").addEventListener("click", loadReviewQueue);
 ["pointerdown", "keydown"].forEach(name => document.addEventListener(name, resetLockTimer, { passive: true }));
 document.addEventListener("visibilitychange", () => { if (document.hidden && state.key) resetLockTimer(); });
