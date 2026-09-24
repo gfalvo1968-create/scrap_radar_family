@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'">
   <title>AI Hall | Scrap Radar Family</title>
   <link rel="stylesheet" href="ai_hall.css">
 </head>
@@ -59,6 +59,7 @@
           <p>Repository records give Jerry, Maya, Gemini, Cassidy, and future helpers one commit-reviewed source of truth, separate from Board Sense.</p>
         </div>
         <div class="stats" aria-label="Hall record counts">
+          <div><strong id="reviewCount">0</strong><span>Reviews</span></div>
           <div><strong id="sharedCount">0</strong><span>Shared</span></div>
           <div><strong id="allCount">0</strong><span>Private</span></div>
           <div><strong id="openCount">0</strong><span>Private open</span></div>
@@ -74,6 +75,41 @@
           <article class="ai-roster-card" data-hall-id="cassidy-ai"><strong>Cassidy</strong><span>AI collaborator • Sponsored by Casey Clark</span><span>Proposal-only • No admin, deployment, approval, or merge authority</span><a href="cassidy_proposal_door.html">Open proposal-only door</a></article>
           <article class="guest-roster-card" data-hall-id="casey-clark-guest"><strong>Casey Clark</strong><span>Human Guest Contributor — Ideas &amp; Questions</span><a href="guest_question_door.html">Open read-only Guest Question Door</a></article>
         </div>
+      </section>
+
+      <section class="panel review-board" aria-labelledby="reviewBoardTitle">
+        <div class="panel-heading">
+          <div><p class="room-label">PUBLIC GITHUB • READ-ONLY</p><h2 id="reviewBoardTitle">Incoming Review Board</h2></div>
+          <button id="refreshReviewQueue" class="quiet-button" type="button">Refresh queue</button>
+        </div>
+        <p class="section-intro">One desk, two separate lanes. Maya reviews and routes each submission; Jerry keeps final decision authority. This board can only read public issue information and open GitHub links.</p>
+        <p id="reviewQueueStatus" class="form-status" role="status" aria-live="polite">The review queue loads after the Hall opens.</p>
+
+        <div class="review-lanes">
+          <section class="review-lane casey-review-lane" aria-labelledby="caseyReviewTitle">
+            <div class="review-lane-heading">
+              <div><p class="room-label">HUMAN GUEST</p><h3 id="caseyReviewTitle">Casey Clark’s Questions</h3></div>
+              <span id="caseyReviewCount" class="review-count" aria-label="Open Casey reviews">0</span>
+            </div>
+            <p>Only open issues beginning “Casey Clark — awaiting review:” appear here.</p>
+            <div id="caseyReviewList" class="review-list"></div>
+            <div id="caseyReviewEmpty" class="review-empty"><span>🚪</span><strong>No Casey questions are waiting.</strong></div>
+            <a class="review-search-link" href="https://github.com/gfalvo1968-create/scrap_radar_family/issues?q=is%3Aissue%20state%3Aopen%20in%3Atitle%20%22Casey%20Clark%20%E2%80%94%20awaiting%20review%3A%22" target="_blank" rel="noopener noreferrer">Open Casey’s queue on GitHub</a>
+          </section>
+
+          <section class="review-lane cassidy-review-lane" aria-labelledby="cassidyReviewTitle">
+            <div class="review-lane-heading">
+              <div><p class="room-label">AI COLLABORATOR</p><h3 id="cassidyReviewTitle">Cassidy’s Proposals</h3></div>
+              <span id="cassidyReviewCount" class="review-count" aria-label="Open Cassidy reviews">0</span>
+            </div>
+            <p>Only open issues beginning “Cassidy — awaiting review:” appear here.</p>
+            <div id="cassidyReviewList" class="review-list"></div>
+            <div id="cassidyReviewEmpty" class="review-empty"><span>💠</span><strong>No Cassidy proposals are waiting.</strong></div>
+            <a class="review-search-link" href="https://github.com/gfalvo1968-create/scrap_radar_family/issues?q=is%3Aissue%20state%3Aopen%20in%3Atitle%20%22Cassidy%20%E2%80%94%20awaiting%20review%3A%22" target="_blank" rel="noopener noreferrer">Open Cassidy’s queue on GitHub</a>
+          </section>
+        </div>
+
+        <div class="review-boundary"><strong>Review boundary:</strong> no issue, comment, label, account, code, deployment, or permission can be changed from this board.</div>
       </section>
 
       <section class="panel shared-panel" aria-labelledby="sharedTitle">
