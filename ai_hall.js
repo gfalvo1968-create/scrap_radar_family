@@ -9,10 +9,15 @@ const SHARED_RECORD_SOURCES = [
   ["assignment", "ai_hall_records/assignments.json"],
   ["status", "ai_hall_records/status_updates.json"]
 ];
+const REVIEW_QUEUE_API = "https://api.github.com/repos/gfalvo1968-create/scrap_radar_family/issues?state=open&per_page=100";
+const REVIEW_PREFIXES = Object.freeze({
+  casey: "Casey Clark — awaiting review:",
+  cassidy: "Cassidy — awaiting review:"
+});
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-const state = { key: null, vault: null, timer: null, failures: 0, blockedUntil: 0 };
+const state = { key: null, vault: null, timer: null, failures: 0, blockedUntil: 0, reviewRequest: 0 };
 const $ = id => document.getElementById(id);
 
 function bytesToBase64(bytes) {
@@ -158,6 +163,7 @@ function openHall() {
   resetLockTimer();
   renderRecords();
   loadSharedRecords();
+  loadReviewQueue();
   $("recordTitle").focus();
 }
 
@@ -186,6 +192,126 @@ function renderSharedRecords(records) {
   records.forEach(record => list.appendChild(buildSharedRecordCard(record)));
   $("sharedEmptyState").hidden = records.length > 0;
   $("sharedCount").textContent = records.length;
+}
+
+function classifyReviewIssues(issues) {
+  if (!Array.isArray(issues)) throw new Error("GitHub returned an invalid review queue");
+  const openIssues = issues.filter(issue => issue && issue.state === "open" && !issue.pull_request && typeof issue.title === "string");
+  const newestFirst = (a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at);
+  return {
+    casey: openIssues.filter(issue => issue.title.startsWith(REVIEW_PREFIXES.casey)).sort(newestFirst),
+    cassidy: openIssues.filter(issue => issue.title.startsWith(REVIEW_PREFIXES.cassidy)).sort(newestFirst)
+  };
+}
+
+function extractIssueSection(body, heading) {
+  if (typeof body !== "string") return "";
+  const marker = `### ${heading}`;
+  const markerIndex = body.indexOf(marker);
+  if (markerIndex < 0) return "";
+  const remaining = body.slice(markerIndex + marker.length).trim();
+  const nextHeading = remaining.search(/\n###\s+/);
+  const section = (nextHeading < 0 ? remaining : remaining.slice(0, nextHeading)).trim();
+  return section.replace(/\r/g, "").replace(/\n+/g, " ").replace(/\s+/g, " ");
+}
+
+function safeGitHubIssueUrl(value) {
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:" || url.hostname !== "github.com") return "";
+    if (!/^\/gfalvo1968-create\/scrap_radar_family\/issues\/\d+$/.test(url.pathname)) return "";
+    return url.href;
+  } catch (_) { return ""; }
+}
+
+function reviewExcerpt(issue, lane) {
+  const headings = lane === "casey" ? ["Question, idea, or reaction", "Subject"] : ["Cassidy’s proposal", "Subject"];
+  const value = headings.map(heading => extractIssueSection(issue.body, heading)).find(Boolean) || "Open the GitHub thread to review this submission.";
+  return value.length > 240 ? `${value.slice(0, 237)}…` : value;
+}
+
+function buildReviewCard(issue, lane) {
+  const prefix = REVIEW_PREFIXES[lane];
+  const card = document.createElement("article");
+  card.className = "review-card";
+  card.dataset.reviewLane = lane;
+
+  const top = document.createElement("div");
+  top.className = "review-card-top";
+  const title = document.createElement("h4");
+  title.textContent = issue.title.slice(prefix.length).trim() || extractIssueSection(issue.body, "Subject") || "Review request";
+  const number = document.createElement("span");
+  number.className = "badge";
+  number.textContent = Number.isInteger(issue.number) ? `#${issue.number}` : "Issue";
+  top.append(title, number);
+
+  const details = document.createElement("p");
+  details.className = "review-excerpt";
+  details.textContent = reviewExcerpt(issue, lane);
+
+  const meta = document.createElement("div");
+  meta.className = "record-meta";
+  const author = issue.user && typeof issue.user.login === "string" ? issue.user.login : "GitHub contributor";
+  const comments = Number.isInteger(issue.comments) ? issue.comments : 0;
+  meta.textContent = `Opened by ${author} • ${formatDate(issue.created_at)} • ${comments} repl${comments === 1 ? "y" : "ies"}`;
+
+  const footer = document.createElement("div");
+  footer.className = "review-card-footer";
+  const labels = Array.isArray(issue.labels) ? issue.labels.slice(0, 3) : [];
+  labels.forEach(label => {
+    const chip = document.createElement("span");
+    chip.className = "review-label";
+    chip.textContent = typeof label === "string" ? label : label && typeof label.name === "string" ? label.name : "label";
+    footer.appendChild(chip);
+  });
+  const issueUrl = safeGitHubIssueUrl(issue.html_url);
+  if (issueUrl) {
+    const link = document.createElement("a");
+    link.className = "review-issue-link";
+    link.href = issueUrl;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "Review on GitHub";
+    footer.appendChild(link);
+  }
+
+  card.append(top, details, meta, footer);
+  return card;
+}
+
+function renderReviewLane(lane, issues) {
+  const list = $(`${lane}ReviewList`);
+  list.replaceChildren();
+  issues.forEach(issue => list.appendChild(buildReviewCard(issue, lane)));
+  $(`${lane}ReviewCount`).textContent = issues.length;
+  $(`${lane}ReviewEmpty`).hidden = issues.length > 0;
+}
+
+async function loadReviewQueue() {
+  const requestId = ++state.reviewRequest;
+  const refreshButton = $("refreshReviewQueue");
+  refreshButton.disabled = true;
+  setStatus($("reviewQueueStatus"), "Loading the public GitHub review queue…");
+  try {
+    const response = await fetch(REVIEW_QUEUE_API, {
+      method: "GET",
+      credentials: "omit",
+      cache: "no-store",
+      referrerPolicy: "no-referrer"
+    });
+    if (!response.ok) throw new Error("GitHub review queue is unavailable");
+    const groups = classifyReviewIssues(await response.json());
+    if (requestId !== state.reviewRequest) return;
+    renderReviewLane("casey", groups.casey);
+    renderReviewLane("cassidy", groups.cassidy);
+    const total = groups.casey.length + groups.cassidy.length;
+    $("reviewCount").textContent = total;
+    setStatus($("reviewQueueStatus"), `${total} open review request${total === 1 ? "" : "s"} loaded. Last checked ${new Intl.DateTimeFormat(undefined, { timeStyle: "short" }).format(new Date())}.`);
+  } catch (_) {
+    if (requestId === state.reviewRequest) setStatus($("reviewQueueStatus"), "The read-only queue could not be loaded right now. Use the GitHub queue links below; no Hall data was changed.", true);
+  } finally {
+    if (requestId === state.reviewRequest) refreshButton.disabled = false;
+  }
 }
 
 function buildSharedRecordCard(record) {
@@ -405,6 +531,7 @@ $("searchRecords").addEventListener("input", renderRecords);
 $("exportButton").addEventListener("click", exportVault);
 $("importInput").addEventListener("change", importVault);
 $("resetButton").addEventListener("click", resetVault);
+$("refreshReviewQueue").addEventListener("click", loadReviewQueue);
 ["pointerdown", "keydown"].forEach(name => document.addEventListener(name, resetLockTimer, { passive: true }));
 document.addEventListener("visibilitychange", () => { if (document.hidden && state.key) resetLockTimer(); });
 

@@ -43,6 +43,15 @@ A roster entry documents a role; it does not create a GitHub account or grant ac
 
 Cassidy’s public Proposal Door routes questions, ideas, research findings, suggested changes, and security observations to `.github/ISSUE_TEMPLATE/cassidy-proposal.yml`. Each issue begins **“Cassidy — awaiting review:”** and remains review material until Maya routes it and Jerry makes the final decision. The door does not authenticate an AI, create an account, edit these records, or grant repository permission.
 
+## Incoming Review Board
+
+The Hall’s read-only Review Board loads public open issues from the GitHub API and separates them by exact title prefix:
+
+- **“Casey Clark — awaiting review:”** appears only in the human guest lane.
+- **“Cassidy — awaiting review:”** appears only in the AI collaborator lane.
+
+The browser sends no GitHub credentials or tokens. Issue text is rendered as plain text, and direct links are accepted only when they point to a numbered issue in `gfalvo1968-create/scrap_radar_family`. The board cannot post, comment, label, close, approve, deploy, merge, or change permissions. GitHub remains the review system of record, Maya reviews and routes, and Jerry makes the final decision.
+
 ## Guest contributor boundary
 
 Casey Clark is listed as **Guest Contributor — Ideas & Questions**. Her read-only Guest Question Door routes questions, ideas, and reactions to `.github/ISSUE_TEMPLATE/casey-guest-question.yml` for Maya’s review. Guest submissions do not edit these records or grant access to code, private notes, passwords, administration, Railway, billing, approvals, or merging. Jerry remains owner and final decision-maker.
@@ -54,3 +63,5 @@ Run `node tests/test_ai_hall_security.js` to verify that locking purges decrypte
 Run `node tests/test_ai_hall_roster.js` to verify that Casey and Cassidy remain separate, that Cassidy's collaborator-only boundary is recorded, and that Casey's Guest Door stays the human guest route.
 
 Run `node tests/test_cassidy_proposal_door.js` to verify Cassidy’s canonical proposal link, public-review warning, separate identity acknowledgement, and no-authority boundary.
+
+Run `node tests/test_ai_hall_review_board.js` to verify exact lane separation, public read-only fetching, untrusted-text handling, and repository-scoped issue links.
