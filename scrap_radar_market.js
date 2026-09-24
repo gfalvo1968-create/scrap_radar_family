@@ -61,6 +61,13 @@ function clearEvalLock(){try{sessionStorage.removeItem(EVAL_PRICE_LOCK_KEY)}catc
 function unitLabel(u){return u==='troy_oz'?'troy oz':u==='metric_ton'?'metric ton':u||''}
 function money(v){return Number.isFinite(Number(v))?'$'+Number(v).toLocaleString(undefined,{minimumFractionDigits:Number(v)<10?2:0,maximumFractionDigits:Number(v)<10?2:2}):'—'}
 function hasNumericValue(v){return v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))}
+function sourceDate(m){
+  const date=m&&m.source_price_date;
+  if(typeof date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(date))return null;
+  const parsed=new Date(date+'T00:00:00Z');
+  return !Number.isNaN(parsed.getTime())&&parsed.toISOString().slice(0,10)===date?date:null;
+}
+function needsDateCheck(m){return m.stale===true||!sourceDate(m)}
 
 function fallbackCategories(data){
   const metals=(data&&data.metals)||{};
@@ -76,7 +83,10 @@ function fallbackCategories(data){
       else m.price=null;
       m.price_unit='lb';m.price_type='estimated_scrap_grade';
     }else{m.price=null;m.price_unit=m.unit;m.price_type='local_quote_required'}
-    if(m.reference&&metals[m.reference]){m.benchmark_price=metals[m.reference].price;m.benchmark_unit=metals[m.reference].unit}
+    if(m.reference&&metals[m.reference]){
+      const ref=metals[m.reference];m.benchmark_price=ref.price;m.benchmark_unit=ref.unit;
+      m.source_price_date=ref.source_price_date;m.stale=ref.stale===true;
+    }
     return m;
   })}));
 }
@@ -99,10 +109,15 @@ async function loadData(){
   state.categories=Array.isArray(data.materials)&&data.materials.length?data.materials:fallbackCategories(data);
   flatten();
   renderBenchmarks();renderMaterials();renderCalculator();
-  if(data.status==='live')setStatus('Market feed live','live');
+  const hasUnverified=Object.values(state.metals).some(m=>m.available&&needsDateCheck(m));
+  if(data.status==='stale')setStatus('Market prices stale • verify before use','warn');
+  else if(data.status==='live'&&hasUnverified)setStatus('Some market dates are stale or unverified','warn');
+  else if(data.status==='live')setStatus('Market feed checked • daily prices dated below','live');
   else if(data.status==='unconfigured')setStatus('Market bridge needs Scrap Radar API URL','warn');
   else setStatus('Catalog ready • live prices unavailable','warn');
-  el('sr-updated').textContent=state.updatedAt?'Updated '+new Date(state.updatedAt).toLocaleString():'Catalog loaded';
+  const checked=data.checked_at||state.updatedAt;
+  const checkedTime=checked&&new Date(checked);
+  el('sr-updated').textContent=checkedTime&&!Number.isNaN(checkedTime.getTime())?'Feed checked '+checkedTime.toLocaleString():'Feed check time unavailable';
 }
 
 function setStatus(text,kind){const s=el('sr-feed-status');if(!s)return;s.textContent=text;s.className='status-chip '+(kind||'')}
@@ -112,6 +127,7 @@ function renderBenchmarks(){
   const order=[['gold','🥇 Gold'],['silver','🥈 Silver'],['copper','🥉 Copper'],['aluminum','⚪ Aluminum'],['platinum','⚪ Platinum'],['palladium','⚫ Palladium']];
   box.innerHTML=order.map(([id,label])=>{
     const m=state.metals[id]||{};const ok=m.available&&hasNumericValue(m.price);
+    const date=sourceDate(m);const unverified=ok&&needsDateCheck(m);
     let val='Waiting…',unit=unitLabel(m.unit),yardContext='';
     if(ok){
       val=money(m.price);
@@ -121,7 +137,8 @@ function renderBenchmarks(){
       }
     }
     const intel=m.intelligence||{};
-    return `<div class="market-card ${ok?'':'unavailable'}"><div class="name">${label}</div><div class="value">${val}</div><div class="unit">${ok?'USD / '+esc(unit):'benchmark unavailable'}</div>${yardContext}<div class="trend">${esc(intel.trend||'')}</div></div>`;
+    const dateLabel=ok?(date?'Market date '+esc(date):'Market date unknown')+(unverified?' • verify before use':''):'';
+    return `<div class="market-card ${ok?'':'unavailable'} ${unverified?'stale':''}"><div class="name">${label}</div><div class="value">${val}</div><div class="unit">${ok?'USD / '+esc(unit):'benchmark unavailable'}</div>${yardContext}<div class="trend">${esc(intel.trend||'')}</div><div class="market-date">${dateLabel}</div></div>`;
   }).join('');
 }
 
@@ -129,18 +146,21 @@ function effectivePrice(m){
   const rawQuote=quotes[m.id];
   if(hasNumericValue(rawQuote)){
     const q=Number(rawQuote);
-    if(q>=0)return {price:q,type:'local',unit:m.unit,label:'Your yard quote'};
+    if(q>=0)return {price:q,type:'local',unit:m.unit,label:'Your yard quote • date not recorded',stale:false};
   }
   if(hasNumericValue(m.price)){
     const p=Number(m.price);
-    if(p>=0)return {price:p,type:m.price_type==='market_reference'?'benchmark':'estimate',unit:m.price_unit||m.unit,label:m.price_type==='market_reference'?'Market reference':'Benchmark-derived estimate'};
+    if(p>=0)return {price:p,type:m.price_type==='market_reference'?'benchmark':'estimate',unit:m.price_unit||m.unit,label:m.price_type==='market_reference'?'Market reference':'Benchmark-derived estimate',stale:needsDateCheck(m)};
   }
   return {price:null,type:'local',unit:m.unit,label:'Local quote required'};
 }
 
 function priceBlock(m){
   const e=effectivePrice(m);
-  if(e.price!==null){return `<div class="material-price price-${e.type}"><strong>${money(e.price)} / ${esc(unitLabel(e.unit))}</strong><small>${esc(e.label)}</small></div>`}
+  if(e.price!==null){
+    const date=e.type==='local'?'':`<small>${sourceDate(m)?'Market date '+esc(sourceDate(m)):'Market date unknown'}${e.stale?' • verify before use':''}</small>`;
+    return `<div class="material-price price-${e.type}${e.stale?' stale':''}"><strong>${money(e.price)} / ${esc(unitLabel(e.unit))}</strong><small>${esc(e.label)}</small>${date}</div>`;
+  }
   return `<div class="material-price price-local"><input class="quote-input" inputmode="decimal" data-quote-id="${esc(m.id)}" placeholder="yard $" aria-label="Yard quote for ${esc(m.label)}"><small>local yard/refiner quote</small></div>`;
 }
 
@@ -194,7 +214,7 @@ function updateCalcPrice(){
     p.value=Number(lock.price).toFixed(2);
   }else{
     const e=effectivePrice(m);
-    if(e.price!==null)p.value=Number(e.price).toFixed(2);else p.value='';
+    if(e.price!==null&&!e.stale)p.value=Number(e.price).toFixed(2);else p.value='';
   }
   el('calc-unit').textContent='per '+unitLabel(m.unit);
 }
@@ -204,7 +224,8 @@ function calculate(){
   const weight=Number(el('calc-weight')?.value);const rawPrice=el('calc-price')?.value;const price=Number(rawPrice);
   const value=m&&Number.isFinite(weight)&&weight>=0&&rawPrice!==''&&Number.isFinite(price)&&price>=0?weight*price:0;
   el('calc-value').textContent=money(value);
-  el('calc-detail').textContent=m&&rawPrice!==''&&price>=0?`${weight||0} ${unitLabel(m.unit)} × ${money(price)} per ${unitLabel(m.unit)}`:'Choose a material and enter weight.';
+  el('calc-detail').textContent=m&&rawPrice!==''&&price>=0?`${weight||0} ${unitLabel(m.unit)} × ${money(price)} per ${unitLabel(m.unit)}`:
+    m&&effectivePrice(m).stale?'Market date is stale or unverified. Enter a current quote.':'Choose a material and enter weight.';
 }
 
 function bind(){
