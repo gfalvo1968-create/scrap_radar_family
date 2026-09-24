@@ -1,1 +1,16 @@
-{"schemaVersion":1,"recordType":"assignment","records":[]}
+{
+  "schemaVersion": 1,
+  "recordType": "assignment",
+  "records": [
+    {
+      "id": "assignment-cassidy-reviewed-collaboration",
+      "title": "Use Cassidy's collaborator-only review path",
+      "details": "Cassidy may prepare ideas, shared-record proposals, or code proposals for review. She must use her own clearly identified AI identity, include no secrets, and may not administer services, deploy, approve, merge, or make final decisions. Any future GitHub account or external integration requires Jerry's separate approval and least-privilege access.",
+      "author": "Maya",
+      "assignee": "Cassidy",
+      "createdAt": "2026-09-23T19:01:40Z",
+      "status": "open",
+      "priority": "high"
+    }
+  ]
+}
