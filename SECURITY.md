@@ -20,6 +20,7 @@ Casey Clark and Cassidy are separate identities. They must not share an account,
 - The Incoming Review Board makes unauthenticated `GET` requests for public issue metadata from `api.github.com`. It must never contain, request, store, or transmit a GitHub token, and it must never call a GitHub write endpoint.
 - Shared Hall Records change only through repository commits or pull requests.
 - Optional Private Device Notes are encrypted in that browser with AES-GCM. The browser password protects only that local vault; it is not server-side authentication and does not hide public repository files.
+- The device password cannot be recovered. The locked-door reset requires two confirmations and may remove only this browser's encrypted local vault; it must not change Shared Hall Records, GitHub issues, repository files, accounts, or permissions.
 - Locking the Hall must remove decrypted records, unfinished note text, and search text from memory and the page.
 - A backup import must authenticate, decrypt, and validate completely before it can replace the current local vault.
 
