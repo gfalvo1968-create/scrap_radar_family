@@ -58,7 +58,7 @@ Casey Clark is listed as **Guest Contributor — Ideas & Questions**. Her read-o
 
 ## Private-vault security checks
 
-Run `node tests/test_ai_hall_security.js` to verify that locking purges decrypted private records and unfinished composer text from both memory and the DOM, and that an imported backup cannot replace the current vault until its password, authenticated ciphertext, and record data have all been verified.
+Run `node tests/test_ai_hall_security.js` to verify that locking purges decrypted private records and unfinished composer text from both memory and the DOM, that an imported backup cannot replace the current vault until its password, authenticated ciphertext, and record data have all been verified, and that forgotten-password recovery erases only the confirmed browser-local vault while leaving shared records and review requests unchanged.
 
 Run `node tests/test_ai_hall_roster.js` to verify that Casey and Cassidy remain separate, that Cassidy's collaborator-only boundary is recorded, and that Casey's Guest Door stays the human guest route.
 
