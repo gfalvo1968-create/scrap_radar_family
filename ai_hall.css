@@ -12,6 +12,22 @@
 .workspace-divider::before,.workspace-divider::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,rgba(189,140,255,.45),transparent)}
 .entry-links{display:grid;gap:.55rem;margin-top:1rem}.guest-door-link,.cassidy-door-link{display:block;font-weight:850}.guest-door-link{color:var(--violet)}.cassidy-door-link{color:var(--blue)}.roster-panel{margin-bottom:1rem}.roster-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.75rem;margin-top:1rem}.roster-grid article{display:flex;flex-direction:column;gap:.25rem;padding:1rem;border:1px solid var(--line);border-radius:12px;background:rgba(3,13,16,.62)}.roster-grid span{color:var(--muted);font-size:.8rem}.roster-grid a{margin-top:.5rem;color:var(--violet);font-size:.78rem}.ai-roster-card{border-color:rgba(99,201,255,.55)!important}.ai-roster-card a{color:var(--blue)}.guest-roster-card{border-color:rgba(189,140,255,.45)!important}.guest-door-page{display:grid;min-height:100vh;place-items:center}.guest-door-shell{width:min(760px,100%);padding:clamp(1rem,5vw,3rem)}.guest-door-shell>.island-mark{margin-bottom:1rem}.guest-door-panel{text-align:center}.guest-door-icon{font-size:4rem}.guest-door-panel h1{font-size:clamp(2rem,7vw,3.5rem);margin-bottom:.35rem}.guest-role{color:var(--violet);font-weight:900;letter-spacing:.04em}.cassidy-door-panel{border-color:rgba(99,201,255,.45)}.cassidy-door-panel .room-label,.collaborator-role{color:var(--blue)}.cassidy-door-panel .review-route{border-left-color:var(--blue);background:rgba(99,201,255,.07)}.cassidy-door-panel .boundary-box{border-color:rgba(99,201,255,.35);background:rgba(99,201,255,.06)}.review-route,.boundary-box{margin:1.2rem 0;padding:1rem;border-radius:12px;text-align:left}.review-route{display:flex;flex-direction:column;border-left:3px solid var(--green);background:rgba(72,240,174,.07)}.review-route span,.guest-privacy{color:var(--muted)}.boundary-box{border:1px solid rgba(189,140,255,.35);background:rgba(189,140,255,.06)}.boundary-box h2{margin-bottom:.4rem;font-size:1.2rem}.boundary-box ul{margin-bottom:0}.guest-submit-link{display:block;text-decoration:none}.guest-submit-link[aria-disabled="true"]{pointer-events:none;filter:grayscale(1);opacity:.55}.guest-privacy{margin:1rem auto;font-size:.78rem}.quiet-return{color:var(--green)}
 
+/* Cassidy's documented read-only Hall seat */
+.cassidy-seat{margin-bottom:1rem;border-color:rgba(99,201,255,.52);background:linear-gradient(145deg,rgba(7,27,34,.95),rgba(8,15,27,.95))}
+.cassidy-seat .room-label{color:var(--blue)}
+.cassidy-seat .section-intro code{color:#bdeaff;background:#06131b}
+.read-only-chip{padding:.35rem .65rem;border:1px solid rgba(99,201,255,.48);border-radius:999px;color:var(--blue);font-size:.68rem;font-weight:900;letter-spacing:.09em;white-space:nowrap}
+.cassidy-seat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem;margin-top:1rem}
+.cassidy-seat-card{padding:1rem;border:1px solid rgba(99,201,255,.24);border-radius:12px;background:rgba(3,13,18,.72)}
+.cassidy-seat-card.allowed{border-top:3px solid var(--green)}
+.cassidy-seat-card.restricted{border-top:3px solid var(--danger)}
+.cassidy-seat-card.route{border-top:3px solid var(--blue)}
+.cassidy-seat-card h3{margin-bottom:.55rem;font-size:1rem}
+.cassidy-seat-card ul,.cassidy-seat-card ol{margin:0;padding-left:1.2rem;color:#cce3db;font-size:.82rem}
+.cassidy-seat-card li+li{margin-top:.45rem}
+.cassidy-seat-action{display:block;margin-top:1rem;padding:.65rem .75rem;border:1px solid rgba(99,201,255,.4);border-radius:9px;color:var(--blue);font-size:.8rem;font-weight:900;text-align:center;text-decoration:none}
+.cassidy-seat-action:hover{background:rgba(99,201,255,.08)}
+
 /* Read-only GitHub review board */
 .review-board{margin-bottom:1rem;border-color:rgba(99,201,255,.4)}
 .review-board .quiet-button:disabled{cursor:wait;opacity:.55}
@@ -41,4 +57,4 @@
 .review-search-link{margin-top:auto;padding-top:1rem;font-size:.78rem}
 .review-empty{display:flex;align-items:center;gap:.55rem;padding:1rem;border:1px dashed rgba(155,185,175,.2);border-radius:10px;color:var(--muted);font-size:.82rem}
 .review-boundary{margin-top:1rem;padding:.85rem 1rem;border-left:3px solid var(--green);background:rgba(72,240,174,.06);color:#cce3db;font-size:.82rem}
-@media(max-width:850px){.review-lanes{grid-template-columns:1fr}}
+@media(max-width:850px){.review-lanes,.cassidy-seat-grid{grid-template-columns:1fr}}

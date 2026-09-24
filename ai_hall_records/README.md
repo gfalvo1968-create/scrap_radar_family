@@ -41,6 +41,8 @@ Do not put passwords, API keys, tokens, personal secrets, or encrypted private-d
 
 A roster entry documents a role; it does not create a GitHub account or grant access. Cassidy may read public Shared Hall Records and propose changes through the repository review path when separately authorized. She has no access to passwords, private-device notes, owner or administrator controls, billing, Railway, deployments, approvals, merging, or final decisions. Jerry must approve any future account or integration separately and give it only the minimum access needed.
 
+The Hall renders one dedicated read-only seat for `cassidy-ai`. The seat is informational: it exposes no form, password field, private notes, or write control. It links only to Cassidy’s Proposal Door and states the review route from Cassidy to Maya to Jerry.
+
 Cassidy’s public Proposal Door routes questions, ideas, research findings, suggested changes, and security observations to `.github/ISSUE_TEMPLATE/cassidy-proposal.yml`. Each issue begins **“Cassidy — awaiting review:”** and remains review material until Maya routes it and Jerry makes the final decision. The door does not authenticate an AI, create an account, edit these records, or grant repository permission.
 
 ## Incoming Review Board
@@ -60,7 +62,7 @@ Casey Clark is listed as **Guest Contributor — Ideas & Questions**. Her read-o
 
 Run `node tests/test_ai_hall_security.js` to verify that locking purges decrypted private records and unfinished composer text from both memory and the DOM, that an imported backup cannot replace the current vault until its password, authenticated ciphertext, and record data have all been verified, and that forgotten-password recovery erases only the confirmed browser-local vault while leaving shared records and review requests unchanged.
 
-Run `node tests/test_ai_hall_roster.js` to verify that Casey and Cassidy remain separate, that Cassidy's collaborator-only boundary is recorded, and that Casey's Guest Door stays the human guest route.
+Run `node tests/test_ai_hall_roster.js` to verify that Casey and Cassidy remain separate, that Cassidy has one informational read-only seat with no write controls, that her collaborator boundary is recorded, and that Casey's Guest Door stays the human guest route.
 
 Run `node tests/test_cassidy_proposal_door.js` to verify Cassidy’s canonical proposal link, public-review warning, separate identity acknowledgement, and no-authority boundary.
 
