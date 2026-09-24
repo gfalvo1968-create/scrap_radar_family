@@ -11,7 +11,7 @@ const assignments = JSON.parse(fs.readFileSync("ai_hall_records/assignments.json
 
 assert.strictEqual((hall.match(/data-hall-id="cassidy-ai"/g) || []).length, 1, "Cassidy must have one unique Hall seat");
 assert.strictEqual((hall.match(/data-hall-id="casey-clark-guest"/g) || []).length, 1, "Casey must have one distinct human guest seat");
-assert.match(hall, /data-hall-id="cassidy-ai"[^>]*>[\s\S]*?<strong>Cassidy<\/strong>[\s\S]*?AI collaborator • Sponsored by Casey Clark[\s\S]*?No admin, deployment, approval, or merge authority/);
+assert.match(hall, /data-hall-id="cassidy-ai"[^>]*>[\s\S]*?<strong>Cassidy<\/strong>[\s\S]*?AI collaborator • Sponsored by Casey Clark[\s\S]*?No admin, deployment, approval, or merge authority[\s\S]*?href="cassidy_proposal_door\.html"/);
 assert.match(hall, /data-hall-id="casey-clark-guest"[^>]*>[\s\S]*?Human Guest Contributor — Ideas &amp; Questions[\s\S]*?href="guest_question_door\.html"/);
 
 const identityDecision = decisions.records.find(record => record.id === "decision-separate-casey-and-cassidy-identities");

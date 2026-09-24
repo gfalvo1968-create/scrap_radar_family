@@ -27,8 +27,9 @@ Casey Clark and Cassidy are separate identities. They must not share an account,
 1. Read the proposed diff before merging.
 2. Reject any contribution containing a password, token, billing detail, private note, or other secret; rotate an exposed credential outside the repository.
 3. Keep guest submissions in the review queue. A guest issue is not permission to edit, deploy, approve, or merge.
-4. Give every future account a unique identity and the minimum access required. Do not reuse Jerry's or Casey's credentials.
-5. Jerry makes the final decision on membership, permissions, deployments, and merges.
+4. A Cassidy proposal issue is review material only. It does not authenticate Cassidy, grant repository access, or authorize a change, deployment, approval, or merge.
+5. Give every future account a unique identity and the minimum access required. Do not reuse Jerry's or Casey's credentials.
+6. Jerry makes the final decision on membership, permissions, deployments, and merges.
 
 ## Required checks
 
@@ -39,4 +40,5 @@ python tests/validate_ai_hall_records.py
 node tests/test_ai_hall_security.js
 node tests/test_ai_hall_roster.js
 node tests/test_guest_question_door.js
+node tests/test_cassidy_proposal_door.js
 ```

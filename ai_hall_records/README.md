@@ -41,6 +41,8 @@ Do not put passwords, API keys, tokens, personal secrets, or encrypted private-d
 
 A roster entry documents a role; it does not create a GitHub account or grant access. Cassidy may read public Shared Hall Records and propose changes through the repository review path when separately authorized. She has no access to passwords, private-device notes, owner or administrator controls, billing, Railway, deployments, approvals, merging, or final decisions. Jerry must approve any future account or integration separately and give it only the minimum access needed.
 
+Cassidy’s public Proposal Door routes questions, ideas, research findings, suggested changes, and security observations to `.github/ISSUE_TEMPLATE/cassidy-proposal.yml`. Each issue begins **“Cassidy — awaiting review:”** and remains review material until Maya routes it and Jerry makes the final decision. The door does not authenticate an AI, create an account, edit these records, or grant repository permission.
+
 ## Guest contributor boundary
 
 Casey Clark is listed as **Guest Contributor — Ideas & Questions**. Her read-only Guest Question Door routes questions, ideas, and reactions to `.github/ISSUE_TEMPLATE/casey-guest-question.yml` for Maya’s review. Guest submissions do not edit these records or grant access to code, private notes, passwords, administration, Railway, billing, approvals, or merging. Jerry remains owner and final decision-maker.
@@ -50,3 +52,5 @@ Casey Clark is listed as **Guest Contributor — Ideas & Questions**. Her read-o
 Run `node tests/test_ai_hall_security.js` to verify that locking purges decrypted private records and unfinished composer text from both memory and the DOM, and that an imported backup cannot replace the current vault until its password, authenticated ciphertext, and record data have all been verified.
 
 Run `node tests/test_ai_hall_roster.js` to verify that Casey and Cassidy remain separate, that Cassidy's collaborator-only boundary is recorded, and that Casey's Guest Door stays the human guest route.
+
+Run `node tests/test_cassidy_proposal_door.js` to verify Cassidy’s canonical proposal link, public-review warning, separate identity acknowledgement, and no-authority boundary.
