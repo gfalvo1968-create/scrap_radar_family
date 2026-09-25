@@ -66,5 +66,28 @@ function payload({ date, stale, status }) {
   assert.equal(fresh.elements["calc-price"].value, "3.40");
   assert.match(fresh.elements["calc-value"].textContent, /\$6\.80/);
 
-  console.log("Market date warnings: 3 feed states passed");
+  // The Board Sense screen shares the market bridge and must also warn on stale prices.
+  const boardScript = fs.readFileSync("board_sense.html", "utf8").split("<script>")[1].split("</script>")[0];
+  async function boardMarket(feed) {
+    const box = { innerHTML: "" };
+    const context = {
+      document: { getElementById: () => box, addEventListener() {} },
+      fetch: async () => ({ ok: true, json: async () => feed }),
+      Date, Number, JSON, console
+    };
+    vm.createContext(context);
+    vm.runInContext(boardScript, context);
+    await context.loadMarket();
+    return box.innerHTML;
+  }
+  const oldBoardFeed = payload({ date: "2026-09-18", stale: true, status: "stale" });
+  oldBoardFeed.metals.copper.intelligence = { trend: "RISING", signal: "FAVORABLE SELL WINDOW" };
+  const boardOld = await boardMarket(oldBoardFeed);
+  assert.match(boardOld, /stale or have no verified market date/);
+  assert.match(boardOld, /Trend withheld pending a current quote/);
+  assert.doesNotMatch(boardOld, /FAVORABLE SELL WINDOW/);
+  const boardFresh = await boardMarket(payload({ date: "2026-09-21", stale: false, status: "live" }));
+  assert.doesNotMatch(boardFresh, /Some prices are stale/);
+
+  console.log("Market date warnings: Scrap Radar and Board Sense states passed");
 })().catch(error => { console.error(error); process.exitCode = 1; });

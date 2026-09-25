@@ -138,7 +138,7 @@ function renderBenchmarks(){
     }
     const intel=m.intelligence||{};
     const dateLabel=ok?(date?'Market date '+esc(date):'Market date unknown')+(unverified?' • verify before use':''):'';
-    return `<div class="market-card ${ok?'':'unavailable'} ${unverified?'stale':''}"><div class="name">${label}</div><div class="value">${val}</div><div class="unit">${ok?'USD / '+esc(unit):'benchmark unavailable'}</div>${yardContext}<div class="trend">${esc(intel.trend||'')}</div><div class="market-date">${dateLabel}</div></div>`;
+    return `<div class="market-card ${ok?'':'unavailable'} ${unverified?'stale':''}"><div class="name">${label}</div><div class="value">${val}</div><div class="unit">${ok?'USD / '+esc(unit):'benchmark unavailable'}</div>${yardContext}<div class="trend">${unverified?'Trend withheld pending a current quote':esc(intel.trend||'')}</div><div class="market-date">${dateLabel}</div></div>`;
   }).join('');
 }
 
