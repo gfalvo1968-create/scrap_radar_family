@@ -62,7 +62,27 @@ function renderRecovery(data){var ri=data.reference_intelligence||{},refs=ri.mat
 function renderKnowledge(data){var ri=data.reference_intelligence||{},refs=ri.matches||[];return refs.length?refs.map(function(m){return '<b>'+esc(m.category)+':</b> '+esc(m.notes||m.sorting_advice||m.reason)}).join('<br><br>'):'No specific reference-sheet lesson triggered.'}
 function renderLabs(data){var p=data.recovery_lab||{},labs=p.labs||[];currentLabs=labs;if(!labs.length)return '<p class="muted">No recovery lab route confirmed yet.</p>';var h='<b>Recovery route:</b> '+labs.length+' matched labs<br><b>Risk class:</b> '+esc(p.risk&&p.risk.level||'unknown')+'<div class="lab-buttons">';h+=labs.map(function(l,i){return '<button type="button" onclick="showLab('+i+')">'+esc(l.label)+' 📖</button>'}).join('');return h+'</div><div id="labDetail" class="lab-card">Choose a matched lab.</div>'}
 function showLab(i){var l=currentLabs[i],w=l&&l.workflow;if(!l)return;var h='<h3>'+esc(l.label)+'</h3><b>Focus:</b> '+(l.focus||[]).map(esc).join(', ');if(w){h+='<p><b>Scope:</b> '+esc(w.scope||'')+'</p>'+((w.identify||[]).length?'<b>Before you start</b>'+list(w.identify):'')+(w.workflow||[]).map(function(s){return '<div class="output-box"><b>'+esc(s.step)+'. '+esc(s.title)+'</b><br>'+esc(s.instruction)+'</div>'}).join('')+((w.stop_conditions||[]).length?'<div class="warning-box"><b>🛑 Stop conditions</b>'+list(w.stop_conditions)+'</div>':'')+(w.hazard_policy?'<div class="warning-box"><b>⚠️ Hazard policy</b><br>'+esc(w.hazard_policy)+'</div>':'')}el('labDetail').innerHTML=h}
-async function loadMarket(){try{var r=await fetch(API+'/market-intelligence?t='+Date.now());var d=await r.json();if(!r.ok)throw new Error('HTTP '+r.status);if(d.status==='unconfigured'||d.status==='unavailable'){el('marketBox').innerHTML='<div class="warning-box">'+esc(d.message||'Market bridge unavailable.')+'</div>';return}var order=[['gold','🥇 Gold'],['silver','🥈 Silver'],['copper','🥉 Copper'],['platinum','⚪ Platinum'],['palladium','⚫ Palladium']];el('marketBox').innerHTML='<div class="market-grid">'+order.map(function(pair){var k=pair[0],n=pair[1],m=d.metals&&d.metals[k]||{},intel=m.intelligence||{};return '<div class="market-item"><b>'+n+'</b><h3>'+(m.available?'$'+Number(m.price).toLocaleString()+' / '+esc(m.unit):'Unavailable')+'</h3>'+esc(intel.trend||'')+(intel.signal?' • '+esc(intel.signal):'')+'</div>'}).join('')+'</div>'}catch(e){el('marketBox').innerHTML='<div class="warning-box">Market bridge unavailable: '+esc(e.message)+'</div>'}}
+function validMarketDate(value){if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return null;var d=new Date(value+'T00:00:00Z');return !Number.isNaN(d.getTime())&&d.toISOString().slice(0,10)===value?value:null}
+async function loadMarket(){
+  try{
+    var r=await fetch(API+'/market-intelligence?t='+Date.now());var d=await r.json();
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    if(d.status==='unconfigured'||d.status==='unavailable'){
+      el('marketBox').innerHTML='<div class="warning-box">'+esc(d.message||'Market bridge unavailable.')+'</div>';return;
+    }
+    var order=[['gold','🥇 Gold'],['silver','🥈 Silver'],['copper','🥉 Copper'],['platinum','⚪ Platinum'],['palladium','⚫ Palladium']];
+    var anyUnverified=d.status==='stale';
+    var cards=order.map(function(pair){
+      var k=pair[0],n=pair[1],m=d.metals&&d.metals[k]||{},intel=m.intelligence||{};
+      var date=validMarketDate(m.source_price_date),available=m.available&&Number.isFinite(Number(m.price))&&Number(m.price)>0;
+      var unverified=available&&(m.stale===true||!date);if(unverified)anyUnverified=true;
+      var context=available?'<small>Market date: '+(date?esc(date):'unknown')+(unverified?' • verify before use':'')+'</small>':'';
+      var trend=unverified?'Trend withheld pending a current quote':esc(intel.trend||'')+(intel.signal?' • '+esc(intel.signal):'');
+      return '<div class="market-item"><b>'+n+'</b><h3>'+(available?'$'+Number(m.price).toLocaleString()+' / '+esc(m.unit):'Unavailable')+'</h3>'+context+'<br>'+trend+'</div>';
+    }).join('');
+    el('marketBox').innerHTML=(anyUnverified?'<div class="warning-box">Some prices are stale or have no verified market date. Check the source before using them.</div>':'')+'<div class="market-grid">'+cards+'</div>';
+  }catch(e){el('marketBox').innerHTML='<div class="warning-box">Market bridge unavailable: '+esc(e.message)+'</div>'}
+}
 function compareEconomics(){var s=Number(el('sellValue').value)||0,r=Number(el('recoveredValue').value)||0,m=Number(el('laborMinutes').value)||0;if(m<=0)return;var extra=r-s,ph=extra/m*60,d=extra<=0?'SELL WHOLE':ph>=60?'RECOVERY LOOKS STRONG':ph>=25?'RECOVERY MAY BE WORTHWHILE':'SELL WHOLE / REVIEW LABOR';el('economicsBox').innerHTML='<b>'+d+'</b><br>Extra value: $'+extra.toFixed(2)+' • $'+ph.toFixed(2)+'/hour'}
 async function fetchAnalysis(file){var f=new FormData();f.append('file',file);var r=await fetch(API+'/analyze',{method:'POST',body:f});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json()}
 function renderBoardData(d){el('labBox').innerHTML=renderLabs(d);el('blueprintBox').innerHTML=renderBlueprint(d);el('spikeBox').innerHTML=renderSpike(d);el('reasoningBox').innerHTML=renderReasoning(d);el('recoveryBox').innerHTML=renderRecovery(d);el('lessonBox').innerHTML=renderKnowledge(d);loadMarket()}

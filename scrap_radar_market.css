@@ -37,6 +37,9 @@ a{color:inherit}
 .market-card .name{font-size:.85rem;color:#b8f5ff}
 .market-card .value{font-size:clamp(1.1rem,2vw,1.55rem);font-weight:900;color:var(--cyan);margin:8px 0 4px}
 .market-card .unit,.market-card .trend{font-size:.75rem;color:#81aeb4}
+.market-card .market-date{font-size:.7rem;color:#b6d3c0;margin-top:7px;line-height:1.35}
+.market-card.stale{border-color:rgba(255,203,102,.7)}
+.market-card.stale .market-date,.material-price.stale small{color:var(--warn)}
 .market-card.unavailable{opacity:.6;border-style:dashed}
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0;font-size:.78rem}
 .legend span{padding:5px 8px;border-radius:999px;background:#07110d;border:1px solid rgba(255,255,255,.12)}
