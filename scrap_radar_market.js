@@ -41,7 +41,7 @@ const FALLBACK={
   ferrous:[['prepared_steel','Prepared Steel','ton','local_quote'],['unprepared_steel','Unprepared Steel','ton','local_quote'],['light_iron','Light Iron / Shred','ton','local_quote'],['cast_iron','Cast Iron','ton','local_quote'],['hms_1','HMS #1','ton','local_quote'],['hms_2','HMS #2','ton','local_quote'],['rebar','Rebar','ton','local_quote'],['white_goods','White Goods / Appliances','ton','local_quote']],
   motors_transformers:[['electric_motors','Electric Motors','lb','local_quote'],['transformers','Transformers','lb','local_quote'],['sealed_units','Sealed Units / Compressors','lb','local_quote'],['ballasts','Ballasts','lb','local_quote']],
   batteries:[['lead_acid_battery','Lead-Acid Battery','lb','local_quote'],['lithium_battery','Lithium-Ion Battery','lb','local_quote'],['nimh_battery','NiMH Battery','lb','local_quote']],
-  electronics:[['board_high','High Grade Circuit Boards','lb','local_quote'],['board_mid','Mid Grade Circuit Boards','lb','local_quote'],['board_low','Low Grade Circuit Boards','lb','local_quote'],['ram','RAM','lb','local_quote'],['cpu','CPUs / Processors','lb','local_quote'],['hard_drives','Hard Drives','lb','local_quote'],['power_supplies','Power Supplies','lb','local_quote']],
+  electronics:[['cell_phone_boards','Clean Cell Phone Logic Boards','lb','local_quote'],['board_high','High Grade Circuit Boards','lb','local_quote'],['board_mid','Mid Grade Circuit Boards','lb','local_quote'],['board_low','Low Grade Circuit Boards','lb','local_quote'],['ram','RAM','lb','local_quote'],['cpu','CPUs / Processors','lb','local_quote'],['hard_drives','Hard Drives','lb','local_quote'],['power_supplies','Power Supplies','lb','local_quote']],
   catalytic:[['catalytic_converter','Catalytic Converter','each','local_quote']]
 };
 
@@ -107,6 +107,9 @@ async function loadData(){
   state.source=data.source||'Scrap Radar';
   state.updatedAt=data.updated_at||null;
   state.categories=Array.isArray(data.materials)&&data.materials.length?data.materials:fallbackCategories(data);
+  // Keep the phone-board buyer category available when an older market API catalog omits it.
+  const electronics=state.categories.find(c=>c.id==='electronics');
+  if(electronics&&!electronics.materials.some(m=>m.id==='cell_phone_boards'))electronics.materials.unshift({id:'cell_phone_boards',label:'Clean Cell Phone Logic Boards',unit:'lb',pricing_mode:'local_quote',price:null,price_unit:'lb',price_type:'local_quote_required'});
   flatten();
   renderBenchmarks();renderMaterials();renderCalculator();
   const hasUnverified=Object.values(state.metals).some(m=>m.available&&needsDateCheck(m));
