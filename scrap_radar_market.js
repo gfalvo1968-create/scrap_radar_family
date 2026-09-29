@@ -155,13 +155,24 @@ function effectivePrice(m){
     const p=Number(m.price);
     if(p>=0)return {price:p,type:m.price_type==='market_reference'?'benchmark':'estimate',unit:m.price_unit||m.unit,label:m.price_type==='market_reference'?'Market reference':'Benchmark-derived estimate',stale:needsDateCheck(m)};
   }
+  const b=window.ScrapRadarBoardPriceReference?.get(m.id);
+  if(b)return {price:b.price,type:'estimate',unit:'lb',label:'Dated U.S. buyer-sample planning estimate',stale:b.stale,date:b.date};
   return {price:null,type:'local',unit:m.unit,label:'Local quote required'};
 }
 
-// Small read-only bridge for the Board Sense handoff. It exposes the same market/estimate logic used by the pricebook without duplicating prices.\nwindow.getScrapRadarMaterialQuote=function(id){\n  const m=state.materials.find(x=>x.id===id);\n  if(!m)return null;\n  const e=effectivePrice(m);\n  return {id:m.id,label:m.label,unit:m.unit,price:e.price,type:e.type,labelSource:e.label,stale:e.stale===true,source:m.price_type||m.pricing_mode||'quote',updatedAt:state.updatedAt||null};\n};\n\nfunction priceBlock(m){
+// Small read-only bridge for the Board Sense handoff. It exposes the same
+// market/estimate logic used by the pricebook without duplicating prices.
+window.getScrapRadarMaterialQuote=function(id){
+  const m=state.materials.find(x=>x.id===id);
+  if(!m)return null;
+  const e=effectivePrice(m);
+  return {id:m.id,label:m.label,unit:m.unit,price:e.price,type:e.type,labelSource:e.label,stale:e.stale===true,date:e.date||sourceDate(m),source:e.type==='estimate'&&e.date?'published_buyer_samples':m.price_type||m.pricing_mode||'quote',updatedAt:state.updatedAt||null};
+};
+
+function priceBlock(m){
   const e=effectivePrice(m);
   if(e.price!==null){
-    const date=e.type==='local'?'':`<small>${sourceDate(m)?'Market date '+esc(sourceDate(m)):'Market date unknown'}${e.stale?' • verify before use':''}</small>`;
+    const date=e.type==='local'?'':`<small>${e.date?'Buyer samples dated '+esc(e.date):sourceDate(m)?'Market date '+esc(sourceDate(m)):'Market date unknown'}${e.stale?' • verify before use':''}</small>`;
     return `<div class="material-price price-${e.type}${e.stale?' stale':''}"><strong>${money(e.price)} / ${esc(unitLabel(e.unit))}</strong><small>${esc(e.label)}</small>${date}</div>`;
   }
   return `<div class="material-price price-local"><input class="quote-input" inputmode="decimal" data-quote-id="${esc(m.id)}" placeholder="yard $" aria-label="Yard quote for ${esc(m.label)}"><small>local yard/refiner quote</small></div>`;
