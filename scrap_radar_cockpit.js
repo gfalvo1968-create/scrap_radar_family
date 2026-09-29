@@ -5,7 +5,7 @@ let lineId=0;
 function el(id){return document.getElementById(id)}
 function n(id){const x=el(id);if(!x||x.value==='')return null;const v=Number(x.value);return Number.isFinite(v)?v:null}
 function v(id){return el(id)?.value??''}
-function cash(x){return '$'+Number(x||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}
+function cash(x){const n=Number(x||0),rounded=Math.sign(n)*Math.round((Math.abs(n)+Number.EPSILON)*100)/100;return '$'+rounded.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}
 function text(id,x){if(el(id))el(id).textContent=x}
 function getJson(k,f){try{return JSON.parse(localStorage.getItem(k)||'')||f}catch(_){return f}}
 function putJson(k,x){try{localStorage.setItem(k,JSON.stringify(x))}catch(_){}}
