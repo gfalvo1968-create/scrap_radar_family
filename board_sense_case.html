@@ -55,7 +55,7 @@
     clean();
     new MutationObserver(clean).observe(status,{childList:true,subtree:true,characterData:true});
   }
-  function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=13',function(){add(d,'boardCaseReportLoader','board_case_report.js?v=1');installLimitMessage(d)})}
+  function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=13',function(){add(d,'boardCaseReportLoader','board_case_report.js?v=2');installLimitMessage(d)})}
   function loadSpikeDual(d){add(d,'spikeDualLoader','board_spike_dual.js?v=2')}
   function loadTargetArea(d){add(d,'targetAreaDisplayLoader','board_target_area_patch.js?v=2',function(){loadSpikeDual(d)})}
   frame.addEventListener('load',function(){
