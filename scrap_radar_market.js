@@ -257,11 +257,13 @@ function bind(){
     updateCalcPrice();calculate();
   });
   el('calc-weight')?.addEventListener('input',calculate);
-  el('calc-price')?.addEventListener('input',()=>{
-    const id=el('calc-material')?.value;const raw=el('calc-price')?.value;
-    if(id&&hasNumericValue(raw))saveEvalLock(id,raw);else clearEvalLock();
-    el('calc-price').dataset.basis='entered';
-    if(el('calc-price-basis'))el('calc-price-basis').textContent='Entered price; confirm the buyer terms before relying on it.';
+  el('calc-price')?.addEventListener('input',(event)=>{
+    if(event.isTrusted){
+      const id=el('calc-material')?.value;const raw=el('calc-price')?.value;
+      if(id&&hasNumericValue(raw))saveEvalLock(id,raw);else clearEvalLock();
+      el('calc-price').dataset.basis='entered';
+      if(el('calc-price-basis'))el('calc-price-basis').textContent='Entered price; confirm the buyer terms before relying on it.';
+    }
     calculate();
   });
 }
