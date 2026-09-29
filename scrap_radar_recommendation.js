@@ -38,8 +38,9 @@ function recalc(){
   const gas=num('br-shared-gas')!==null?num('br-shared-gas'):num('trip-gas');
   const target=num('trip-target');
   const wholeOffer=num('br-whole');
-  const partialEntered=['br-partial-value','br-residual','br-partial-costs'].some(id=>val(id)!=='');
-  const fullEntered=['br-full-value','br-full-residual','br-full-costs'].some(id=>val(id)!=='');
+  // A cost or time entry alone does not establish a recovery value.
+  const partialEntered=['br-partial-value','br-residual'].some(id=>val(id)!=='');
+  const fullEntered=['br-full-value','br-full-residual'].some(id=>val(id)!=='');
   const wl=logistics('whole',mpg,gas),pl=logistics('partial',mpg,gas),fl=logistics('full',mpg,gas);
   const paths=[];
   if(wholeOffer!==null)paths.push({name:'SELL WHOLE',net:wholeOffer-wl.cost,minutes:wl.travel});
@@ -53,20 +54,31 @@ function recalc(){
   }
   if(!paths.length){
     set('br-economic-title','RECOVERY RECOMMENDATION');
-    set('br-economic-detail','Enter board values, distance and costs to compare the recovery paths.');
+    set('br-economic-detail','No recovery path has a value yet. Add a board weight for the whole-board estimate, or enter a verified buyer quote or recovery value.');
+    return;
+  }
+  const missing=['SELL WHOLE','SELECTIVE HARVEST','DEEPER RECOVERY'].filter(name=>!paths.some(p=>p.name===name));
+  const planning=el('br-whole')?.dataset.basis==='planning_estimate';
+  const estimateNote=planning?'The whole-board value is a planning estimate, not a buyer offer. ':'';
+  const missingNote=missing.length?' Still unpriced: '+missing.join(' and ')+'.':'';
+  const costNote=' Blank travel, processing, and time inputs are excluded.';
+  if(paths.length===1){
+    const only=paths[0];
+    set('br-economic-title',planning?'📌 WHOLE-BOARD PLANNING ESTIMATE':'📌 ONE PATH PRICED: '+only.name);
+    set('br-economic-detail',estimateNote+only.name+' shows '+cash(only.net)+' after entered costs. No recovery winner can be named yet.'+missingNote+costNote);
     return;
   }
   const highest=[...paths].sort((a,b)=>b.net-a.net)[0];
   if(target!==null&&target>=0){
     paths.forEach(p=>p.score=p.net-(p.minutes/60)*target);
     const best=[...paths].sort((a,b)=>b.score-a.score)[0];
-    set('br-economic-title','⏱️ ECONOMIC RECOMMENDATION: '+best.name);
+    set('br-economic-title',missing.length||planning?'⏱️ LIMITED PLANNING COMPARISON: '+best.name:'⏱️ ECONOMIC RECOMMENDATION: '+best.name);
     const fuelText=gas!==null?' Fuel '+cash(gas)+'/gal is included.':'';
-    set('br-economic-detail','Highest entered net: '+highest.name+' at '+cash(highest.net)+'. At your '+cash(target)+'/hr target, '+best.name+' has the strongest net-after-time score using '+best.minutes.toFixed(0)+' entered minutes.'+fuelText);
+    set('br-economic-detail',estimateNote+'Highest priced net: '+highest.name+' at '+cash(highest.net)+'. At your '+cash(target)+'/hr target, '+best.name+' has the strongest net-after-time score among priced paths using '+best.minutes.toFixed(0)+' entered minutes.'+fuelText+missingNote+costNote);
     return;
   }
-  set('br-economic-title','📌 CURRENT NET LEADER: '+highest.name);
-  set('br-economic-detail',highest.name+' currently leads at '+cash(highest.net)+' after entered travel and processing costs. Enter an hourly target to include the value of your time in the recommendation.');
+  set('br-economic-title',missing.length||planning?'📌 HIGHEST OF '+paths.length+' PRICED PATHS: '+highest.name:'📌 HIGHEST ENTERED NET: '+highest.name);
+  set('br-economic-detail',estimateNote+highest.name+' shows '+cash(highest.net)+' after entered costs among the priced paths.'+missingNote+' Enter an hourly target to compare the value of your time.'+costNote);
 }
 
 function schedule(){setTimeout(recalc,0)}
