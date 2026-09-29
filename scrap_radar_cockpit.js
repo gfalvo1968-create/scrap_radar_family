@@ -16,24 +16,27 @@ function fillLinePrice(row){const s=row.querySelector('.load-material'),p=row.qu
 function calcLoad(){let gross=0,qty=0,active=0;document.querySelectorAll('.load-line').forEach(r=>{const qv=r.querySelector('.load-qty').value,pv=r.querySelector('.load-price').value,q=Number(qv),p=Number(pv),ok=qv!==''&&pv!==''&&Number.isFinite(q)&&Number.isFinite(p)&&q>=0&&p>=0,value=ok?q*p:0;if(qv!==''||pv!==''||r.querySelector('.load-material').value)active++;if(qv!==''&&Number.isFinite(q))qty+=q;gross+=value;r.querySelector('.line-value').textContent=cash(value)});text('mixed-count',String(active));text('mixed-weight',Number(qty).toFixed(2));text('mixed-gross',cash(gross));text('gauge-mixed-gross',cash(gross))}
 function clearLoad(){if(el('load-lines'))el('load-lines').innerHTML='';addLine()}
 function calcYards(){
-  const weight=n('yard-weight'),mpg=n('yard-mpg'),gas=n('yard-gas'),quotes=[],planning=[];
+  const weight=n('yard-weight'),mpg=n('yard-mpg'),gas=n('yard-gas'),quotes=[],planning=[],unverified=[];
   for(let i=1;i<=3;i++){
     const priceInput=el('yard-price-'+i),price=n('yard-price-'+i),miles=Math.max(0,n('yard-miles-'+i)||0),fees=Math.max(0,n('yard-fees-'+i)||0);
     const name=v('yard-name-'+i).trim()||'Buyer '+i,valid=weight!==null&&weight>0&&price!==null&&price>=0;
     const fuel=valid&&mpg!==null&&mpg>0&&gas!==null&&gas>=0?miles*2/mpg*gas:0,net=valid?weight*price-fuel-fees:null;
-    const isPlanning=priceInput?.dataset.basis==='planning_estimate';
+    const basis=priceInput?.dataset.basis;
     text('yard-net-'+i,net===null?'—':cash(net));
     document.querySelector('[data-yard="'+i+'"]')?.classList.remove('best');
-    if(net!==null)(isPlanning?planning:quotes).push({i,name,net});
+    if(net!==null)(basis==='planning_estimate'?planning:basis==='entered_quote'?quotes:unverified).push({i,name,net});
   }
   if(quotes.length<2){
     text('gauge-yard-net','—');
     if(quotes.length===1){
       text('yard-decision','ONE BUYER QUOTE ENTERED');
-      text('yard-detail',quotes[0].name+' nets '+cash(quotes[0].net)+' after entered costs. Add a second actual buyer quote before naming a best buyer. Planning sample values are excluded from this comparison.');
+      text('yard-detail',quotes[0].name+' nets '+cash(quotes[0].net)+' after entered costs. Add a second actual buyer quote before naming a best buyer. Planning and unverified prices are excluded.');
     }else if(planning.length){
       text('yard-decision','PLANNING PRICE — NO BUYER QUOTE');
       text('yard-detail','The displayed net uses a board-grade planning sample, not a buyer offer. Enter actual quotes from two buyers to compare yards. Blank travel and fuel inputs are excluded.');
+    }else if(unverified.length){
+      text('yard-decision','UNVERIFIED PRICES — NO BUYER COMPARISON');
+      text('yard-detail','Saved or automatically filled prices need confirmation from the buyers. Enter two buyer quotes to compare yards; the displayed nets exclude blank travel and fuel inputs.');
     }else{
       text('yard-decision','ENTER BUYER PRICES');
       text('yard-detail','Enter weight and two actual buyer prices to compare net after entered fuel and fees.');
@@ -45,9 +48,9 @@ function calcYards(){
   document.querySelector('[data-yard="'+best.i+'"]')?.classList.add('best');
   text('gauge-yard-net',cash(best.net));
   text('yard-decision','✅ BEST ENTERED NET: '+best.name.toUpperCase());
-  text('yard-detail',best.name+' nets '+cash(best.net)+', '+cash(best.net-second.net)+' more than the next entered buyer after entered fuel and fees. Compared '+quotes.length+' actual buyer prices; planning samples are excluded.');
+  text('yard-detail',best.name+' nets '+cash(best.net)+', '+cash(best.net-second.net)+' more than the next entered buyer after entered fuel and fees. Compared '+quotes.length+' actual buyer prices; planning and unverified prices are excluded.');
 }
-function copyTrip(){if(v('calc-weight')!=='')el('yard-weight').value=v('calc-weight');if(v('trip-mpg')!=='')el('yard-mpg').value=v('trip-mpg');if(v('trip-gas')!=='')el('yard-gas').value=v('trip-gas');if(v('calc-price')!==''&&!v('yard-price-1')){el('yard-price-1').value=v('calc-price');el('yard-price-1').dataset.basis=el('calc-price')?.dataset.basis==='planning_estimate'?'planning_estimate':'entered_quote'}if(v('trip-miles')!==''&&!v('yard-miles-1'))el('yard-miles-1').value=v('trip-miles');if(v('trip-other')!==''&&!v('yard-fees-1'))el('yard-fees-1').value=v('trip-other');if(!v('yard-name-1')&&el('yard-price-1')?.dataset.basis!=='planning_estimate')el('yard-name-1').value='Current Buyer';calcYards();el('yard-comparison')?.scrollIntoView({behavior:'smooth',block:'start'})}
+function copyTrip(){if(v('calc-weight')!=='')el('yard-weight').value=v('calc-weight');if(v('trip-mpg')!=='')el('yard-mpg').value=v('trip-mpg');if(v('trip-gas')!=='')el('yard-gas').value=v('trip-gas');if(v('calc-price')!==''&&!v('yard-price-1')){el('yard-price-1').value=v('calc-price');const basis=el('calc-price')?.dataset.basis;el('yard-price-1').dataset.basis=basis==='entered'?'entered_quote':basis||'unverified_saved_price'}if(v('trip-miles')!==''&&!v('yard-miles-1'))el('yard-miles-1').value=v('trip-miles');if(v('trip-other')!==''&&!v('yard-fees-1'))el('yard-fees-1').value=v('trip-other');if(!v('yard-name-1')&&el('yard-price-1')?.dataset.basis==='entered_quote')el('yard-name-1').value='Current Buyer';calcYards();el('yard-comparison')?.scrollIntoView({behavior:'smooth',block:'start'})}
 function calcRecovery(){const whole=n('br-whole'),pv=Math.max(0,n('br-partial-value')||0),pr=Math.max(0,n('br-residual')||0),pc=Math.max(0,n('br-partial-costs')||0),pm=n('br-partial-minutes'),fv=Math.max(0,n('br-full-value')||0),fr=Math.max(0,n('br-full-residual')||0),fc=Math.max(0,n('br-full-costs')||0),fm=n('br-full-minutes'),pe=['br-partial-value','br-residual'].some(id=>v(id)!==''),fe=['br-full-value','br-full-residual'].some(id=>v(id)!==''),partial=pe?pv+pr-pc:null,full=fe?fv+fr-fc:null;text('br-whole-net',whole===null?'—':cash(whole));text('br-partial-net',partial===null?'—':cash(partial));text('br-full-net',full===null?'—':cash(full));const ph=partial!==null&&pm!==null&&pm>0?(partial-(whole||0))/(pm/60):null,fh=full!==null&&fm!==null&&fm>0?(full-(whole||0))/(fm/60):null;text('br-partial-hourly',ph===null?'— / hr':cash(ph)+'/hr incremental vs whole');text('br-full-hourly',fh===null?'— / hr':cash(fh)+'/hr incremental vs whole');const paths=[];if(whole!==null)paths.push({name:'SELL WHOLE',net:whole});if(partial!==null)paths.push({name:'SELECTIVE HARVEST',net:partial});if(full!==null)paths.push({name:'DEEPER RECOVERY',net:full});if(!paths.length){text('br-decision','ENTER BOARD VALUES');text('br-detail','Use known offers, recovered values, time and costs. Do not add value just because a component looks valuable.');return}paths.sort((a,b)=>b.net-a.net);const best=paths[0];text('br-decision','📌 HIGHEST ENTERED NET: '+best.name);text('br-detail',best.name+(best.name==='SELL WHOLE'?' shows ':' currently shows ')+cash(best.net)+' net on the entered values.'+(best.name!=='SELL WHOLE'&&whole!==null?' That is '+cash(best.net-whole)+' above the whole-board offer before judging the time rate.':''))}
 function roi(){return {profit:Math.max(0,n('roi-profit')||0),savings:Math.max(0,n('roi-savings')||0),recovered:Math.max(0,n('roi-recovered')||0),costs:Math.max(0,n('roi-costs')||0),potential:Math.max(0,n('roi-potential')||0),subscription:Math.max(0,n('roi-subscription')||0)}}
 function loadRoi(){const d=getJson(ROI_KEY,{}),map={profit:'roi-profit',savings:'roi-savings',recovered:'roi-recovered',costs:'roi-costs',potential:'roi-potential',subscription:'roi-subscription'};Object.keys(map).forEach(k=>{if(d[k]!==undefined&&el(map[k]))el(map[k]).value=d[k]||''})}
