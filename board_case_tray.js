@@ -204,6 +204,7 @@ function threeAnswersHTML(d){
 }
 async function run(){
   if(caseFiles.length<2){E('uploadStatus').textContent='Add at least 2 photos of the same board before analysis.';return}
+  try{window.dispatchEvent(new CustomEvent('boardSenseCaseReportReset'))}catch(_){}
   var btn=E('analyzeCaseBtn');btn.disabled=true;E('uploadStatus').textContent='SPIKE is verifying board identity before reconciling '+caseFiles.length+' views...';
   try{
     var fd=new FormData();caseFiles.forEach(function(f){fd.append('files',f)});
@@ -214,6 +215,7 @@ async function run(){
     var r=await fetch(API+'/analyze-case',{method:'POST',body:fd});if(!r.ok)throw new Error('HTTP '+r.status);
     var p=await r.json();if(p.status==='error')throw new Error(p.message||'Case analysis failed.');
     var d=p.combined||{},idg=d.same_board_verification||{},identityBlocked=d.status==='case_identity_failed'||d.status==='case_identity_clarification'||idg.block_reconciliation,objectBlocked=!pcbGate(d).confirmed,blocked=identityBlocked||objectBlocked;
+    try{window.dispatchEvent(new CustomEvent('boardSenseCaseReport',{detail:{payload:p,blocked:blocked}}))}catch(_){}
     if(objectBlocked){
       try{localStorage.removeItem(HANDOFF_KEY)}catch(_){}
       if(E('predictionBox'))E('predictionBox').innerHTML=objectGateStopHTML(d);
@@ -239,6 +241,7 @@ async function run(){
   }catch(e){E('uploadStatus').textContent='Case analysis failed: '+e.message}finally{btn.disabled=false}
 }
 function clearMissionState(){
+  try{window.dispatchEvent(new CustomEvent('boardSenseCaseReportReset'))}catch(_){}
   try{localStorage.removeItem(TARGET_KEY);localStorage.removeItem(HANDOFF_KEY)}catch(_){}
   try{window.ScrapRadarInspectionTarget=null}catch(_){}
   var panel=E('inspectionTargetPanel');if(panel)panel.remove();
