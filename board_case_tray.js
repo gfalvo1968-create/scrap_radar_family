@@ -178,7 +178,8 @@ function multiBoardReportHTML(d){
   var h='<div class="decision-box"><h3>🧩 SPIKE: SEPARATE BOARD REPORTS</h3><b>'+safe(m.board_count||boards.length)+' physical PCB bodies analyzed independently.</b><br>No identity, grade, or value was combined across the boards.';
   boards.forEach(function(b){
     var targets=Array.isArray(b.remaining_recovery_targets)?b.remaining_recovery_targets:[];
-    h+='<div class="lab-card"><b>BOARD '+safe(b.board_index||'?')+'</b>'+
+    var crop=b.crop_url?'<img src="'+safe(API+b.crop_url)+'" alt="Separated board '+safe(b.board_index||'?')+'" style="display:block;width:100%;max-height:260px;object-fit:contain;background:#111;border:1px solid #d6ff00;border-radius:8px;margin:8px 0">':'';
+    h+='<div class="lab-card"><b>BOARD '+safe(b.board_index||'?')+'</b>'+crop+
       '<br><b>Identity:</b> '+safe(b.identity||'Unresolved')+
       (b.confidence!=null?'<br><b>Confidence:</b> '+safe(b.confidence)+'%':'')+
       '<br><b>Grade:</b> '+safe(b.grade||'UNRESOLVED')+
