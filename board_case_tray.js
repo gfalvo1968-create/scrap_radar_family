@@ -165,6 +165,7 @@ function identityHTML(d){
     }
     return '<div class="decision-box"><h3>🔎 IDENTITY EVIDENCE NEEDED</h3><b>SPIKE stopped the case before combining evidence.</b><br>These photos do not provide enough whole-board geometry to prove that every view shows the same physical board. No multiple-board verdict is being claimed.'+reasons+next+'</div>';
   }
+  if(g.status==='OPERATOR_CONFIRMED_SAME_BOARD')return '<div class="decision-box"><b>Same board confirmed by you.</b> Automatic photo matching was uncertain. Identity confidence is limited to '+safe(g.confidence||60)+'%; review the blueprint and estimates before using them.'+reasons+'</div>';
   return '<div class="lab-card"><b>🔎 Same-Board Verification:</b> '+safe(g.status||'checked')+' ('+safe(g.confidence||0)+'%)'+(g.whole_view_count!=null?'<br><b>Whole-board views:</b> '+safe(g.whole_view_count):'')+reasons+next+'</div>'
 }
 function multiBoardReportHTML(d){
@@ -208,6 +209,7 @@ async function run(){
   var btn=E('analyzeCaseBtn');btn.disabled=true;E('uploadStatus').textContent='SPIKE is verifying board identity before reconciling '+caseFiles.length+' views...';
   try{
     var fd=new FormData();caseFiles.forEach(function(f){fd.append('files',f)});
+    if(E('sameBoardConfirmation')&&E('sameBoardConfirmation').checked)fd.append('operator_same_board_confirmation','true');
     var sell=num('sellValue'),recovered=num('recoveredValue'),minutes=num('laborMinutes');
     if(sell!=null&&sell>0)addField(fd,'current_sell_whole_value',sell);
     if(recovered!=null&&recovered>0)addField(fd,'full_recovery_value',recovered);
@@ -236,7 +238,7 @@ async function run(){
       }else renderEconomics(d);
       if(E('predictionBox'))E('predictionBox').innerHTML=(identityBlocked?identityHTML(d)+multiBoardReportHTML(d):'<h3>📸 SPIKE MULTI-PHOTO BOARD CASE</h3>'+identityHTML(d)+'<div class="type-box"><div class="type-name">'+safe(d.board_type||'Unknown')+'</div><b>Photos compared:</b> '+safe(p.photo_count||caseFiles.length)+'<br><b>Grade:</b> '+safe(d.grade||'N/A')+'<br><b>Confidence:</b> '+safe(d.confidence||0)+'%<br><b>Recovery Score:</b> '+safe(d.score||0)+'<br><b>Recommendation:</b> '+safe(d.recommendation||'Manual review required.')+'<br><b>Engine:</b> '+safe(d.model||'Board Sense')+'</div>')+threeAnswersHTML(d);
       var mr=d.multi_board_material_report||{};
-      E('uploadStatus').textContent=identityBlocked?(identityBlockKind(idg)==='multiple'?(mr.status==='SEPARATE_REPORTS_READY'?'Case split: '+safe(mr.board_count)+' separate board reports ready. No identities or values were combined.':'Case stopped from merging: multiple-board evidence detected. Add a little spacing if SPIKE cannot isolate each piece.'):'Case stopped: identity evidence is incomplete. Add the requested full-board photo.'):'Board identity checked. Three-answer board case complete.';
+      E('uploadStatus').textContent=identityBlocked?(identityBlockKind(idg)==='multiple'?(mr.status==='SEPARATE_REPORTS_READY'?'Case split: '+safe(mr.board_count)+' separate board reports ready. No identities or values were combined.':'Case stopped: evidence of separate boards in a frame or across views. Review the flagged photos.'):'Case paused: same-board identity is uncertain. Confirm it above if every photo is the same physical board, then analyze again.'):(idg.status==='OPERATOR_CONFIRMED_SAME_BOARD'?'User-confirmed same board. Analysis complete with limited identity confidence.':'Board identity checked. Three-answer board case complete.');
     }
   }catch(e){E('uploadStatus').textContent='Case analysis failed: '+e.message}finally{btn.disabled=false}
 }
@@ -260,6 +262,7 @@ function clearMissionState(){
 }
 function reset(){
   caseFiles=[];['casePhoto','casePhotos'].forEach(function(id){var i=E(id);if(i)i.value=''});tray();
+  if(E('sameBoardConfirmation'))E('sameBoardConfirmation').checked=false;
   clearMissionState();
   if(E('sellValue'))E('sellValue').value='0';if(E('recoveredValue'))E('recoveredValue').value='0';if(E('laborMinutes'))E('laborMinutes').value='10';
   E('uploadStatus').textContent='New board/object ready. Prior inspection mission cleared. Add 2–6 photos of one board.';
@@ -269,7 +272,7 @@ function reset(){
 function install(){
   var a=E('boardImageA');if(!a)return;var s=a.closest('section');if(!s)return;
   ensureBreakdownPanel();
-  s.innerHTML='<h2>📷 SPIKE Multi-Photo Board Case</h2><p><b>One physical board, several views.</b> SPIKE verifies case identity first, then gives three separate answers: identity, recovery, and economics.</p><div class="side-box"><b>Fast batch:</b> Select 2–6 saved photos together.<br><input type="file" id="casePhotos" accept="image/*" multiple><button type="button" id="addCasePhotosBtn">＋ Add Selected Photos</button><br><br><b>Single-photo fallback:</b><br><input type="file" id="casePhoto" accept="image/*"><button type="button" id="addCasePhotoBtn">＋ Add One Photo</button><div id="caseTray" style="margin-top:12px"></div></div><div class="scan-actions"><button type="button" id="analyzeCaseBtn">Verify & Analyze Board Case</button><button type="button" id="resetCaseBtn">Start New Board</button></div><p id="uploadStatus">Ready. Add 2–6 photos of one board.</p>';
+  s.innerHTML='<h2>📷 SPIKE Multi-Photo Board Case</h2><p><b>One physical board, several views.</b> SPIKE verifies case identity first, then gives three separate answers: identity, recovery, and economics.</p><div class="side-box"><b>Fast batch:</b> Select 2–6 saved photos together.<br><input type="file" id="casePhotos" accept="image/*" multiple><button type="button" id="addCasePhotosBtn">＋ Add Selected Photos</button><br><br><b>Single-photo fallback:</b><br><input type="file" id="casePhoto" accept="image/*"><button type="button" id="addCasePhotoBtn">＋ Add One Photo</button><div id="caseTray" style="margin-top:12px"></div></div><p><label><input type="checkbox" id="sameBoardConfirmation"> I confirm every photo shows the same physical board (front, back, or close-up).</label><br><small>Use this when SPIKE is uncertain. It cannot override clear evidence of separate boards; the result is marked user-confirmed.</small></p><div class="scan-actions"><button type="button" id="analyzeCaseBtn">Verify & Analyze Board Case</button><button type="button" id="resetCaseBtn">Start New Board</button></div><p id="uploadStatus">Ready. Add 2–6 photos of one board.</p>';
   E('addCasePhotosBtn').onclick=addBatch;E('addCasePhotoBtn').onclick=addSingle;E('analyzeCaseBtn').onclick=run;E('resetCaseBtn').onclick=reset;tray();
   var v=document.querySelector('.version-stamp');if(v)v.textContent='Harbor Rich Dashboard • SPIKE Case Tray v1.2 • Stop Merge / Keep Investigating'
 }
