@@ -78,8 +78,8 @@ function pathData(){
   const fullResidual=Math.max(0,num('br-full-residual')||0);
   const fullCosts=Math.max(0,num('br-full-costs')||0);
   const fullWork=Math.max(0,num('br-full-minutes')||0);
-  const partialEntered=['br-partial-value','br-residual','br-partial-costs'].some(id=>value(id)!=='');
-  const fullEntered=['br-full-value','br-full-residual','br-full-costs'].some(id=>value(id)!=='');
+  const partialEntered=['br-partial-value','br-residual'].some(id=>value(id)!=='');
+  const fullEntered=['br-full-value','br-full-residual'].some(id=>value(id)!=='');
   const wl=tripCost('whole',mpg,gas),pl=tripCost('partial',mpg,gas),fl=tripCost('full',mpg,gas);
   const whole=wholeOffer===null?null:wholeOffer-wl.total;
   const partial=partialEntered?partialValue+partialResidual-partialCosts-pl.total:null;
@@ -94,9 +94,9 @@ function updateLogistics(d){
   set('br-whole-log-cost','Travel cost '+cash(d.wl.total));
   set('br-partial-log-cost','Travel cost '+cash(d.pl.total));
   set('br-full-log-cost','Travel cost '+cash(d.fl.total));
-  set('br-whole-net',d.whole===null?'$0.00':cash(d.whole));
-  set('br-partial-net',d.partial===null?'$0.00':cash(d.partial));
-  set('br-full-net',d.full===null?'$0.00':cash(d.full));
+  set('br-whole-net',d.whole===null?'—':cash(d.whole));
+  set('br-partial-net',d.partial===null?'—':cash(d.partial));
+  set('br-full-net',d.full===null?'—':cash(d.full));
 }
 
 function compareRate(path,whole){
@@ -123,9 +123,9 @@ function recalc(){
   const partial=paths.find(p=>p.kind==='partial')||null;
   const full=paths.find(p=>p.kind==='full')||null;
   const planning=el('br-whole')?.dataset.basis==='planning_estimate';
-  if(planning&&paths.length===1){
-    set('br-decision','📌 WHOLE-BOARD PLANNING ESTIMATE');
-    set('br-detail','This uses dated published buyer samples for the identified grade. Add a current buyer quote and any trip costs before treating it as a sale decision.');
+  if(paths.length===1){
+    set('br-decision',planning?'📌 WHOLE-BOARD PLANNING ESTIMATE':'📌 ONE PATH PRICED');
+    set('br-detail','Only '+paths[0].name+' has a value. The other recovery paths are unpriced, so there is no winner yet. '+(planning?'The whole-board value uses dated buyer samples, not an actual offer.':''));
     return;
   }
   const pr=partial&&whole?compareRate(partial,whole):null;
@@ -138,7 +138,7 @@ function recalc(){
   if(hasTarget){
     paths.forEach(p=>p.score=p.net-(p.minutes/60)*d.target);
     const best=[...paths].sort((a,b)=>b.score-a.score)[0];
-    set('br-decision',planning?'⏱️ PLANNING COMPARISON: '+best.name:'⏱️ ECONOMIC RECOMMENDATION: '+best.name);
+    set('br-decision',planning||paths.length<3?'⏱️ LIMITED PLANNING COMPARISON: '+best.name:'⏱️ ECONOMIC RECOMMENDATION: '+best.name);
     const highText='Highest entered net is '+highest.name+' at '+cash(highest.net)+'. ';
     const travelText='Fuel is '+(d.gas!==null?cash(d.gas)+'/gal':'not entered')+' and the entered path distances are included. ';
     const timeText=best.minutes>0?'At your '+cash(d.target)+'/hr target, '+best.name+' has the strongest net-after-time score using '+best.minutes.toFixed(0)+' total entered minutes. ':'At your '+cash(d.target)+'/hr target, '+best.name+' preserves the most value after entered logistics and time.';
@@ -155,7 +155,7 @@ function recalc(){
     return;
   }
 
-  set('br-decision',planning?'📌 HIGHEST PLANNING NET: '+highest.name:'📌 HIGHEST ENTERED NET: '+highest.name);
+  set('br-decision',planning||paths.length<3?'📌 HIGHEST OF '+paths.length+' PRICED PATHS: '+highest.name:'📌 HIGHEST ENTERED NET: '+highest.name);
   set('br-detail',(planning?'Whole-board value is a planning estimate. ':'')+highest.name+' currently shows '+cash(highest.net)+' after entered travel costs. Add travel minutes and an hourly target to compare the value of your time as well as fuel and distance.');
 }
 
