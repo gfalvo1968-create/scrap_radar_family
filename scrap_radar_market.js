@@ -158,7 +158,7 @@ function effectivePrice(m){
   return {price:null,type:'local',unit:m.unit,label:'Local quote required'};
 }
 
-function priceBlock(m){
+// Small read-only bridge for the Board Sense handoff. It exposes the same market/estimate logic used by the pricebook without duplicating prices.\nwindow.getScrapRadarMaterialQuote=function(id){\n  const m=state.materials.find(x=>x.id===id);\n  if(!m)return null;\n  const e=effectivePrice(m);\n  return {id:m.id,label:m.label,unit:m.unit,price:e.price,type:e.type,labelSource:e.label,stale:e.stale===true,source:m.price_type||m.pricing_mode||'quote',updatedAt:state.updatedAt||null};\n};\n\nfunction priceBlock(m){
   const e=effectivePrice(m);
   if(e.price!==null){
     const date=e.type==='local'?'':`<small>${sourceDate(m)?'Market date '+esc(sourceDate(m)):'Market date unknown'}${e.stale?' • verify before use':''}</small>`;
