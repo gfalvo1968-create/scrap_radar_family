@@ -53,15 +53,57 @@ function ensureCard(){
   let card=E('spike-import-card');if(card)return card;
   card=document.createElement('div');card.id='spike-import-card';card.className='decision-box';
   card.style.borderColor='#b44cff';
-  card.innerHTML='<h3 style="margin-top:0">🧠📡 SPIKE CASE HANDOFF</h3><div id="spike-import-detail">No SPIKE case loaded.</div><div class="eval-actions" style="margin-top:10px"><button id="spike-reapply" class="mini-btn" type="button">Reapply SPIKE Values</button><button id="spike-critical" class="mini-btn" type="button">Check Critical Materials</button><button id="spike-clear" class="mini-btn" type="button">Clear SPIKE Case</button><button id="spike-back" class="mini-btn" type="button">Back to Board Sense</button></div>';
+  card.innerHTML='<h3 style="margin-top:0">🧠📡 SPIKE CASE HANDOFF</h3><div id="spike-import-detail">No SPIKE case loaded.</div><div id="spike-quick-estimate" style="margin-top:14px;padding:12px;border:1px solid #39ff14;border-radius:10px"><b>⚡ QUICK ESTIMATE</b><div class="muted" style="margin:5px 0 9px">Enter only the board weight. Scrap Radar will use the current board-grade estimate to start the comparison.</div><label>Board weight (lb) <input id="spike-board-weight" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00" style="max-width:130px"></label><button id="spike-estimate" class="mini-btn" type="button" style="margin-left:8px">Estimate Whole Board</button><div id="spike-estimate-result" class="muted" style="margin-top:8px">Estimated value — not an exact buyer price.</div></div><div class="eval-actions" style="margin-top:10px"><button id="spike-reapply" class="mini-btn" type="button">Reapply SPIKE Values</button><button id="spike-critical" class="mini-btn" type="button">Check Critical Materials</button><button id="spike-clear" class="mini-btn" type="button">Clear SPIKE Case</button><button id="spike-back" class="mini-btn" type="button">Back to Board Sense</button></div>';
   grid.parentNode.insertBefore(card,grid);
-  E('spike-reapply').onclick=apply;
+  E('spike-reapply').onclick=apply;\n  E('spike-estimate').onclick=estimateWhole;
   E('spike-critical').onclick=openCritical;
   E('spike-clear').onclick=function(){localStorage.removeItem(KEY);render(null)};
   E('spike-back').onclick=function(){window.top.location.href='board_sense_case.html'};
   return card;
 }
-function render(packet){
+function boardQuote(){\n  const ids=['board_mid','board_low','board_high','cell_phone_boards'];\n  for(const id of ids){const q=window.getScrapRadarMaterialQuote&&window.getScrapRadarMaterialQuote(id);if(q&&q.price!=null&&Number.isFinite(Number(q.price))&&Number(q.price)>=0)return q}\n  return null;\n}\nfunction estimateWhole(){\n  const w=Number(E('spike-board-weight')?.value),out=E('spike-estimate-result');\n  if(!Number.isFinite(w)||w<=0){if(out)out.textContent='Enter the board weight in pounds to create the estimate.';return}\n  const q=boardQuote();\n  if(!q){if(out)out.textContent='No board-grade market estimate is available yet. Refresh Market Benchmarks or enter a buyer quote.';return}\n  const total=w*Number(q.price);setValue('br-whole',total.toFixed(2));\n  if(out)out.innerHTML='<b>Estimated whole-board value: 
+  ensureCard();const d=E('spike-import-detail'),b=E('spike-critical');if(!d)return;
+  if(!packet){d.innerHTML='<b>No SPIKE case loaded.</b> Analyze a board in Board Sense, then use Send Case to Scrap Radar.';if(b){b.disabled=true;b.textContent='Check Critical Materials'}return}
+  const i=packet.identity||{},r=packet.recovery||{},e=packet.economics||{},same=packet.sameBoard||{};
+  const signals=(r.signals||[]).slice(0,6),cue=sourceCue(packet),cueLabel=cue?SOURCE_LABELS[cue]:null;
+  d.innerHTML='<b>'+safe(i.boardType||'Unknown Board')+'</b>'+(i.subtype?'<br>Subtype: '+safe(i.subtype):'')+(i.confidence!=null?'<br>Identity confidence: '+safe(i.confidence)+'%':'')+'<br><b>Recovery:</b> Grade '+safe(r.grade||'WITHHELD')+(r.score!=null?' • Score '+safe(r.score):'')+(r.condition?' • '+safe(r.condition):'')+(same.status?'<br><b>Same-board verification:</b> '+safe(same.status)+(same.confidence!=null?' '+safe(same.confidence)+'%':''):'')+(signals.length?'<br><b>SPIKE recovery signals:</b> '+signals.map(safe).join(' • '):'')+'<br><b>Transferred values:</b> '+(e.sellWholeValue!=null?'Whole offer $'+safe(e.sellWholeValue):'No whole offer')+' • '+(e.fullRecoveryValue!=null?'Deeper recovery $'+safe(e.fullRecoveryValue):'No recovery dollars')+' • '+(e.fullMinutes!=null?safe(e.fullMinutes)+' min':'No recovery time')+(cueLabel?'<br><b>Critical-material inspection cue:</b> '+safe(cueLabel)+' <span class="muted">(source clue only, not composition proof)</span>':'')+'<br><span class="muted">SPIKE supplied evidence and previously entered values only. Confirm buyer terms, distance, fuel, processing costs and hourly target here before acting.</span>';
+  if(b){b.disabled=false;b.textContent=cueLabel?'Check Critical Materials: '+cueLabel:'Check Critical Materials'}
+}
+function apply(){
+  const packet=read();render(packet);if(!packet)return;
+  const e=packet.economics||{};
+  if(e.sellWholeValue!=null)setValue('br-whole',e.sellWholeValue);
+  if(e.fullRecoveryValue!=null)setValue('br-full-value',e.fullRecoveryValue);
+  if(e.fullMinutes!=null)setValue('br-full-minutes',e.fullMinutes);
+  setTimeout(function(){E('board-recovery')&&E('board-recovery').scrollIntoView({behavior:'smooth',block:'start'})},120);
+}
+function fixPageLinks(){
+  document.querySelectorAll('a[href]').forEach(function(a){const h=a.getAttribute('href')||'';if(h&&h.charAt(0)!=='#')a.setAttribute('target','_top')});
+}
+function init(){ensureCard();fixPageLinks();const packet=read();render(packet);const qs=new URLSearchParams(location.search);if(packet&&(qs.get('source')==='spike'||window.top!==window))setTimeout(apply,120)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();+total.toFixed(2)+'</b> ('+w.toFixed(2)+' lb × 
+  ensureCard();const d=E('spike-import-detail'),b=E('spike-critical');if(!d)return;
+  if(!packet){d.innerHTML='<b>No SPIKE case loaded.</b> Analyze a board in Board Sense, then use Send Case to Scrap Radar.';if(b){b.disabled=true;b.textContent='Check Critical Materials'}return}
+  const i=packet.identity||{},r=packet.recovery||{},e=packet.economics||{},same=packet.sameBoard||{};
+  const signals=(r.signals||[]).slice(0,6),cue=sourceCue(packet),cueLabel=cue?SOURCE_LABELS[cue]:null;
+  d.innerHTML='<b>'+safe(i.boardType||'Unknown Board')+'</b>'+(i.subtype?'<br>Subtype: '+safe(i.subtype):'')+(i.confidence!=null?'<br>Identity confidence: '+safe(i.confidence)+'%':'')+'<br><b>Recovery:</b> Grade '+safe(r.grade||'WITHHELD')+(r.score!=null?' • Score '+safe(r.score):'')+(r.condition?' • '+safe(r.condition):'')+(same.status?'<br><b>Same-board verification:</b> '+safe(same.status)+(same.confidence!=null?' '+safe(same.confidence)+'%':''):'')+(signals.length?'<br><b>SPIKE recovery signals:</b> '+signals.map(safe).join(' • '):'')+'<br><b>Transferred values:</b> '+(e.sellWholeValue!=null?'Whole offer $'+safe(e.sellWholeValue):'No whole offer')+' • '+(e.fullRecoveryValue!=null?'Deeper recovery $'+safe(e.fullRecoveryValue):'No recovery dollars')+' • '+(e.fullMinutes!=null?safe(e.fullMinutes)+' min':'No recovery time')+(cueLabel?'<br><b>Critical-material inspection cue:</b> '+safe(cueLabel)+' <span class="muted">(source clue only, not composition proof)</span>':'')+'<br><span class="muted">SPIKE supplied evidence and previously entered values only. Confirm buyer terms, distance, fuel, processing costs and hourly target here before acting.</span>';
+  if(b){b.disabled=false;b.textContent=cueLabel?'Check Critical Materials: '+cueLabel:'Check Critical Materials'}
+}
+function apply(){
+  const packet=read();render(packet);if(!packet)return;
+  const e=packet.economics||{};
+  if(e.sellWholeValue!=null)setValue('br-whole',e.sellWholeValue);
+  if(e.fullRecoveryValue!=null)setValue('br-full-value',e.fullRecoveryValue);
+  if(e.fullMinutes!=null)setValue('br-full-minutes',e.fullMinutes);
+  setTimeout(function(){E('board-recovery')&&E('board-recovery').scrollIntoView({behavior:'smooth',block:'start'})},120);
+}
+function fixPageLinks(){
+  document.querySelectorAll('a[href]').forEach(function(a){const h=a.getAttribute('href')||'';if(h&&h.charAt(0)!=='#')a.setAttribute('target','_top')});
+}
+function init(){ensureCard();fixPageLinks();const packet=read();render(packet);const qs=new URLSearchParams(location.search);if(packet&&(qs.get('source')==='spike'||window.top!==window))setTimeout(apply,120)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();+Number(q.price).toFixed(2)+'/lb '+safe(q.label)+'). Estimated value — not an exact buyer price.';\n}\nfunction render(packet){
   ensureCard();const d=E('spike-import-detail'),b=E('spike-critical');if(!d)return;
   if(!packet){d.innerHTML='<b>No SPIKE case loaded.</b> Analyze a board in Board Sense, then use Send Case to Scrap Radar.';if(b){b.disabled=true;b.textContent='Check Critical Materials'}return}
   const i=packet.identity||{},r=packet.recovery||{},e=packet.economics||{},same=packet.sameBoard||{};
