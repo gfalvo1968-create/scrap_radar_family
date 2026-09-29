@@ -7,7 +7,7 @@
 const KEY='scrapRadarSpikeRecoveryPacketV1';
 const INSPECTION_KEY='scrapRadarInspectionTargetV1';
 const DEST='scrap_radar_spike_case.html?source=spike#board-recovery';
-let latest=null;
+let latest=null,pendingPlanning=null;
 function E(id){return document.getElementById(id)}
 function N(id){const x=E(id);if(!x||x.value==='')return null;const n=Number(x.value);return Number.isFinite(n)?n:null}
 function safe(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -51,6 +51,7 @@ function normalize(p){
       signals:Array.isArray(d.recovery_signals)?d.recovery_signals.slice(0,12):[]
     },
     sameBoard:{status:same.status||null,confidence:same.confidence!=null?same.confidence:null},
+    planning:pendingPlanning||null,
     economics:{
       sellWholeValue:sell!=null&&sell>0?sell:null,
       fullRecoveryValue:recovered!=null&&recovered>0?recovered:null,
@@ -91,7 +92,14 @@ function render(packet,blocked){
 }
 function save(packet){
   if(inspectionActive()){parkForInspection();return}
+  if(pendingPlanning)packet.planning=pendingPlanning;
   latest=packet;localStorage.setItem(KEY,JSON.stringify(packet));render(packet,false)
+}
+function updatePlanning(detail){
+  if(!detail||inspectionActive())return;
+  const w=Number(detail.weightGrams);
+  pendingPlanning={gradeId:detail.gradeId||null,weightGrams:detail.weightGrams!=null&&Number.isFinite(w)&&w>0?w:null};
+  if(latest){latest.planning=pendingPlanning;localStorage.setItem(KEY,JSON.stringify(latest))}
 }
 function capture(payload){
   if(inspectionActive()){parkForInspection();return}
@@ -123,6 +131,8 @@ function init(){
   const saved=readSaved();if(saved){latest=saved;render(saved,false)}
 }
 window.addEventListener('boardSenseObjectGateBlocked',function(){try{localStorage.removeItem(KEY)}catch(_){}latest=null;render(null,true)});
+window.addEventListener('boardSensePlanningUpdated',function(e){updatePlanning(e.detail)});
+window.addEventListener('boardSenseCaseReportReset',function(){pendingPlanning=null});
 window.addEventListener('storage',function(e){if(e.key===INSPECTION_KEY||e.key===KEY){if(inspectionActive())parkForInspection();else render(readSaved(),false)}});
 window.addEventListener('boardSenseInspectionMission',function(){if(inspectionActive())parkForInspection();else render(readSaved(),false)});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
