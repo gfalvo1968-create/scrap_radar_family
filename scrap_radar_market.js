@@ -179,6 +179,7 @@ function priceBlock(m){
 }
 
 function benchmarkNote(m){
+  if(window.ScrapRadarBoardPriceReference?.get(m.id))return 'Dated U.S. buyer samples support this planning price. Confirm the board grade and buyer quote.';
   if(m.pricing_mode==='derived_estimate')return `Estimated from copper benchmark${m.factor?' × '+m.factor:''}.`;
   if(m.pricing_mode==='market_reference')return 'Commodity benchmark, not a scrap-yard payout.';
   if(m.reference&&hasNumericValue(m.benchmark_price)){
@@ -223,14 +224,19 @@ function renderCalculator(){
 
 function updateCalcPrice(){
   const id=el('calc-material')?.value;const m=state.materials.find(x=>x.id===id);if(!m)return;
-  const p=el('calc-price');const lock=loadEvalLock();
+  const p=el('calc-price');const lock=loadEvalLock();let basis='';
   if(lock&&lock.materialId===id&&hasNumericValue(lock.price)){
     p.value=Number(lock.price).toFixed(2);
+    basis='Entered price; confirm the buyer terms before relying on it.';p.dataset.basis='entered';
   }else{
     const e=effectivePrice(m);
     if(e.price!==null&&!e.stale)p.value=Number(e.price).toFixed(2);else p.value='';
+    p.dataset.basis=e.type==='estimate'?'planning_estimate':e.type==='local'?'saved_quote':e.type;
+    basis=e.type==='estimate'?(e.date?'U.S. buyer-sample planning estimate dated '+e.date+'. Not an exact buyer offer.':'Benchmark-derived estimate, not an exact buyer offer.'):
+      e.type==='local'?'Saved local quote; confirm its date and buyer terms.':e.type==='benchmark'?'Commodity benchmark, not a scrap payout.':'Ask a buyer for a current quote.';
   }
   el('calc-unit').textContent='per '+unitLabel(m.unit);
+  if(el('calc-price-basis'))el('calc-price-basis').textContent=basis;
 }
 
 function calculate(){
@@ -254,6 +260,8 @@ function bind(){
   el('calc-price')?.addEventListener('input',()=>{
     const id=el('calc-material')?.value;const raw=el('calc-price')?.value;
     if(id&&hasNumericValue(raw))saveEvalLock(id,raw);else clearEvalLock();
+    el('calc-price').dataset.basis='entered';
+    if(el('calc-price-basis'))el('calc-price-basis').textContent='Entered price; confirm the buyer terms before relying on it.';
     calculate();
   });
 }
