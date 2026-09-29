@@ -43,6 +43,7 @@ function calculateOperating(){
     }else if(net>0){decision='🟢 NET POSITIVE ON ENTERED COSTS';detail='Add total job minutes and an hourly target to judge whether the trip is worth your time.'}
     else{decision='⚪ BREAK EVEN ON ENTERED COSTS';detail='The entered payout and entered trip costs are currently equal.'}
   }
+  if(hasLoad&&el('calc-price')?.dataset.basis==='planning_estimate')detail='Planning estimate from dated buyer samples, not an exact buyer offer. '+detail;
   if(el('op-decision'))el('op-decision').textContent=decision;
   if(el('op-detail'))el('op-detail').textContent=detail;
 }
