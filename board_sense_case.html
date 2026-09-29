@@ -57,7 +57,8 @@
   }
   function routeScrapRadar(d){
     var link=d.querySelector('a[href="scrap_radar.html"]');if(!link)return;
-    link.href='scrap_radar_spike_case.html?source=spike#board-recovery';
+    link.href='scrap_radar_spike_case.html?source=spike&build=case15#board-recovery';
+    link.addEventListener('click',function(){link.href='scrap_radar_spike_case.html?source=spike&build='+Date.now()+'#board-recovery'});
     link.target='_top';
     link.textContent='📡 SCRAP RADAR / CASE HANDOFF';
   }
@@ -71,7 +72,7 @@
       routeScrapRadar(d);
       add(d,'inspectionTargetLoader','board_inspection_target.js?v=4',function(){loadTargetArea(d)});
       if(d.getElementById('spikeScrapBridgeLoader')){loadTray(d);return}
-      var b=d.createElement('script');b.id='spikeScrapBridgeLoader';b.src='board_scrap_bridge.js?v=5';b.async=false;b.onload=function(){loadTray(d)};b.onerror=function(){console.error('SPIKE Scrap Radar bridge failed to load');loadTray(d)};d.body.appendChild(b);
+      var b=d.createElement('script');b.id='spikeScrapBridgeLoader';b.src='board_scrap_bridge.js?v=6';b.async=false;b.onload=function(){loadTray(d)};b.onerror=function(){console.error('SPIKE Scrap Radar bridge failed to load');loadTray(d)};d.body.appendChild(b);
     }catch(e){console.error('SPIKE Case Tray injection failed',e)}
   });
 })();
