@@ -81,6 +81,12 @@ function priceText(q){
   if(!q)return 'A board-grade planning price is unavailable for this case.';
   return safe(q.label)+' • $'+Number(q.price).toFixed(2)+'/lb • '+(q.type==='local'?'saved local quote (confirm date)':'U.S. buyer-sample planning estimate dated '+safe(q.date||'unknown'))+'. Estimated value is not an exact buyer price.';
 }
+function selectMaterialWhenReady(id,tries){
+  const sel=E('calc-material');if(!sel||!id)return;
+  if(Array.from(sel.options).some(function(o){return o.value===id})){
+    if(!sel.value)setValue('calc-material',id);
+  }else if(tries<40)setTimeout(function(){selectMaterialWhenReady(id,tries+1)},150);
+}
 function estimateWhole(){
   const packet=read(),raw=E('spike-board-weight')?.value,w=Number(raw),out=E('spike-estimate-result'),q=boardQuote(packet);
   if(!packet||!q){if(out)out.textContent='A verified board grade is needed before an estimate can be calculated.';return}
@@ -88,7 +94,7 @@ function estimateWhole(){
   const total=w*Number(q.price),basis=q.type==='local'?'saved_quote':'planning_estimate';
   ['br-whole','calc-price','yard-price-1'].forEach(function(id){const n=E(id);if(n)n.dataset.basis=basis});
   setValue('br-whole',total.toFixed(2));
-  setValue('calc-material',q.id);setValue('calc-weight',w);setValue('calc-price',Number(q.price).toFixed(2));
+  selectMaterialWhenReady(q.id,0);setValue('calc-weight',w);setValue('calc-price',Number(q.price).toFixed(2));
   setValue('yard-weight',w);setValue('yard-price-1',Number(q.price).toFixed(2));
   if(out)out.innerHTML='<b>Estimated whole-board value: $'+total.toFixed(2)+'</b> ('+w.toFixed(3)+' lb × $'+Number(q.price).toFixed(2)+'/lb). '+priceText(q);
   [['calc-price','spike-calc-basis'],['yard-price-1','spike-yard-basis']].forEach(function(pair){const input=E(pair[0]);if(!input)return;let note=E(pair[1]);if(!note){note=document.createElement('small');note.id=pair[1];input.insertAdjacentElement('afterend',note)}note.textContent=q.type==='local'?'Saved local quote; confirm it is current.':'Planning estimate from dated U.S. buyer samples; replace with an actual quote when available.'});
