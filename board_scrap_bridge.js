@@ -67,7 +67,7 @@ function ensureCard(){
   let card=E('spikeScrapBridge');if(card)return card;
   const box=E('predictionBox');if(!box)return null;
   card=document.createElement('div');card.id='spikeScrapBridge';card.className='decision-box';
-  card.innerHTML='<h3>📡 SPIKE → SCRAP RADAR</h3><div id="spikeScrapBridgeStatus" class="muted">Analyze a multi-photo board case to prepare a recovery handoff.</div><div class="scan-actions" style="margin-top:10px"><form id="sendSpikeForm" action="scrap_radar_spike_case.html" method="get" target="_top" style="display:inline"><input type="hidden" name="source" value="spike"><button id="sendSpikeToScrap" type="submit" disabled>Send Case to Scrap Radar</button></form><button id="clearSpikeHandoff" type="button">Clear Saved Handoff</button></div>';
+  card.innerHTML='<h3>📡 SPIKE → SCRAP RADAR</h3><div id="spikeScrapBridgeStatus" class="muted">Analyze a multi-photo board case to prepare a recovery handoff.</div><div class="scan-actions" style="margin-top:10px"><form id="sendSpikeForm" action="scrap_radar_spike_case.html" method="get" target="_top" style="display:inline"><input type="hidden" name="source" value="spike"><input id="sendSpikeBuild" type="hidden" name="build" value=""><button id="sendSpikeToScrap" type="submit" disabled>Send Case to Scrap Radar</button></form><button id="clearSpikeHandoff" type="button">Clear Saved Handoff</button></div>';
   box.insertAdjacentElement('afterend',card);
   E('sendSpikeForm').onsubmit=send;
   E('clearSpikeHandoff').onclick=function(){localStorage.removeItem(KEY);latest=null;render(null)};
@@ -113,6 +113,7 @@ function send(event){
   const packet=latest||readSaved();if(!packet){event.preventDefault();render(null,false);return false}
   try{localStorage.setItem(KEY,JSON.stringify(packet))}
   catch(_){event.preventDefault();const s=E('spikeScrapBridgeStatus');if(s)s.textContent='Could not save this board for the handoff. Check browser storage and try again.';return false}
+  const build=E('sendSpikeBuild');if(build)build.value=String(Date.now());
   const s=E('spikeScrapBridgeStatus');if(s)s.textContent='Case saved. Opening Scrap Radar…';
   return true;
 }
