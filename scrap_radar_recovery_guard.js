@@ -122,6 +122,12 @@ function recalc(){
   const whole=paths.find(p=>p.kind==='whole')||null;
   const partial=paths.find(p=>p.kind==='partial')||null;
   const full=paths.find(p=>p.kind==='full')||null;
+  const planning=el('br-whole')?.dataset.basis==='planning_estimate';
+  if(planning&&paths.length===1){
+    set('br-decision','📌 WHOLE-BOARD PLANNING ESTIMATE');
+    set('br-detail','This uses dated published buyer samples for the identified grade. Add a current buyer quote and any trip costs before treating it as a sale decision.');
+    return;
+  }
   const pr=partial&&whole?compareRate(partial,whole):null;
   const fr=full&&whole?compareRate(full,whole):null;
   if(partial)set('br-partial-hourly',pr&&pr.rate===Infinity?'Faster + higher net vs whole':pr&&pr.rate!==null?cash(pr.rate)+'/hr incremental vs whole':'— / hr incremental vs whole');
@@ -132,11 +138,11 @@ function recalc(){
   if(hasTarget){
     paths.forEach(p=>p.score=p.net-(p.minutes/60)*d.target);
     const best=[...paths].sort((a,b)=>b.score-a.score)[0];
-    set('br-decision','⏱️ ECONOMIC RECOMMENDATION: '+best.name);
+    set('br-decision',planning?'⏱️ PLANNING COMPARISON: '+best.name:'⏱️ ECONOMIC RECOMMENDATION: '+best.name);
     const highText='Highest entered net is '+highest.name+' at '+cash(highest.net)+'. ';
     const travelText='Fuel is '+(d.gas!==null?cash(d.gas)+'/gal':'not entered')+' and the entered path distances are included. ';
     const timeText=best.minutes>0?'At your '+cash(d.target)+'/hr target, '+best.name+' has the strongest net-after-time score using '+best.minutes.toFixed(0)+' total entered minutes. ':'At your '+cash(d.target)+'/hr target, '+best.name+' preserves the most value after entered logistics and time.';
-    set('br-detail',highText+travelText+timeText);
+    set('br-detail',(planning?'Whole-board value is a planning estimate. ':'')+highText+travelText+timeText);
     return;
   }
 
@@ -144,18 +150,19 @@ function recalc(){
   if(timed.length){
     timed.sort((a,b)=>{const ar=a.cmp.rate===Infinity?Number.MAX_VALUE:a.cmp.rate;const br=b.cmp.rate===Infinity?Number.MAX_VALUE:b.cmp.rate;return br-ar});
     const best=timed[0];
-    set('br-decision','⏱️ BEST ENTERED TIME-VALUE: '+best.path.name);
-    set('br-detail','Highest entered net is '+highest.name+' at '+cash(highest.net)+'. '+best.path.name+' has the strongest entered incremental time-value after travel costs. Enter an hourly target for a full economic recommendation.');
+    set('br-decision',planning?'⏱️ PLANNING TIME-VALUE: '+best.path.name:'⏱️ BEST ENTERED TIME-VALUE: '+best.path.name);
+    set('br-detail',(planning?'Whole-board value is a planning estimate. ':'')+'Highest entered net is '+highest.name+' at '+cash(highest.net)+'. '+best.path.name+' has the strongest entered incremental time-value after travel costs. Enter an hourly target for a full economic recommendation.');
     return;
   }
 
-  set('br-decision','📌 HIGHEST ENTERED NET: '+highest.name);
-  set('br-detail',highest.name+' currently shows '+cash(highest.net)+' after entered travel costs. Add travel minutes and an hourly target to compare the value of your time as well as fuel and distance.');
+  set('br-decision',planning?'📌 HIGHEST PLANNING NET: '+highest.name:'📌 HIGHEST ENTERED NET: '+highest.name);
+  set('br-detail',(planning?'Whole-board value is a planning estimate. ':'')+highest.name+' currently shows '+cash(highest.net)+' after entered travel costs. Add travel minutes and an hourly target to compare the value of your time as well as fuel and distance.');
 }
 
 function schedule(){setTimeout(recalc,0)}
 function bind(){
   ensureLogistics();
+  el('br-whole')?.addEventListener('input',e=>{if(e.isTrusted)e.currentTarget.dataset.basis='entered_offer'});
   el('br-shared-mpg')?.addEventListener('input',()=>{syncToEvaluator('br-shared-mpg','trip-mpg');schedule()});
   el('br-shared-gas')?.addEventListener('input',()=>{syncToEvaluator('br-shared-gas','trip-gas');schedule()});
   ['trip-mpg','trip-gas'].forEach(id=>el(id)?.addEventListener('input',()=>{syncFromEvaluator();schedule()}));
