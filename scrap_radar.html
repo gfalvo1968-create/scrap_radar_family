@@ -73,7 +73,7 @@
     <aside id="board-recovery" class="sr-panel recovery-preview">
       <h2>🧠 Board Recovery</h2><p class="panel-kicker">Compare recovery paths without assuming every chip is worth removing. SPIKE supplies deeper board evidence; Scrap Radar handles the economics.</p>
       <div class="recovery-path-grid">
-        <div class="recovery-path-card"><b>SELL WHOLE</b><label>Current whole-board offer $<input id="br-whole" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><strong id="br-whole-net">$0.00</strong></div>
+        <div class="recovery-path-card"><b>SELL WHOLE</b><label>Buyer grade / category<input id="br-quote-grade" type="text" maxlength="80" placeholder="As quoted by the yard"></label><label>Board weight (lb)<input id="br-quote-weight" type="number" min="0" step="any" inputmode="decimal" placeholder="Measured weight"></label><label>Buyer price ($/lb)<input id="br-quote-rate" type="number" min="0" step="any" inputmode="decimal" placeholder="Confirmed rate"></label><button id="br-quote-calculate" class="mini-btn" type="button">Use weight × price/lb</button><small id="br-quote-status" role="status">Use a buyer's grade and rate; photos do not provide a weight or a payout quote.</small><label>Current whole-board offer $<input id="br-whole" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><strong id="br-whole-net">$0.00</strong></div>
         <div class="recovery-path-card"><b>SELECTIVE HARVEST</b><label>Recovered parts value $<input id="br-partial-value" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><label>Remaining board value $<input id="br-residual" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><label>Minutes<input id="br-partial-minutes" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Processing costs $<input id="br-partial-costs" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><strong id="br-partial-net">$0.00</strong><small id="br-partial-hourly">— / hr</small></div>
         <div class="recovery-path-card"><b>DEEPER RECOVERY</b><label>Recovered material value $<input id="br-full-value" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><label>Residual / downstream value $<input id="br-full-residual" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><label>Minutes<input id="br-full-minutes" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></label><label>Processing costs $<input id="br-full-costs" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></label><strong id="br-full-net">$0.00</strong><small id="br-full-hourly">— / hr</small></div>
       </div>
@@ -99,6 +99,7 @@
   <footer class="sr-footer">SCRAP RADAR FAMILY • OPERATING SCREEN • VALUE + TIME + DISTANCE + EVIDENCE</footer>
 </main>
 <script src="scrap_radar_market.js?v=4"></script>
+<script src="scrap_radar_board_quote.js?v=1"></script>
 <script src="scrap_radar_operating.js?v=9"></script>
 </body>
 </html>
