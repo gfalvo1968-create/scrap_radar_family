@@ -59,7 +59,7 @@ function saveEvalLock(materialId,price){
 }
 function clearEvalLock(){try{sessionStorage.removeItem(EVAL_PRICE_LOCK_KEY)}catch(_){}}
 function unitLabel(u){return u==='troy_oz'?'troy oz':u==='metric_ton'?'metric ton':u||''}
-function money(v){return Number.isFinite(Number(v))?'$'+Number(v).toLocaleString(undefined,{minimumFractionDigits:Number(v)<10?2:0,maximumFractionDigits:Number(v)<10?2:2}):'—'}
+function money(v){const n=Number(v),rounded=Math.sign(n)*Math.round((Math.abs(n)+Number.EPSILON)*100)/100;return Number.isFinite(n)?'$'+rounded.toLocaleString(undefined,{minimumFractionDigits:n<10?2:0,maximumFractionDigits:2}):'—'}
 function hasNumericValue(v){return v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))}
 function sourceDate(m){
   const date=m&&m.source_price_date;
