@@ -101,7 +101,7 @@ function estimateWhole(){
   if(!packet||!q){if(out)out.textContent='A verified board grade is needed before an estimate can be calculated.';return}
   if(raw===''||!Number.isFinite(w)||w<=0){if(out)out.innerHTML='<b style="color:#ffdf73">Tap the white weight box and enter a number greater than zero.</b><br>'+priceText(q);if(input){input.style.outline='3px solid #ffdf73';input.focus()}return}
   if(input)input.style.outline='';
-  const total=w*Number(q.price),basis=q.type==='local'?'saved_quote':'planning_estimate';
+  const total=Math.round((w*Number(q.price)+Number.EPSILON)*100)/100,basis=q.type==='local'?'saved_quote':'planning_estimate';
   ['br-whole','calc-price','yard-price-1'].forEach(function(id){const n=E(id);if(n)n.dataset.basis=basis});
   if((packet.economics||{}).sellWholeValue==null||E('br-whole')?.dataset.spikeEstimated)setEstimatedValue('br-whole',total.toFixed(2));
   selectMaterialWhenReady(q.id,0);setEstimatedValue('calc-weight',w);setValue('calc-price',Number(q.price).toFixed(2));
