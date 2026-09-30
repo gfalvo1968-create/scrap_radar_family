@@ -1,4 +1,4 @@
-/* Board Sense -> Scrap Radar local handoff v1.2
+/* Board Sense -> Scrap Radar local handoff v1.3
    Captures a completed SPIKE multi-photo case and stores a small, versioned
    recovery packet in this browser only. Identity/evidence never creates dollars.
    An active Scrap Radar inspection mission quarantines prior whole-board handoffs. */
@@ -27,7 +27,7 @@ function isConfirmedPCB(d){
   if(signals.includes('INSUFFICIENT BOARD EVIDENCE')||signals.includes('NOT ENOUGH EVIDENCE'))return false;
   return true;
 }
-function isBlocked(p,d){const g=d&&d.same_board_verification||{};return !isConfirmedPCB(d)||p&&p.mode==='multi_photo_identity_blocked'||d&&d.status==='case_identity_failed'||g.block_reconciliation===true}
+function isBlocked(p,d){const g=d&&d.same_board_verification||{};return !isConfirmedPCB(d)||p&&p.mode==='multi_photo_identity_blocked'||d&&['case_identity_failed','case_identity_clarification'].includes(d.status)||g.block_reconciliation===true}
 function normalize(p){
   const d=p&&p.combined;if(isBlocked(p,d))return null;
   const t=d.three_answers||{},ti=t.identity||{},tr=t.recovery||{},cond=d.condition_and_harvest||(d.spike_evidence||{}).condition_and_harvest||{},same=d.same_board_verification||{};
@@ -136,7 +136,11 @@ function init(){
 }
 window.addEventListener('boardSenseObjectGateBlocked',function(){try{localStorage.removeItem(KEY)}catch(_){}latest=null;render(null,true)});
 window.addEventListener('boardSensePlanningUpdated',function(e){updatePlanning(e.detail)});
-window.addEventListener('boardSenseCaseReportReset',function(){pendingPlanning=null});
+window.addEventListener('boardSenseCaseReportReset',function(){
+  pendingPlanning=null;latest=null;
+  try{localStorage.removeItem(KEY)}catch(_){}
+  render(null,false);
+});
 window.addEventListener('storage',function(e){if(e.key===INSPECTION_KEY||e.key===KEY){if(inspectionActive())parkForInspection();else render(readSaved(),false)}});
 window.addEventListener('boardSenseInspectionMission',function(){if(inspectionActive())parkForInspection();else render(readSaved(),false)});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();

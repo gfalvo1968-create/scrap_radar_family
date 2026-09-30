@@ -10,7 +10,7 @@ function harness(payload) {
   const elements = new Proxy({}, {
     get(target, id) {
       if (!target[id]) target[id] = {
-        value: "", textContent: "", className: "", innerHTML: "",
+        value: "", textContent: "", className: "", innerHTML: "", dataset: {},
         addEventListener() {}, querySelectorAll() { return []; }
       };
       return target[id];
@@ -23,7 +23,7 @@ function harness(payload) {
     localStorage: { getItem: () => null, setItem() {} },
     sessionStorage: { getItem: () => null, setItem() {}, removeItem() {} },
     fetch: async () => ({ ok: true, json: async () => payload }),
-    Date, Number, Object, JSON, Intl, console
+    window: {}, Date, Number, Object, JSON, Intl, console
   };
   vm.createContext(context);
   vm.runInContext(source.replace(/\}\)\(\);\s*$/, "globalThis.testApi={loadData};\n})();"), context);
