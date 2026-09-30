@@ -10,6 +10,14 @@ function ensureCard(){
   const panel=el('board-recovery');
   const grid=panel?.querySelector('.recovery-path-grid');
   if(!panel||!grid)return null;
+  const yard=el('yard-comparison');
+  if(yard&&!el('yard-recovery-targets')){
+    const link=document.createElement('a');
+    link.id='yard-recovery-targets';link.className='mini-btn';
+    link.href='#br-break-even';link.textContent='↗ See Board Recovery Break-Even Targets';
+    link.style.cssText='display:inline-block;margin:0 0 12px';
+    yard.querySelector('.panel-kicker')?.insertAdjacentElement('afterend',link);
+  }
   let card=el('br-economic-card');
   if(!card){
     card=document.createElement('div');
