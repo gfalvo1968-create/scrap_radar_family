@@ -39,6 +39,10 @@ function harness() {
   }
   const prediction = new Element();
   prediction.id = "predictionBox";
+  for (const id of ["sellValue", "recoveredValue", "laborMinutes"]) {
+    const input = new Element();
+    input.id = id;
+  }
   const window = {
     addEventListener(name, listener) {
       if (!listeners.has(name)) listeners.set(name, []);
@@ -97,7 +101,16 @@ function validCase() {
   assert.equal(h.packet().planning.weightGrams, 907.18474);
   assert.equal(h.packet().sameBoard.status, "PROBABLY_SAME_BOARD");
   assert.equal(h.packet().economics.sellWholeValue, null);
+  assert.equal(h.packet().economics.fullMinutes, null, "blank time must remain unentered");
+  assert.match(h.elements.get("spikeScrapBridgeStatus").innerHTML, /no time entered/);
   assert.equal(h.elements.get("sendSpikeToScrap").disabled, false);
+
+  h.elements.get("laborMinutes").value = "12.5";
+  await h.analyze(validCase());
+  assert.equal(h.packet().economics.fullMinutes, 12.5, "carry minutes entered for this board");
+  assert.equal(h.send().prevented, false);
+  assert.equal(h.packet().economics.fullMinutes, 12.5);
+  h.elements.get("laborMinutes").value = "";
 
   // Starting a scan or a new board must retire the prior saved AND in-memory
   // case. If the next request fails, the old board must remain unavailable.

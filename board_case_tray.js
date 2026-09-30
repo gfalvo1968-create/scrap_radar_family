@@ -265,7 +265,7 @@ function reset(){
   caseFiles=[];['casePhoto','casePhotos'].forEach(function(id){var i=E(id);if(i)i.value=''});tray();
   if(E('sameBoardConfirmation'))E('sameBoardConfirmation').checked=false;
   clearMissionState();
-  if(E('sellValue'))E('sellValue').value='0';if(E('recoveredValue'))E('recoveredValue').value='0';if(E('laborMinutes'))E('laborMinutes').value='10';
+  if(E('sellValue'))E('sellValue').value='0';if(E('recoveredValue'))E('recoveredValue').value='0';if(E('laborMinutes'))E('laborMinutes').value='';
   E('uploadStatus').textContent='New board/object ready. Prior inspection mission cleared. Add 2–6 photos of one board.';
   if(E('predictionBox'))E('predictionBox').textContent='Waiting for scan...'
   if(E('componentBreakdownBox'))E('componentBreakdownBox').innerHTML='<p class="muted">Analyze a board to build the component breakdown.</p>';

@@ -1,4 +1,4 @@
-/* Board Sense -> Scrap Radar local handoff v1.3
+/* Board Sense -> Scrap Radar local handoff v1.4
    Captures a completed SPIKE multi-photo case and stores a small, versioned
    recovery packet in this browser only. Identity/evidence never creates dollars.
    An active Scrap Radar inspection mission quarantines prior whole-board handoffs. */
@@ -86,7 +86,7 @@ function render(packet,blocked){
   if(blocked){s.innerHTML='<b>HANDOFF BLOCKED:</b> SPIKE did not confirm a valid single-board PCB case. Board grading, recovery economics, and Scrap Radar transfer were withheld.';b.disabled=true;return}
   if(!packet){s.textContent='Analyze a multi-photo board case to prepare a recovery handoff.';b.disabled=true;return}
   const i=packet.identity||{},r=packet.recovery||{},e=packet.economics||{};
-  s.innerHTML='<b>Case ready:</b> '+safe(i.boardType)+' • Grade '+safe(r.grade)+(r.score!=null?' • Recovery '+safe(r.score):'')+(r.condition?' • '+safe(r.condition):'')+'<br><b>Verified inputs ready to transfer:</b> '+(e.sellWholeValue!=null?'whole offer $'+safe(e.sellWholeValue):'no whole offer')+' • '+(e.fullRecoveryValue!=null?'recovery value $'+safe(e.fullRecoveryValue):'no recovery dollars')+' • '+(e.fullMinutes!=null?safe(e.fullMinutes)+' min':'no time')+'<br><span class="muted">Evidence travels with the case. It does not manufacture value.</span>';
+  s.innerHTML='<b>Case ready:</b> '+safe(i.boardType)+' • Grade '+safe(r.grade)+(r.score!=null?' • Recovery '+safe(r.score):'')+(r.condition?' • '+safe(r.condition):'')+'<br><b>Entered inputs ready to transfer:</b> '+(e.sellWholeValue!=null?'whole offer $'+safe(e.sellWholeValue):'no whole offer')+' • '+(e.fullRecoveryValue!=null?'recovery value $'+safe(e.fullRecoveryValue):'no recovery dollars')+' • '+(e.fullMinutes!=null?safe(e.fullMinutes)+' min':'no time entered')+'<br><span class="muted">Evidence travels with the case. It does not manufacture value.</span>';
   b.disabled=false;
 }
 function save(packet){
