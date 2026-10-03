@@ -1,4 +1,4 @@
-/* Board Sense -> Scrap Radar local handoff v1.4
+/* Board Sense <-> Scrap Radar local handoff v1.5
    Captures a completed SPIKE multi-photo case and stores a small, versioned
    recovery packet in this browser only. Identity/evidence never creates dollars.
    An active Scrap Radar inspection mission quarantines prior whole-board handoffs. */
@@ -11,6 +11,31 @@ function E(id){return document.getElementById(id)}
 function N(id){const x=E(id);if(!x||x.value==='')return null;const n=Number(x.value);return Number.isFinite(n)?n:null}
 function safe(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function readSaved(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(_){return null}}
+function caseId(p){return p?String(p.caseId||p.createdAt||''):''}
+function amount(v){return v!=null&&v!==''&&Number.isFinite(Number(v))&&Number(v)>=0?Number(v):null}
+function returnedValues(packet){
+  const review=packet.scrapRadarReturn;
+  return review&&review.version===1&&review.caseId===caseId(packet)?review:null;
+}
+function money(v){return '$'+Number(v).toFixed(2)}
+function returnHTML(packet){
+  const p=packet.planning||{},estimate=p.wholeBoardEstimate,review=returnedValues(packet),inputs=review&&review.inputs||{};
+  if(!estimate&&!review)return '';
+  let html='<div style="margin-top:12px;padding:12px;border:1px solid #39ff14;border-radius:10px"><b>Values from Scrap Radar</b>';
+  if(amount(p.weightGrams)>0)html+='<br><b>Board weight:</b> '+safe(Number(Number(p.weightGrams).toFixed(6)))+' grams';
+  if(estimate&&amount(estimate.value)!=null&&amount(estimate.pricePerLb)!=null){
+    html+='<br><b>Whole-board planning estimate:</b> '+money(estimate.value)+'<br><span class="muted">'+money(estimate.pricePerLb)+'/lb • '+safe(estimate.basis==='saved_quote'?'saved local quote; confirm it is current':'buyer-sample planning rate dated '+(estimate.priceDate||'unknown'))+'. Estimated value is not an exact buyer price.</span>';
+  }
+  if(review){
+    if(amount(inputs['br-whole'])!=null&&review.wholeBasis==='entered_offer')html+='<br><b>Entered whole-board buyer offer:</b> '+money(inputs['br-whole']);
+    const labels=[['br-partial-value','Entered parts payout'],['br-residual','Entered remaining board value'],['br-full-value','Entered material payout'],['br-full-residual','Entered downstream value']];
+    labels.forEach(function(row){if(amount(inputs[row[0]])!=null)html+='<br>'+row[1]+': '+money(inputs[row[0]])});
+    if(amount(inputs['br-partial-value'])==null&&amount(inputs['br-residual'])==null)html+='<br>Selective harvest: unpriced';
+    if(amount(inputs['br-full-value'])==null&&amount(inputs['br-full-residual'])==null)html+='<br>Deeper recovery: unpriced';
+    html+='<br><span class="muted">Entered recovery time, costs and travel stay with this saved case. Use Send Case to Scrap Radar to continue the comparison.</span>';
+  }
+  return html+'</div>';
+}
 function readInspection(){try{return JSON.parse(localStorage.getItem(INSPECTION_KEY)||'null')}catch(_){return null}}
 function inspectionActive(){const p=readInspection();return !!(p&&p.target)}
 function upper(v){return String(v==null?'':v).trim().toUpperCase()}
@@ -32,9 +57,11 @@ function normalize(p){
   const d=p&&p.combined;if(isBlocked(p,d))return null;
   const t=d.three_answers||{},ti=t.identity||{},tr=t.recovery||{},cond=d.condition_and_harvest||(d.spike_evidence||{}).condition_and_harvest||{},same=d.same_board_verification||{};
   const sell=N('sellValue'),recovered=N('recoveredValue'),minutes=N('laborMinutes');
+  const createdAt=new Date().toISOString();
   return {
     version:1,
-    createdAt:new Date().toISOString(),
+    caseId:window.crypto&&window.crypto.randomUUID?window.crypto.randomUUID():createdAt+'-'+Math.random().toString(36).slice(2),
+    createdAt:createdAt,
     source:'Board Sense / SPIKE',
     sourceMode:p.mode||'same_board_multi_photo',
     identity:{
@@ -67,7 +94,7 @@ function ensureCard(){
   let card=E('spikeScrapBridge');if(card)return card;
   const box=E('predictionBox');if(!box)return null;
   card=document.createElement('div');card.id='spikeScrapBridge';card.className='decision-box';
-  card.innerHTML='<h3>📡 SPIKE → SCRAP RADAR</h3><div id="spikeScrapBridgeStatus" class="muted">Analyze a multi-photo board case to prepare a recovery handoff.</div><div class="scan-actions" style="margin-top:10px"><form id="sendSpikeForm" action="scrap_radar_spike_case.html" method="get" target="_top" style="display:inline"><input type="hidden" name="source" value="spike"><input id="sendSpikeBuild" type="hidden" name="build" value=""><button id="sendSpikeToScrap" type="submit" disabled>Send Case to Scrap Radar</button></form><button id="clearSpikeHandoff" type="button">Clear Saved Handoff</button></div>';
+  card.innerHTML='<h3>📡 BOARD SENSE ↔ SCRAP RADAR</h3><div id="spikeScrapBridgeStatus" class="muted">Analyze a multi-photo board case to prepare a recovery handoff.</div><div class="scan-actions" style="margin-top:10px"><form id="sendSpikeForm" action="scrap_radar_spike_case.html" method="get" target="_top" style="display:inline"><input type="hidden" name="source" value="spike"><input id="sendSpikeBuild" type="hidden" name="build" value=""><button id="sendSpikeToScrap" type="submit" disabled>Send Case to Scrap Radar</button></form><button id="clearSpikeHandoff" type="button">Clear Saved Handoff</button></div>';
   box.insertAdjacentElement('afterend',card);
   E('sendSpikeForm').onsubmit=send;
   E('clearSpikeHandoff').onclick=function(){localStorage.removeItem(KEY);latest=null;render(null)};
@@ -87,6 +114,7 @@ function render(packet,blocked){
   if(!packet){s.textContent='Analyze a multi-photo board case to prepare a recovery handoff.';b.disabled=true;return}
   const i=packet.identity||{},r=packet.recovery||{},e=packet.economics||{};
   s.innerHTML='<b>Case ready:</b> '+safe(i.boardType)+' • Grade '+safe(r.grade)+(r.score!=null?' • Recovery '+safe(r.score):'')+(r.condition?' • '+safe(r.condition):'')+'<br><b>Entered inputs ready to transfer:</b> '+(e.sellWholeValue!=null?'whole offer $'+safe(e.sellWholeValue):'no whole offer')+' • '+(e.fullRecoveryValue!=null?'recovery value $'+safe(e.fullRecoveryValue):'no recovery dollars')+' • '+(e.fullMinutes!=null?safe(e.fullMinutes)+' min':'no time entered')+'<br><span class="muted">Evidence travels with the case. It does not manufacture value.</span>';
+  s.innerHTML+=returnHTML(packet);
   b.disabled=false;
 }
 function save(packet){
@@ -100,7 +128,18 @@ function updatePlanning(detail){
   if(!detail||inspectionActive())return;
   const w=Number(detail.weightGrams);
   pendingPlanning={gradeId:detail.gradeId||null,weightGrams:detail.weightGrams!=null&&Number.isFinite(w)&&w>0?w:null};
-  if(latest){latest.planning=pendingPlanning;localStorage.setItem(KEY,JSON.stringify(latest))}
+  if(latest){
+    const saved=readSaved();
+    if(!saved||caseId(saved)!==caseId(latest)){latest=saved;render(saved,false);return}
+    const old=saved.planning||{},changed=old.gradeId!==pendingPlanning.gradeId||old.weightGrams!==pendingPlanning.weightGrams;
+    saved.planning=Object.assign({},old,pendingPlanning);
+    if(changed){
+      delete saved.planning.wholeBoardEstimate;delete saved.planning.weightEntry;
+      const review=returnedValues(saved);
+      if(review&&review.wholeBasis!=='entered_offer'&&review.inputs)review.inputs['br-whole']=null;
+    }
+    try{localStorage.setItem(KEY,JSON.stringify(saved));latest=saved;render(saved,false)}catch(_){}
+  }
 }
 function capture(payload){
   if(inspectionActive()){parkForInspection();return}
@@ -110,7 +149,8 @@ function capture(payload){
 }
 function send(event){
   if(inspectionActive()){event.preventDefault();parkForInspection();return false}
-  const packet=latest||readSaved();if(!packet){event.preventDefault();render(null,false);return false}
+  const packet=readSaved();if(!packet){event.preventDefault();latest=null;render(null,false);return false}
+  latest=packet;
   try{localStorage.setItem(KEY,JSON.stringify(packet))}
   catch(_){event.preventDefault();const s=E('spikeScrapBridgeStatus');if(s)s.textContent='Could not save this board for the handoff. Check browser storage and try again.';return false}
   const build=E('sendSpikeBuild');if(build)build.value=String(Date.now());
@@ -133,6 +173,7 @@ function init(){
   patchFetch();ensureCard();
   if(inspectionActive()){parkForInspection();return}
   const saved=readSaved();if(saved){latest=saved;render(saved,false)}
+  if(saved&&returnedValues(saved)&&/[?&]from=scrap-radar(?:&|$)/.test(window.top&&window.top.location?window.top.location.search:''))setTimeout(function(){const card=E('spikeScrapBridge');if(card)card.scrollIntoView({behavior:'auto',block:'center'})},300);
 }
 window.addEventListener('boardSenseObjectGateBlocked',function(){try{localStorage.removeItem(KEY)}catch(_){}latest=null;render(null,true)});
 window.addEventListener('boardSensePlanningUpdated',function(e){updatePlanning(e.detail)});
@@ -141,7 +182,7 @@ window.addEventListener('boardSenseCaseReportReset',function(){
   try{localStorage.removeItem(KEY)}catch(_){}
   render(null,false);
 });
-window.addEventListener('storage',function(e){if(e.key===INSPECTION_KEY||e.key===KEY){if(inspectionActive())parkForInspection();else render(readSaved(),false)}});
-window.addEventListener('boardSenseInspectionMission',function(){if(inspectionActive())parkForInspection();else render(readSaved(),false)});
+window.addEventListener('storage',function(e){if(e.key===INSPECTION_KEY||e.key===KEY||e.key===null){if(inspectionActive())parkForInspection();else{latest=readSaved();render(latest,false)}}});
+window.addEventListener('boardSenseInspectionMission',function(){if(inspectionActive())parkForInspection();else{latest=readSaved();render(latest,false)}});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();

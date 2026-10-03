@@ -1,10 +1,12 @@
-/* Scrap Radar SPIKE case importer v1.1
+/* Scrap Radar SPIKE case importer and return v1.2
    Reads only the device-local handoff packet created by Board Sense.
    Evidence stays evidence. Only entered/configured values are copied into fields.
    Clear source clues may cue Critical Materials inspection, but never create composition or value. */
 (function(){
 'use strict';
 const KEY='scrapRadarSpikeRecoveryPacketV1';
+const RETURN_FIELDS=['br-whole','br-partial-value','br-residual','br-partial-minutes','br-partial-costs','br-full-value','br-full-residual','br-full-minutes','br-full-costs','br-whole-miles','br-whole-travel','br-whole-fees','br-partial-miles','br-partial-travel','br-partial-fees','br-full-miles','br-full-travel','br-full-fees','br-shared-mpg','br-shared-gas','trip-target'];
+let loadedCaseId=caseId(read());
 const SOURCE_LABELS={
   'hard-drive':'Hard drive',
   'speaker':'Speaker / audio magnet',
@@ -22,6 +24,29 @@ const SOURCE_LABELS={
 function E(id){return document.getElementById(id)}
 function safe(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function read(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(_){return null}}
+function caseId(p){return p?String(p.caseId||p.createdAt||''):''}
+function currentPacket(){const p=read();return p&&loadedCaseId&&caseId(p)===loadedCaseId?p:null}
+function numeric(id){const raw=E(id)?.value,n=Number(raw);return raw!=null&&String(raw).trim()!==''&&Number.isFinite(n)&&n>=0?n:null}
+function caseChanged(){const out=E('spike-estimate-result');if(out)out.textContent='The saved board case changed. Reload Scrap Radar before entering or returning values.';return false}
+function savePacket(packet){
+  if(!currentPacket()||caseId(packet)!==loadedCaseId)return caseChanged();
+  try{localStorage.setItem(KEY,JSON.stringify(packet));return true}
+  catch(_){const out=E('spike-estimate-result');if(out)out.textContent='Could not save this case. Check browser storage before returning to Board Sense.';return false}
+}
+function savedReview(packet){const r=packet&&packet.scrapRadarReturn;return r&&r.version===1&&r.caseId===caseId(packet)?r:null}
+function clearSavedEstimate(){
+  const packet=currentPacket();if(!packet)return read()?caseChanged():undefined;
+  packet.planning=Object.assign({},packet.planning,{weightGrams:null});
+  delete packet.planning.weightEntry;delete packet.planning.wholeBoardEstimate;
+  const review=savedReview(packet);if(review&&review.wholeBasis!=='entered_offer'&&review.inputs)review.inputs['br-whole']=null;
+  return savePacket(packet);
+}
+function saveReturn(){
+  const packet=currentPacket();if(!packet)return caseChanged();
+  const inputs={};RETURN_FIELDS.forEach(function(id){inputs[id]=numeric(id)});
+  packet.scrapRadarReturn={version:1,caseId:caseId(packet),returnedAt:new Date().toISOString(),wholeBasis:E('br-whole')?.dataset.basis||'entered_offer',inputs:inputs};
+  return savePacket(packet);
+}
 function fire(node,type){if(node)node.dispatchEvent(new Event(type,{bubbles:true}))}
 function setValue(id,value){if(value==null)return;const n=E(id);if(!n)return;n.value=String(value);fire(n,'input');fire(n,'change')}
 function sourceCue(packet){
@@ -59,12 +84,13 @@ function ensureCard(){
   E('spike-estimate').onclick=estimateWhole;
   E('spike-board-weight').addEventListener('input',function(){
     if(Number(this.value)>0&&this.value!=='')estimateWhole();
-    else{clearEstimatedFields();const out=E('spike-estimate-result');if(out)out.innerHTML='<b style="color:#ffdf73">Enter this board\'s scale weight to see a dollar total.</b> '+priceText(boardQuote(read()))}
+    else{clearEstimatedFields();if(clearSavedEstimate()===false)return;const out=E('spike-estimate-result');if(out)out.innerHTML='<b style="color:#ffdf73">Enter this board\'s scale weight to see a dollar total.</b> '+priceText(boardQuote(currentPacket()))}
   });
   E('spike-weight-unit').addEventListener('change',function(){if(Number(E('spike-board-weight')?.value)>0)estimateWhole()});
   E('spike-critical').onclick=openCritical;
-  E('spike-clear').onclick=function(){localStorage.removeItem(KEY);render(null)};
-  E('spike-back').onclick=function(){window.top.location.href='board_sense_case.html'};
+  E('spike-clear').onclick=function(){if(read()&&!currentPacket())return caseChanged();localStorage.removeItem(KEY);loadedCaseId='';clearEstimatedFields();render(null)};
+  E('spike-back').onclick=function(){if(read()&&!saveReturn())return;window.top.location.href='board_sense_case.html?from=scrap-radar&build='+Date.now()};
+  E('br-whole')?.addEventListener('input',function(e){if(e.isTrusted){delete this.dataset.spikeEstimated;this.dataset.basis='entered_offer'}});
   return card;
 }
 function gradeId(packet){
@@ -97,13 +123,17 @@ function clearEstimatedFields(){
 }
 function setEstimatedValue(id,value){const n=E(id);if(!n)return;setValue(id,value);n.dataset.spikeEstimated=String(value)}
 function estimateWhole(){
-  const packet=read(),input=E('spike-board-weight'),raw=input?.value,entered=Number(raw),unit=E('spike-weight-unit')?.value||'lb',w=unit==='g'?entered/453.59237:entered,out=E('spike-estimate-result'),q=boardQuote(packet);
+  const packet=currentPacket(),input=E('spike-board-weight'),raw=input?.value,entered=Number(raw),unit=E('spike-weight-unit')?.value||'lb',w=unit==='g'?entered/453.59237:entered,out=E('spike-estimate-result'),q=boardQuote(packet);
+  if(read()&&!packet)return caseChanged();
   if(!packet||!q){if(out)out.textContent='A verified board grade is needed before an estimate can be calculated.';return}
   if(raw===''||!Number.isFinite(w)||w<=0){if(out)out.innerHTML='<b style="color:#ffdf73">Tap the white weight box and enter a number greater than zero.</b><br>'+priceText(q);if(input){input.style.outline='3px solid #ffdf73';input.focus()}return}
   if(input)input.style.outline='';
   const total=Math.round((w*Number(q.price)+Number.EPSILON)*100)/100,basis=q.type==='local'?'saved_quote':'planning_estimate';
-  ['br-whole','calc-price','yard-price-1'].forEach(function(id){const n=E(id);if(n)n.dataset.basis=basis});
-  if((packet.economics||{}).sellWholeValue==null||E('br-whole')?.dataset.spikeEstimated)setEstimatedValue('br-whole',total.toFixed(2));
+  packet.planning=Object.assign({},packet.planning,{gradeId:q.id||gradeId(packet),weightGrams:unit==='g'?entered:entered*453.59237,weightEntry:{value:entered,unit:unit},wholeBoardEstimate:{value:total,basis:basis,pricePerLb:Number(q.price),priceDate:q.date||null,label:q.label||null,source:'Scrap Radar',calculatedAt:new Date().toISOString()}});
+  if(!savePacket(packet))return false;
+  ['calc-price','yard-price-1'].forEach(function(id){const n=E(id);if(n)n.dataset.basis=basis});
+  const whole=E('br-whole');
+  if(whole&&((packet.economics||{}).sellWholeValue==null)&&(whole.value===''||whole.dataset.spikeEstimated===whole.value)){whole.dataset.basis=basis;setEstimatedValue('br-whole',total.toFixed(2))}
   selectMaterialWhenReady(q.id,0);setEstimatedValue('calc-weight',w);setValue('calc-price',Number(q.price).toFixed(2));
   setEstimatedValue('yard-weight',w);setValue('yard-price-1',Number(q.price).toFixed(2));
   if(out)out.innerHTML='<b>Estimated whole-board value: $'+total.toFixed(2)+'</b> ('+entered+' '+(unit==='g'?'grams ≈ ':'lb = ')+w.toFixed(3)+' lb × $'+Number(q.price).toFixed(2)+'/lb). '+priceText(q);
@@ -118,22 +148,29 @@ function render(packet){
   const signals=(r.signals||[]).slice(0,6),cue=sourceCue(packet),cueLabel=cue?SOURCE_LABELS[cue]:null;
   d.innerHTML='<b>'+safe(i.boardType||'Unknown Board')+'</b>'+(i.subtype?'<br>Subtype: '+safe(i.subtype):'')+(i.confidence!=null?'<br>Identity confidence: '+safe(i.confidence)+'%':'')+'<br><b>Recovery:</b> Grade '+safe(r.grade||'WITHHELD')+(r.score!=null?' • Score '+safe(r.score):'')+(r.condition?' • '+safe(r.condition):'')+(same.status?'<br><b>Same-board verification:</b> '+safe(same.status)+(same.confidence!=null?' '+safe(same.confidence)+'%':''):'')+(signals.length?'<br><b>SPIKE recovery signals:</b> '+signals.map(safe).join(' • '):'')+'<br><b>Transferred values:</b> '+(e.sellWholeValue!=null?'Whole offer $'+safe(e.sellWholeValue):'No whole offer')+' • '+(e.fullRecoveryValue!=null?'Deeper recovery $'+safe(e.fullRecoveryValue):'No recovery dollars')+' • '+(e.fullMinutes!=null?safe(e.fullMinutes)+' min':'No recovery time')+(cueLabel?'<br><b>Critical-material inspection cue:</b> '+safe(cueLabel)+' <span class="muted">(source clue only, not composition proof)</span>':'')+'<br><span class="muted">SPIKE supplied evidence and previously entered values only. Confirm buyer terms, distance, fuel, processing costs and hourly target here before acting.</span>';
   if(b){b.disabled=false;b.textContent=cueLabel?'Check Critical Materials: '+cueLabel:'Check Critical Materials'}
-  const q=boardQuote(packet),weight=E('spike-board-weight'),grams=Number((packet.planning||{}).weightGrams);
-  if(weight&&!weight.value&&grams>0){weight.value=String(grams);E('spike-weight-unit').value='g'}
-  if(out)out.innerHTML=weight&&weight.value?'<b>Board weight received from Board Sense.</b> '+priceText(q):'<b style="color:#ffdf73">Case received. Enter this board\'s scale weight above to see the dollar total.</b><br>'+priceText(q);
+  const q=boardQuote(packet),weight=E('spike-board-weight'),planning=packet.planning||{},grams=Number(planning.weightGrams),entry=planning.weightEntry;
+  if(weight&&!weight.value&&grams>0){weight.value=String(entry&&entry.value>0?entry.value:grams);E('spike-weight-unit').value=entry&&['g','lb'].includes(entry.unit)?entry.unit:'g'}
+  if(out)out.innerHTML=weight&&weight.value?'<b>Saved board weight received.</b> '+priceText(q):'<b style="color:#ffdf73">Case received. Enter this board\'s scale weight above to see the dollar total.</b><br>'+priceText(q);
 }
 function apply(){
-  const packet=read();render(packet);if(!packet)return;
+  const packet=currentPacket();if(read()&&!packet)return caseChanged();render(packet);if(!packet)return;
   const e=packet.economics||{};
-  if(e.sellWholeValue!=null)setValue('br-whole',e.sellWholeValue);
-  if(e.fullRecoveryValue!=null)setValue('br-full-value',e.fullRecoveryValue);
-  if(e.fullMinutes!=null)setValue('br-full-minutes',e.fullMinutes);
-  if(e.sellWholeValue==null&&E('spike-board-weight')?.value)estimateWhole();
+  const review=savedReview(packet);
+  if(review){
+    RETURN_FIELDS.forEach(function(id){const value=(review.inputs||{})[id];setValue(id,value==null?'':value)});
+    const whole=E('br-whole');if(whole){whole.dataset.basis=review.wholeBasis||'entered_offer';if(['planning_estimate','saved_quote'].includes(whole.dataset.basis))whole.dataset.spikeEstimated=whole.value;else delete whole.dataset.spikeEstimated}
+  }else{
+    if(e.sellWholeValue!=null){const whole=E('br-whole');if(whole)whole.dataset.basis='entered_offer';setValue('br-whole',e.sellWholeValue)}
+    if(e.fullRecoveryValue!=null)setValue('br-full-value',e.fullRecoveryValue);
+    if(e.fullMinutes!=null)setValue('br-full-minutes',e.fullMinutes);
+  }
+  if(E('spike-board-weight')?.value)estimateWhole();
   setTimeout(function(){E('board-recovery')&&E('board-recovery').scrollIntoView({behavior:'smooth',block:'start'})},120);
 }
 function fixPageLinks(){
   document.querySelectorAll('a[href]').forEach(function(a){const h=a.getAttribute('href')||'';if(h&&h.charAt(0)!=='#')a.setAttribute('target','_top')});
 }
 function init(){ensureCard();fixPageLinks();const packet=read();render(packet);const qs=new URLSearchParams(location.search);if(packet&&(qs.get('source')==='spike'||window.top!==window))setTimeout(apply,120)}
+window.addEventListener('storage',function(e){if((e.key===KEY||e.key===null)&&caseId(read())!==loadedCaseId){caseChanged();if(E('spike-estimate'))E('spike-estimate').disabled=true}});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
