@@ -6,6 +6,7 @@ const vm = require("node:vm");
 const KEY = "scrapRadarSpikeRecoveryPacketV1";
 const boardSource = fs.readFileSync("board_scrap_bridge.js", "utf8");
 const radarSource = fs.readFileSync("scrap_radar_spike_bridge.js", "utf8");
+const goldSource = fs.readFileSync("scrap_radar_gold_scenario.js", "utf8");
 
 // Run both real bridges against public form events and shared device storage.
 // Quotes and analysis responses below are isolated test fixtures, not live data.
@@ -23,6 +24,7 @@ function storage() {
 function page(kind, localStorage) {
   const elements = new Map(), listeners = new Map();
   let responsePayload;
+  let goldBenchmark = { id: "gold", available: true, price: 4172.10, unit: "troy_oz", date: "2026-10-02", stale: false, source: "Test benchmark" };
   class Element {
     constructor() { this.value = ""; this.dataset = {}; this.style = {}; this.listeners = new Map(); this.textContent = ""; }
     set id(value) { this._id = value; elements.set(value, this); }
@@ -63,18 +65,23 @@ function page(kind, localStorage) {
     fetch: async () => ({ clone: () => ({ json: async () => responsePayload }) }),
     getScrapRadarMaterialQuote: id => ({ id, price: 0.65, type: "estimate", date: "2026-09-29", label: "Mid Grade Circuit Boards" })
   };
-  vm.runInNewContext(kind === "board" ? boardSource : radarSource, {
+  window.getScrapRadarMetalBenchmark = () => goldBenchmark;
+  const context = vm.createContext({
     window, localStorage,
     document: { readyState: "complete", getElementById: id => elements.get(id) || null, createElement: () => new Element(), querySelectorAll: () => [] },
     location: { search: "?source=spike" }, URLSearchParams,
     Event: class { constructor(type) { this.type = type; this.isTrusted = false; } },
     setTimeout: fn => { fn(); return 1; }, console
   });
+  vm.runInContext(kind === "board" ? boardSource : radarSource, context);
+  if(kind === "radar")vm.runInContext(goldSource, context);
   return {
     elements, window,
     edit(id, value) { elements.get(id).value = String(value); elements.get(id).emit("input"); },
     unit(value) { elements.get("spike-weight-unit").value = value; elements.get("spike-weight-unit").emit("change"); },
     click(id) { return elements.get(id).onclick(); },
+    goldUnit(value) { elements.get("spike-gold-unit").value = value; elements.get("spike-gold-unit").emit("change"); },
+    market(value) { goldBenchmark = value; for (const fn of listeners.get("scrapRadarMarketUpdated") || []) fn({}); },
     dispatch(name, event = {}) { for (const fn of listeners.get(name) || []) fn(event); },
     async analyze(payload) { responsePayload = payload; await window.fetch("https://example.invalid/analyze-case"); await new Promise(resolve => setImmediate(resolve)); },
     send() { let prevented = false; elements.get("sendSpikeForm").onsubmit({ preventDefault() { prevented = true; } }); return !prevented; },
@@ -104,6 +111,10 @@ function analysis() {
   assert.equal(saved.packet().planning.wholeBoardEstimate.basis, "planning_estimate");
   assert.equal(saved.packet().economics.sellWholeValue, null, "an estimate must not become a buyer offer");
   assert.equal(radar.elements.get("br-whole").value, "0.06");
+  assert.equal(radar.elements.get("spike-gold-gross").textContent, "$13.41");
+  assert.match(radar.elements.get("spike-gold-basis").textContent, /1 scale point = 0.1 g/);
+  assert.equal(saved.packet().planning.goldRecoveryScenario.kind, "hypothetical");
+  assert.equal(saved.packet().planning.goldRecoveryScenario.netAfterEnteredCosts, null, "blank buyer terms and costs cannot create net proceeds");
   radar.edit("br-partial-costs", 5);
   radar.edit("br-whole-miles", 0);
   radar.click("spike-back");
@@ -118,6 +129,8 @@ function analysis() {
   assert.match(returned.status(), /Selective harvest: unpriced/);
   assert.match(returned.status(), /Deeper recovery: unpriced/);
   assert.doesNotMatch(returned.status(), /Entered whole-board buyer offer/);
+  assert.match(returned.status(), /Gold recovery what-if • assumed yield/);
+  assert.match(returned.status(), /Gross metal value:<\/b> \$13\.41/);
   assert.equal(original.send(), true, "an open Board Sense tab must use the updated saved packet");
   assert.equal(saved.packet().planning.weightGrams, 42.75);
   assert.equal(saved.packet().scrapRadarReturn.inputs["br-partial-costs"], 5);
@@ -204,5 +217,59 @@ function analysis() {
   estimateBoard.dispatch("boardSensePlanningUpdated", { detail: { gradeId: "board_mid", weightGrams: 100 } });
   assert.equal(estimateStore.packet().planning.wholeBoardEstimate, undefined, "a changed measurement invalidates the previous estimate");
   assert.equal(estimateStore.packet().scrapRadarReturn.inputs["br-whole"], null, "an outdated planning total must not return as an offer");
-  console.log("Board/Scrap Radar round trip: grams/pounds, dated estimates, entered offers, blank inputs, case isolation, resets, reloads and storage errors passed");
+
+  // Gold scenarios stay separate from actual payouts; unit changes and market
+  // refreshes recalculate using the current benchmark rather than a fixed price.
+  const scenarioStore = storage(), scenarioBoard = page("board", scenarioStore);
+  await scenarioBoard.analyze(analysis());
+  scenarioBoard.dispatch("boardSensePlanningUpdated", { detail: { gradeId: "board_mid", weightGrams: 42.75 } });
+  const scenario = page("radar", scenarioStore);
+  const baseGold = { id: "gold", available: true, price: 4172.10, unit: "troy_oz", date: "2026-10-02", stale: false, source: "Test benchmark" };
+  scenario.edit("spike-gold-amount", 2);
+  assert.equal(scenario.elements.get("spike-gold-gross").textContent, "$26.83");
+  scenario.goldUnit("g"); scenario.edit("spike-gold-amount", 0.2);
+  assert.equal(scenario.elements.get("spike-gold-gross").textContent, "$26.83");
+  scenario.goldUnit("mg"); scenario.edit("spike-gold-amount", 200);
+  assert.equal(scenario.elements.get("spike-gold-gross").textContent, "$26.83");
+  scenario.edit("spike-gold-amount", "");
+  assert.equal(scenario.elements.get("spike-gold-gross").textContent, "—");
+  scenario.click("spike-gold-one-point");
+  scenario.edit("spike-gold-pay-percent", 100); scenario.edit("spike-gold-costs", 0); scenario.edit("spike-gold-minutes", 10);
+  assert.equal(scenarioStore.packet().planning.goldRecoveryScenario.netAfterEnteredCosts, 13.41);
+  assert.equal(scenarioStore.packet().planning.goldRecoveryScenario.hourlyAfterEnteredCosts, 80.48);
+  scenario.edit("spike-gold-pay-percent", 50); scenario.edit("spike-gold-costs", 20);
+  assert.equal(scenarioStore.packet().planning.goldRecoveryScenario.netAfterEnteredCosts, -13.29);
+  scenario.click("spike-back");
+  assert.match(page("board", scenarioStore).status(), /Scenario after entered costs: \$-13\.29/);
+  assert.equal(scenarioStore.packet().economics.fullRecoveryValue, null);
+  assert.equal(scenarioStore.packet().scrapRadarReturn.inputs["br-full-value"], null);
+  assert.equal(scenarioStore.packet().scrapRadarReturn.inputs["br-partial-value"], null);
+  const savedScenario = page("radar", scenarioStore);
+  assert.equal(savedScenario.elements.get("spike-gold-amount").value, "1");
+  assert.equal(savedScenario.elements.get("spike-gold-pay-percent").value, "50");
+  assert.equal(savedScenario.elements.get("spike-gold-costs").value, "20");
+  savedScenario.edit("spike-gold-pay-percent", 101);
+  assert.equal(scenarioStore.packet().planning.goldRecoveryScenario.netAfterEnteredCosts, null);
+  assert.match(savedScenario.elements.get("spike-gold-net-note").textContent, /between 0 and 100/);
+  savedScenario.goldUnit("g"); savedScenario.edit("spike-gold-amount", 50);
+  assert.equal(scenarioStore.packet().planning.goldRecoveryScenario.status, "exceeds_board_weight");
+  assert.equal(savedScenario.elements.get("spike-gold-gross").textContent, "—");
+  savedScenario.click("spike-gold-one-point");
+  savedScenario.market({ ...baseGold, available: false });
+  assert.equal(scenarioStore.packet().planning.goldRecoveryScenario.status, "needs_benchmark");
+  assert.equal(savedScenario.elements.get("spike-gold-gross").textContent, "—");
+  savedScenario.market({ ...baseGold, unit: "oz" });
+  assert.equal(scenarioStore.packet().planning.goldRecoveryScenario.status, "needs_benchmark", "do not confuse troy and ordinary ounces");
+  savedScenario.market({ ...baseGold, price: 0 });
+  assert.equal(scenarioStore.packet().planning.goldRecoveryScenario.status, "needs_benchmark");
+  savedScenario.market({ ...baseGold, stale: true, date: "2026-09-01" });
+  assert.match(savedScenario.elements.get("spike-gold-basis").textContent, /stale or unverified/);
+  savedScenario.market({ ...baseGold, unit: "g", price: 100 });
+  assert.equal(savedScenario.elements.get("spike-gold-gross").textContent, "$10.00");
+  assert.equal(scenarioStore.packet().economics.fullRecoveryValue, null);
+  scenarioBoard.dispatch("boardSenseCaseReportReset");
+  savedScenario.edit("spike-gold-amount", 2);
+  assert.equal(scenarioStore.packet(), null, "gold scenarios cannot resurrect a cleared board");
+  assert.match(savedScenario.elements.get("spike-gold-basis").textContent, /case changed/);
+  console.log("Board/Scrap Radar round trip and gold scenarios: units, benchmark refresh, blank costs, entered offers, saved assumptions, case isolation, resets and storage errors passed");
 })().catch(error => { console.error(error); process.exitCode = 1; });

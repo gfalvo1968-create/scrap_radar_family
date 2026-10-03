@@ -121,6 +121,7 @@ async function loadData(){
   const checked=data.checked_at||state.updatedAt;
   const checkedTime=checked&&new Date(checked);
   el('sr-updated').textContent=checkedTime&&!Number.isNaN(checkedTime.getTime())?'Feed checked '+checkedTime.toLocaleString():'Feed check time unavailable';
+  if(window.dispatchEvent&&typeof CustomEvent==='function')window.dispatchEvent(new CustomEvent('scrapRadarMarketUpdated'));
 }
 
 function setStatus(text,kind){const s=el('sr-feed-status');if(!s)return;s.textContent=text;s.className='status-chip '+(kind||'')}
@@ -167,6 +168,15 @@ window.getScrapRadarMaterialQuote=function(id){
   if(!m)return null;
   const e=effectivePrice(m);
   return {id:m.id,label:m.label,unit:m.unit,price:e.price,type:e.type,labelSource:e.label,stale:e.stale===true,date:e.date||sourceDate(m),source:e.type==='estimate'&&e.date?'published_buyer_samples':m.price_type||m.pricing_mode||'quote',updatedAt:state.updatedAt||null};
+};
+
+// Raw metal benchmarks for explicitly hypothetical recovery scenarios.
+// Local yard quotes do not override this read-only market reference.
+window.getScrapRadarMetalBenchmark=function(id){
+  const m=state.metals[id];if(!m)return null;
+  return {id:id,available:m.available===true&&hasNumericValue(m.price)&&Number(m.price)>0,
+    price:hasNumericValue(m.price)?Number(m.price):null,unit:m.unit||null,
+    date:sourceDate(m),stale:needsDateCheck(m),source:state.source||'Scrap Radar',updatedAt:state.updatedAt};
 };
 
 function priceBlock(m){

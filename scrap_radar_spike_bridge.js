@@ -42,6 +42,8 @@ function clearSavedEstimate(){
   return savePacket(packet);
 }
 function saveReturn(){
+  if(!currentPacket())return caseChanged();
+  if(window.ScrapRadarGoldScenario?.save()===false){const out=E('spike-estimate-result');if(out)out.textContent='Could not save the gold scenario. Check its message before returning to Board Sense.';return false}
   const packet=currentPacket();if(!packet)return caseChanged();
   const inputs={};RETURN_FIELDS.forEach(function(id){inputs[id]=numeric(id)});
   packet.scrapRadarReturn={version:1,caseId:caseId(packet),returnedAt:new Date().toISOString(),wholeBasis:E('br-whole')?.dataset.basis||'entered_offer',inputs:inputs};
@@ -141,6 +143,7 @@ function estimateWhole(){
 }
 function render(packet){
   ensureCard();const d=E('spike-import-detail'),b=E('spike-critical');if(!d)return;
+  window.ScrapRadarGoldScenario?.refresh();
   const estimate=E('spike-estimate'),out=E('spike-estimate-result');
   if(estimate)estimate.disabled=!packet;
   if(!packet){d.innerHTML='<b>No SPIKE case loaded.</b> Analyze a board in Board Sense, then use Send Case to Scrap Radar.';if(out)out.textContent='Send a verified board case to see its grade and planning price.';if(b){b.disabled=true;b.textContent='Check Critical Materials'}return}

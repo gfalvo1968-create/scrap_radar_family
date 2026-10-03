@@ -18,9 +18,23 @@ function returnedValues(packet){
   return review&&review.version===1&&review.caseId===caseId(packet)?review:null;
 }
 function money(v){return '$'+Number(v).toFixed(2)}
+function goldScenarioHTML(packet){
+  const s=packet.planning&&packet.planning.goldRecoveryScenario;
+  if(!s||s.version!==1||s.kind!=='hypothetical'||s.caseId!==caseId(packet))return '';
+  let html='<div style="margin-top:10px;padding-top:10px;border-top:1px solid #826d2c"><b>Gold recovery what-if • assumed yield</b>';
+  const grams=amount(s.recoveredFineGrams),weight=amount(packet.planning.weightGrams),input=s.input||{},q=s.benchmark||{};
+  if(grams!=null)html+='<br>'+(input.unit==='scale_points'&&amount(input.amount)!=null?safe(input.amount)+' scale point'+(Number(input.amount)===1?'':'s')+' = ':'')+safe(Number(grams.toPrecision(8)))+' grams of recovered 24K gold (assumed)';
+  if(s.status==='calculated'&&amount(s.grossMetalValue)!=null&&!(weight>0&&grams>weight)){
+    html+='<br><b>Gross metal value:</b> '+money(s.grossMetalValue)+'<br><span class="muted">Saved gold benchmark dated '+safe(q.date||'unverified')+(q.stale?' • stale or unverified; confirm before use':'')+'. Buyer deductions and recovery costs affect proceeds.</span>';
+    if(s.netAfterEnteredCosts!=null&&Number.isFinite(Number(s.netAfterEnteredCosts)))html+='<br>Scenario after entered costs: '+money(s.netAfterEnteredCosts);
+    else html+='<br>Scenario proceeds: enter buyer percentage and costs';
+  }else html+='<br>Gold scenario value unavailable: check the assumed weight and market benchmark.';
+  return html+'<br><span class="muted">This board’s actual gold yield remains unmeasured. Recovery payouts stay unpriced until supported by measurements and buyer terms.</span></div>';
+}
 function returnHTML(packet){
   const p=packet.planning||{},estimate=p.wholeBoardEstimate,review=returnedValues(packet),inputs=review&&review.inputs||{};
-  if(!estimate&&!review)return '';
+  const scenario=goldScenarioHTML(packet);
+  if(!estimate&&!review&&!scenario)return '';
   let html='<div style="margin-top:12px;padding:12px;border:1px solid #39ff14;border-radius:10px"><b>Values from Scrap Radar</b>';
   if(amount(p.weightGrams)>0)html+='<br><b>Board weight:</b> '+safe(Number(Number(p.weightGrams).toFixed(6)))+' grams';
   if(estimate&&amount(estimate.value)!=null&&amount(estimate.pricePerLb)!=null){
@@ -34,7 +48,7 @@ function returnHTML(packet){
     if(amount(inputs['br-full-value'])==null&&amount(inputs['br-full-residual'])==null)html+='<br>Deeper recovery: unpriced';
     html+='<br><span class="muted">Entered recovery time, costs and travel stay with this saved case. Use Send Case to Scrap Radar to continue the comparison.</span>';
   }
-  return html+'</div>';
+  return html+scenario+'</div>';
 }
 function readInspection(){try{return JSON.parse(localStorage.getItem(INSPECTION_KEY)||'null')}catch(_){return null}}
 function inspectionActive(){const p=readInspection();return !!(p&&p.target)}

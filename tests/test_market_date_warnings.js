@@ -6,7 +6,8 @@ const vm = require("node:vm");
 
 const source = fs.readFileSync("scrap_radar_market.js", "utf8");
 
-function harness(payload) {
+function harness(payload, quotes = {}) {
+  const events = [];
   const elements = new Proxy({}, {
     get(target, id) {
       if (!target[id]) target[id] = {
@@ -20,14 +21,17 @@ function harness(payload) {
   elements["calc-weight"].value = "2";
   const context = {
     document: { getElementById: id => elements[id], addEventListener() {} },
-    localStorage: { getItem: () => null, setItem() {} },
+    localStorage: { getItem: () => JSON.stringify(quotes), setItem() {} },
     sessionStorage: { getItem: () => null, setItem() {}, removeItem() {} },
     fetch: async () => ({ ok: true, json: async () => payload }),
-    window: {}, Date, Number, Object, JSON, Intl, console
+    window: { dispatchEvent: event => events.push(event.type) },
+    CustomEvent: class { constructor(type) { this.type = type; } }, Date, Number, Object, JSON, Intl, console
   };
   vm.createContext(context);
   vm.runInContext(source.replace(/\}\)\(\);\s*$/, "globalThis.testApi={loadData};\n})();"), context);
-  return { elements, loadData: context.testApi.loadData };
+  return { elements, events, loadData: context.testApi.loadData,
+    benchmark: id => context.window.getScrapRadarMetalBenchmark(id),
+    quote: id => context.window.getScrapRadarMaterialQuote(id) };
 }
 
 function payload({ date, stale, status }) {
@@ -65,6 +69,30 @@ function payload({ date, stale, status }) {
   assert.match(fresh.elements["sr-feed-status"].textContent, /daily prices dated below/);
   assert.equal(fresh.elements["calc-price"].value, "3.40");
   assert.match(fresh.elements["calc-value"].textContent, /\$6\.80/);
+
+  const goldFeed = payload({ date: "2026-10-02", stale: false, status: "live" });
+  goldFeed.metals.gold = { available: true, price: 4172.1, unit: "troy_oz", source_price_date: "2026-10-02", stale: false };
+  goldFeed.materials.push({ id: "precious_metals", label: "Precious Metals", materials: [
+    { id: "gold", label: "Gold", unit: "troy_oz", price_unit: "troy_oz", price: 4172.1, price_type: "market_reference", source_price_date: "2026-10-02" }
+  ] });
+  const gold = harness(goldFeed, { gold: 99 }); await gold.loadData();
+  assert.equal(gold.quote("gold").price, 99);
+  const reference = gold.benchmark("gold");
+  assert.equal(reference.price, 4172.1, "a yard quote must not replace the gold market benchmark");
+  assert.equal(reference.unit, "troy_oz");
+  assert.equal(reference.date, "2026-10-02");
+  assert.equal(reference.available, true);
+  reference.price = 1;
+  assert.equal(gold.benchmark("gold").price, 4172.1, "the read-only getter returns a copy");
+  assert.equal(gold.benchmark("missing"), null);
+  assert.ok(gold.events.includes("scrapRadarMarketUpdated"));
+  goldFeed.metals.gold.source_price_date = "not a date";
+  const undatedGold = harness(goldFeed); await undatedGold.loadData();
+  assert.equal(undatedGold.benchmark("gold").date, null);
+  assert.equal(undatedGold.benchmark("gold").stale, true);
+  goldFeed.metals.gold.available = false;
+  const unavailableGold = harness(goldFeed); await unavailableGold.loadData();
+  assert.equal(unavailableGold.benchmark("gold").available, false);
 
   // The Board Sense screen shares the market bridge and must also warn on stale prices.
   const boardScript = fs.readFileSync("board_sense.html", "utf8").split("<script>")[1].split("</script>")[0];
