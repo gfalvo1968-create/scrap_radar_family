@@ -43,7 +43,7 @@ function clearSavedEstimate(){
 }
 function saveReturn(){
   if(!currentPacket())return caseChanged();
-  if(window.ScrapRadarGoldScenario?.save()===false){const out=E('spike-estimate-result');if(out)out.textContent='Could not save the gold scenario. Check its message before returning to Board Sense.';return false}
+  if(window.ScrapRadarGoldScenario?.save()===false){const out=E('spike-estimate-result');if(out)out.textContent='Could not save the metal recovery scenario. Check its message before returning to Board Sense.';return false}
   const packet=currentPacket();if(!packet)return caseChanged();
   const inputs={};RETURN_FIELDS.forEach(function(id){inputs[id]=numeric(id)});
   packet.scrapRadarReturn={version:1,caseId:caseId(packet),returnedAt:new Date().toISOString(),wholeBasis:E('br-whole')?.dataset.basis||'entered_offer',inputs:inputs};

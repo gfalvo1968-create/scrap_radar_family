@@ -31,9 +31,32 @@ function goldScenarioHTML(packet){
   }else html+='<br>Gold scenario value unavailable: check the assumed weight and market benchmark.';
   return html+'<br><span class="muted">This board’s actual gold yield remains unmeasured. Recovery payouts stay unpriced until supported by measurements and buyer terms.</span></div>';
 }
+function materialScenarioHTML(packet){
+  const s=packet.planning&&packet.planning.materialRecoveryScenario;
+  if(!s||s.version!==1||s.kind!=='hypothetical'||s.caseId!==caseId(packet)||!Array.isArray(s.materials))return '';
+  const labels={gold:'Gold',silver:'Silver',copper:'Copper'},ids=['gold','silver','copper'];
+  if(s.materials.length!==3||ids.some(id=>s.materials.filter(row=>row&&row.metal===id).length!==1))return '';
+  const rows=ids.map(id=>s.materials.find(row=>row.metal===id));
+  const grams=rows.map(row=>amount(row.recoveredGrams)),mass=grams.reduce((sum,n)=>sum+(n==null?0:n),0),weight=amount(packet.planning.weightGrams);
+  const withinWeight=Number.isFinite(mass)&&!(weight>0&&mass>weight+1e-9*Math.max(1,weight));
+  const valid=withinWeight&&['partial','complete'].includes(s.status);
+  let html='<div style="margin-top:10px;padding-top:10px;border-top:1px solid #826d2c"><b>Gold + silver + copper recovery • assumed yields</b>';
+  html+='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;margin-top:8px"><thead><tr><th style="text-align:left">Metal</th><th style="text-align:left">Assumed grams</th><th style="text-align:right">Gross value</th></tr></thead><tbody>';
+  rows.forEach(function(row,index){const value=amount(row.grossMetalValue);html+='<tr><td>'+labels[row.metal]+'</td><td>'+(grams[index]!=null?safe(Number(grams[index].toPrecision(8))):'Unknown')+'</td><td style="text-align:right">'+(valid&&value!=null?money(value):'Unpriced')+'</td></tr>'});
+  html+='</tbody></table></div>';
+  if(valid&&amount(s.grossMetalValue)!=null){
+    html+='<br><b>'+(s.status==='complete'?'Combined gross metal value':'Priced metal subtotal • partial scenario')+':</b> '+money(s.grossMetalValue);
+    if(s.netAfterEnteredCosts!=null&&Number.isFinite(Number(s.netAfterEnteredCosts)))html+='<br>Scenario after entered costs: '+money(s.netAfterEnteredCosts)+(s.status==='partial'?' (priced metals only; partial estimate)':'');
+    else html+='<br>Scenario proceeds: enter each metal’s buyer percentage and total costs';
+    if(s.hourlyAfterEnteredCosts!=null&&Number.isFinite(Number(s.hourlyAfterEnteredCosts)))html+='<br>After entered costs per hour: '+money(s.hourlyAfterEnteredCosts);
+  }else html+='<br>Combined value withheld: check recovered amounts, total board weight and benchmarks.';
+  rows.forEach(function(row){const q=row.benchmark;if(q)html+='<br><span class="muted">Saved '+labels[row.metal].toLowerCase()+' benchmark dated '+safe(q.date||'unverified')+(q.stale?' • stale or unverified; confirm before use':'')+'.</span>'});
+  if(grams.some(n=>n==null))html+='<br>Unknown quantities: '+rows.filter((row,i)=>grams[i]==null).map(row=>labels[row.metal]).join(', ')+'.';
+  return html+'<br><span class="muted">Gold, silver and copper only; other materials and residual board value are not included. Individual values are rounded; the subtotal uses full precision. Total recovery costs are counted once. Actual board yields remain unmeasured; these scenarios do not become buyer offers or recovery payouts.</span></div>';
+}
 function returnHTML(packet){
   const p=packet.planning||{},estimate=p.wholeBoardEstimate,review=returnedValues(packet),inputs=review&&review.inputs||{};
-  const scenario=goldScenarioHTML(packet);
+  const scenario=materialScenarioHTML(packet)||goldScenarioHTML(packet);
   if(!estimate&&!review&&!scenario)return '';
   let html='<div style="margin-top:12px;padding:12px;border:1px solid #39ff14;border-radius:10px"><b>Values from Scrap Radar</b>';
   if(amount(p.weightGrams)>0)html+='<br><b>Board weight:</b> '+safe(Number(Number(p.weightGrams).toFixed(6)))+' grams';
