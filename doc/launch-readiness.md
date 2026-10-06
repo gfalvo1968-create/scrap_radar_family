@@ -17,7 +17,7 @@ Reviewed October 6, 2026. Working launch target: November 19, 2026.
 | Cloudflare origin check | Code and regression checks ready. Inactive until Cloudflare's proxy and private request-header rule are configured. |
 
 Validation: nine frontend JavaScript suites and the shared-record validator;
-52 Board Sense tests; 17 market/profile tests; all reference JSON files parse.
+56 Board Sense tests; 17 market/profile tests; all reference JSON files parse.
 The request test allows one of eight concurrent requests to analyze and rejects
 seven. The market test shares one refresh among eight concurrent consumers.
 These checks do not establish actual metal content in a specimen.
@@ -74,10 +74,12 @@ frontend Pages release also succeeded.
 
 | Service | Verified release | Railway deployment |
 | --- | --- | --- |
-| Board Sense | `a5c707520a059baf7f25d1e980e6fb1dc13a40ed` | `edb02a79-2356-40f9-89ca-71d4e82f1de5` |
+| Board Sense | `bd19cb62399f85eeef0931c1e53f74386e696d9c` | `753bf047-143b-40fc-b8b7-c5b5edf6eff7` |
 | Scrapradar-backend | `a6403dd38d0ea4e391d257962abc3f54b04f67b3` | `37f8df68-60b7-4841-8980-7314dfd9412f` |
 
-Both live `/health` responses return 200 with `release: launch-20261006`.
+Board Sense `/health` returns 200 with `release: launch-20261006-phone-routing`,
+rechecked during the October 6 evening closeout. The market release previously
+passed HTTP 200 with `release: launch-20261006`.
 The market service retained its mounted `/data` profile volume. Live checks
 confirmed profile save/readback and credential isolation, rejection of negative
 rates and case costs, and invalid-image rejection without consuming the public
@@ -137,4 +139,13 @@ Local production-code diagnosis initially routed the wider keypad view as unknow
 
 The Board Sense worksheet now passes an explicitly selected buyer category to Scrap Radar, separately from visual recovery grade. A 22.6 g phone-category regression verifies $1.02, buyer-acceptance disclosure, unchanged identity/LOW recovery grade, no invented metal payout, return/reopen persistence, and retirement of stale estimates when category changes.
 
-**Remaining recognition gate:** downstream logic currently produces general or power/controller labels and LOW recovery grades on these phone photos. PCB acceptance is fixed locally; automatic phone identity, package/keypad detection and accurate recovery grading still require work. Do not treat LOW as a confirmed buyer grade or claim measured gold/silver/copper yields. Public daily quota is retained; no quota reset or extra live analysis was performed to test this change.
+**Remaining recognition gate:** downstream logic currently produces general or power/controller labels and LOW recovery grades on these phone photos. The PCB-routing fix is deployed; all six specimen views passed the local diagnostic. Automatic phone identity, package/keypad detection and accurate recovery grading still require work. Do not treat LOW as a confirmed buyer grade or claim measured gold/silver/copper yields. Public daily quota is retained; no quota reset or extra live analysis was performed to test this change.
+
+
+### October 6 evening closeout
+
+**Closed:** PCB-versus-speaker routing fix published and deployed; current Board Sense health verified. Frontend buyer-category handoff release `fe07cb0b91aaa2d02256c6acf087f2a579c3c649` passed Pages deployment, and published worksheet/bridge bytes matched the tested files. All 56 backend tests passed, along with handoff, round-trip and operating-profile suites. The phone-board weight/category calculation is verified by regression fixtures, not a new live phone scan.
+
+**Next:** (1) correct and validate phone keypad/package and motherboard-slot recognition on real specimens; (2) complete owner-iPad tester, new-case, weight/category and saved-return checks; (3) verify owner account/DNS protections and final privacy/retention/recovery instructions. Published metal-content reference ranges require documented specimen populations and methods before integration. Actual contained or recovered metal grams remain unknown for this board.
+
+Working launch target remains November 19. These closed fixes do not close the remaining recognition, owner-device or security gates.
