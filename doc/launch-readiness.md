@@ -26,9 +26,45 @@ Live browser verification: the published frontend loads dated metal prices and
 separate gold, silver and copper scenario amounts. Whole-board controls wait for
 a saved board case. The buyer-category and saved-case round trip passed fixture
 checks. Live operating-rate backup and reload/readback passed after deployment;
-temporary example rates were cleared. A new real-board scan and iPad round trip
-still need original front/back board photos. Recovered report screenshots were
-not used as substitutes for specimen photos.
+temporary example rates were cleared. Jerry's newly supplied original front/back
+photos completed a live scan and Board Sense → Scrap Radar → Board Sense return.
+The physical iPad flow and the recovery-grade accuracy check remain open.
+Recovered report screenshots were not used as substitutes for specimen photos.
+
+## October 6 real-board check
+
+Original photos: `IMG_5284.jpeg` (component side) and `IMG_5285.jpeg` (back),
+showing an Acer-marked mainboard. Both passed the photo-quality check at 100/100.
+Without operator confirmation, SPIKE matched the views as
+`PROBABLY_SAME_BOARD` at 85% and completed one two-photo case. The report and
+its identity arrived in Scrap Radar; the returned metal scenario appeared in
+Board Sense. Actual whole-board and recovery payouts remained unpriced.
+
+The wiring test used deliberately assumed amounts: 0.05 g gold, 0.2 g silver
+and 20 g copper, with example buyer percentages of 90%, 80% and 70%, one $1
+total cost and 15 minutes. At the test's dated benchmarks, the displayed gross
+subtotal was $7.42, the scenario after entered costs $5.58 and its hourly
+equivalent $22.32. These are test assumptions, not measured contents, buyer
+terms or predicted proceeds from this specimen. No board weight was invented.
+Reopening the case restored every amount, gold unit, buyer percentage, cost
+and minute entry. Refreshed benchmarks later recalculated the same assumptions
+to $7.43 gross, $5.59 after entered costs and $22.34/hour.
+
+A second public request through Spike Glass was rejected with HTTP 429 and a
+message explaining that today's free analysis was used. The completed case
+and its handoff remained available; no second analysis was performed.
+
+**Recovery-grade review remains a launch gate.** The recognizer reported
+`Dense Logic / Controller Board`, subtype `Embedded / Proprietary Main Logic
+Board`, confidence 69%, recovery grade LOW and score 3. Local review reproduced
+that result: only four logic-package candidates were supported, and the two
+long connector candidates did not establish a confirmed RAM-slot bank. The
+back did not lower a higher front score; the front itself scored 3. Good photo
+quality does not validate that recovery grade as a buyer's sorting category.
+Review the motherboard/slot/package recognition on real specimens before
+relying on the broad-grade price. Use an accepted buyer category or actual
+quote and measured board weight for this board's whole-board comparison;
+do not raise the grade or infer precious-metal grams without evidence.
 
 ## Deployment gate
 
@@ -50,10 +86,12 @@ processing costs once; a category without recovered quantities does not invent
 gold or net proceeds. Anonymous profile access returns 401, the unconfigured
 private IRM route returns 503, and the persistent quota preview is available.
 
-Still verify a valid public scan followed by 429, authorized tester access and
-the complete photo/report/handoff flow. The database-outage 503 check passed
-automated tests; no production database outage was induced. Local-only saved
-rates remain available while the profile API is unavailable.
+The valid public scan, shared daily allowance rejection and photo/report/metal
+scenario return passed the real-board check above. Still verify authorized
+tester access, measured-weight and buyer-category return on the owner's iPad,
+and classification accuracy across the specimen set. The database-outage 503
+check passed automated tests; no production database outage was induced.
+Local-only saved rates remain available while the profile API is unavailable.
 
 ## Owner account and DNS gate
 
