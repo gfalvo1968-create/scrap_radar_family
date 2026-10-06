@@ -51,3 +51,7 @@ Use the owner's business payment account; confirm the provider and its supported
 5. Test the complete payment-to-access flow in sandbox, then a controlled live transaction.
 
 Launch readiness requires demonstrated payment and access behavior, not just a working checkout button.
+
+## Implementation checkpoint — October 6 evening
+
+The market backend now provides a versioned membership catalog with the approved prices and checkout disabled. An internal SQLite ledger freezes subscription prices, binds subscriptions to trusted customer IDs, and records idempotent reconciled state changes. Payment failure alone preserves rate continuity. This is foundation code: authentication, verified email, PayPal checkout and verified notifications, entitlement enforcement, customer pages and admin tracking remain unimplemented. All 24 market-backend tests pass. No payment or live customer record was created.
