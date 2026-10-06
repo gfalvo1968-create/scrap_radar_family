@@ -167,10 +167,15 @@ function updatePlanning(detail){
   if(!detail||inspectionActive())return;
   const w=Number(detail.weightGrams);
   pendingPlanning={gradeId:detail.gradeId||null,weightGrams:detail.weightGrams!=null&&Number.isFinite(w)&&w>0?w:null};
+  if(Object.prototype.hasOwnProperty.call(detail,'buyerCategoryId')){
+    const id=detail.buyerCategoryId,quote=id&&window.ScrapRadarBoardPriceReference&&window.ScrapRadarBoardPriceReference.get(id);
+    pendingPlanning.buyerCategoryId=quote?id:null;
+    pendingPlanning.buyerCategoryBasis=quote?'user_selected_unconfirmed':null;
+  }
   if(latest){
     const saved=readSaved();
     if(!saved||caseId(saved)!==caseId(latest)){latest=saved;render(saved,false);return}
-    const old=saved.planning||{},changed=old.gradeId!==pendingPlanning.gradeId||old.weightGrams!==pendingPlanning.weightGrams;
+    const old=saved.planning||{},changed=old.gradeId!==pendingPlanning.gradeId||old.weightGrams!==pendingPlanning.weightGrams||(Object.prototype.hasOwnProperty.call(pendingPlanning,'buyerCategoryId')&&old.buyerCategoryId!==pendingPlanning.buyerCategoryId);
     saved.planning=Object.assign({},old,pendingPlanning);
     if(changed){
       delete saved.planning.wholeBoardEstimate;delete saved.planning.weightEntry;

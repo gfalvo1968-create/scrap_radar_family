@@ -127,3 +127,14 @@ DNS cutover and account MFA enrollment remain owner account setup gates.
 | October 27–November 9 | Family acceptance pass; public privacy/contact text, retention and backup recovery approved. |
 | November 10–18 | Release freeze, fresh buyer samples, final cold-start/outage check and rehearsal. |
 | November 19 | Launch only after the deployment, account/DNS and public demo gates pass. |
+
+
+### October 6 — unidentified 22.6 g phone-board follow-up
+
+Owner identifies this loose board as an older cell-phone board; exact make/model remain unknown (possibly Nokia, unconfirmed). Measured weight: **22.6 g**. Original model/casing is optional for buyer-category planning. BoardSort’s October 6 posted cell-phone-board sample is **$20.50/lb**, producing **$1.02 gross planning value** before costs and subject to buyer acceptance. This is a whole-board sale estimate, not contained-metal value.
+
+Local production-code diagnosis initially routed the wider keypad view as unknown and chip-side view as a speaker. Object Gate v0.5 now checks circuit detail within an isolated supported PCB surface rather than diluting evidence across the background. Speaker routing also requires a visible circular perimeter across at least nine of twelve angular sectors. The six supplied original/close-up images now route as PCB locally. Automated regressions cover wide/close/rotated framing, plain colored-sheet rejection, speaker retention and partial-arc rejection. Original images are not committed to the repository.
+
+The Board Sense worksheet now passes an explicitly selected buyer category to Scrap Radar, separately from visual recovery grade. A 22.6 g phone-category regression verifies $1.02, buyer-acceptance disclosure, unchanged identity/LOW recovery grade, no invented metal payout, return/reopen persistence, and retirement of stale estimates when category changes.
+
+**Remaining recognition gate:** downstream logic currently produces general or power/controller labels and LOW recovery grades on these phone photos. PCB acceptance is fixed locally; automatic phone identity, package/keypad detection and accurate recovery grading still require work. Do not treat LOW as a confirmed buyer grade or claim measured gold/silver/copper yields. Public daily quota is retained; no quota reset or extra live analysis was performed to test this change.
