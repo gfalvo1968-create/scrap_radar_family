@@ -149,3 +149,10 @@ The Board Sense worksheet now passes an explicitly selected buyer category to Sc
 **Next:** (1) correct and validate phone keypad/package and motherboard-slot recognition on real specimens; (2) complete owner-iPad tester, new-case, weight/category and saved-return checks; (3) verify owner account/DNS protections and final privacy/retention/recovery instructions. Published metal-content reference ranges require documented specimen populations and methods before integration. Actual contained or recovered metal grams remain unknown for this board.
 
 Working launch target remains November 19. These closed fixes do not close the remaining recognition, owner-device or security gates.
+
+## October 6 keypad recognition and commercial scope
+
+- Backend now detects repeated keypad-like contact arrays without assigning brand, model, gold mass or additional recovery points.
+- All 62 backend tests pass, including rotation/framing, mounting-contact rejection, mixed-board blocking and photo-order reconciliation.
+- Real 22.6 g phone-board photos: keypad context is recognized locally; unconfirmed two-view identity remains uncertain. Existing same-board operator confirmation retains keypad context in either order. LOW is still a provisional heuristic grade, not a buyer quote or assay.
+- New commercial requirements are in `doc/customer-payments.md`: product prices and paid allowances remain undecided; checkout, customer authentication, payment-state enforcement and private customer tracking still require implementation and end-to-end validation.
