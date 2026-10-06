@@ -8,8 +8,8 @@ Status: implementation requirements recorded October 6, 2026. Checkout, paid acc
 |---|---|---|
 | Public preview | Existing daily board-analysis allowance | Free; keep server-side enforcement |
 | Scrap Radar subscription | Scrap planning and comparison tools | $19.95 USD/month |
-| Board Sense subscription | Board investigation tools | $29.95 USD/month; paid usage allowance remains to be set |
-| Family subscription | Both products and future Scrap Radar Family software modules | $44.95 USD/month for early members |
+| Board Sense subscription | Board investigation tools | $29.95 USD/month; 25 board cases per day |
+| Family subscription | Both products and future Scrap Radar Family software modules | $44.95 USD/month for early members; 25 board cases per day |
 
 Publish a plain comparison of features, usage limits, billing interval and cancellation terms. Do not activate placeholder prices. Scrap buyer rates and assumed recovered-metal values are separate from subscription prices.
 
@@ -55,3 +55,7 @@ Launch readiness requires demonstrated payment and access behavior, not just a w
 ## Implementation checkpoint — October 6 evening
 
 The market backend now provides a versioned membership catalog with the approved prices and checkout disabled. An internal SQLite ledger freezes subscription prices, binds subscriptions to trusted customer IDs, and records idempotent reconciled state changes. Payment failure alone preserves rate continuity. This is foundation code: authentication, verified email, PayPal checkout and verified notifications, entitlement enforcement, customer pages and admin tracking remain unimplemented. All 24 market-backend tests pass. No payment or live customer record was created.
+
+## Approved paid board allowance — October 6, 2026
+
+The owner approved 25 physical board cases per day for Board Sense and Family subscribers. Several permitted views of one board count as one case, not one allowance per photo. This allowance is recorded in the backend catalog; authenticated server-side enforcement is not yet implemented. Scrap Radar-only membership does not include the paid Board Sense allowance. Define daily reset timing and failed-analysis counting before checkout. Do not consume paid allowance for validation failures or mixed-board rejection. Payment retry/grace rules remain pending.
