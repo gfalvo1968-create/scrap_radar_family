@@ -170,7 +170,7 @@ function bind(){
     '<div class="sr-profile-grid"><label>Vehicle cost per mile $ (fuel + wear)<input id="profile-fuel" type="number" min="0" step="any" inputmode="decimal" placeholder="Your rate"></label>'+
     '<label>Target pay per hour $<input id="profile-wage" type="number" min="0" step="any" inputmode="decimal" placeholder="Your hourly target"></label>'+
     '<label>Processing cost per lb $<input id="profile-processing" type="number" min="0" step="any" inputmode="decimal" placeholder="Your processing rate"></label></div>'+
-    '<div class="eval-actions"><button id="profile-save" class="mini-btn" type="button">Save my rates</button><button id="profile-example" class="mini-btn" type="button">Try example rates</button><button id="profile-clear" class="mini-btn" type="button">Clear saved rates</button></div>'+
+    '<div class="sr-profile-actions"><button id="profile-save" class="mini-btn" type="button">Save my rates</button><button id="profile-example" class="mini-btn" type="button">Try example rates</button><button id="profile-clear" class="mini-btn" type="button">Clear saved rates</button></div>'+
     '<p class="material-meta">Example only: $0.45/mi, $25/hr and $0.50/lb. Review and save to use them.</p>'+
     '<p id="profile-status" role="status" aria-live="polite">No saved rates. Enter your costs or try the labeled examples.</p>';
   E('evaluator').querySelector('.eval-grid').insertAdjacentElement('beforebegin',box);
