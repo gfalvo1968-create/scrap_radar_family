@@ -22,10 +22,17 @@ The request test allows one of eight concurrent requests to analyze and rejects
 seven. The market test shares one refresh among eight concurrent consumers.
 These checks do not establish actual metal content in a specimen.
 
+Live browser verification: the published frontend loads dated metal prices and
+separate gold, silver and copper scenario amounts. Whole-board controls wait for
+a saved board case. The buyer-category and saved-case round trip passed fixture
+checks; a new real-board scan and iPad round trip still need the current backend
+release running.
+
 ## Deployment gate
 
-Railway previously rejected a new source build because the workspace trial
-expired. Confirm billing in the owner account, then deploy current `main` for
+Railway rejected the October 6 deployment attempt because the workspace trial
+expired. The frontend Pages deployment succeeded; both Railway services still
+show older deployments. Confirm billing in the owner account, then deploy current `main` for
 both Board Sense and Scrapradar-backend. Check each `/health` response contains
 `release: launch-20261006`; a successful older deployment does not satisfy this
 gate. Keep the market service's existing `/data` profile volume.
