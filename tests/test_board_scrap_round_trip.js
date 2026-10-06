@@ -61,6 +61,7 @@ function page(kind, localStorage) {
     ["predictionBox", "sellValue", "recoveredValue", "laborMinutes"].forEach(add);
   } else {
     ["board-recovery", "br-whole", "br-partial-value", "br-residual", "br-partial-minutes", "br-partial-costs", "br-full-value", "br-full-residual", "br-full-minutes", "br-full-costs", "br-whole-miles", "br-whole-travel", "br-whole-fees", "br-partial-miles", "br-partial-travel", "br-partial-fees", "br-full-miles", "br-full-travel", "br-full-fees", "br-shared-mpg", "br-shared-gas", "trip-target", "calc-weight", "calc-price", "yard-weight", "yard-price-1"].forEach(add);
+    add("trip-cost-method"); add("trip-fuel-rate");
     const select = add("calc-material"); select.options = [{ value: "board_mid" }];
   }
   const window = {
@@ -124,11 +125,14 @@ function analysis() {
   assert.deepEqual(saved.packet().planning.materialRecoveryScenario.missingQuantities, ["silver", "copper"], "missing quantities are unknown, not zero");
   radar.edit("br-partial-costs", 5);
   radar.edit("br-whole-miles", 0);
+  radar.edit("trip-cost-method", "rate"); radar.edit("trip-fuel-rate", 0.45);
   radar.click("spike-back");
   assert.match(radar.window.top.location.href, /board_sense_case\.html\?from=scrap-radar&build=/);
   assert.equal(saved.packet().scrapRadarReturn.inputs["br-full-value"], null, "blank recovery dollars must remain unpriced");
   assert.equal(saved.packet().scrapRadarReturn.inputs["br-partial-minutes"], null, "blank time must remain unentered");
   assert.equal(saved.packet().scrapRadarReturn.inputs["br-whole-miles"], 0, "explicit zero differs from a blank input");
+  assert.equal(saved.packet().scrapRadarReturn.inputs["trip-cost-method"], "rate");
+  assert.equal(saved.packet().scrapRadarReturn.inputs["trip-fuel-rate"], 0.45);
   const returned = page("board", saved);
   assert.match(returned.status(), /42\.75 grams/);
   assert.match(returned.status(), /Whole-board planning estimate:<\/b> \$0\.06/);
@@ -147,6 +151,8 @@ function analysis() {
   assert.equal(reopened.elements.get("br-whole").value, "0.06");
   assert.equal(reopened.elements.get("br-partial-costs").value, "5");
   assert.equal(reopened.elements.get("br-partial-value").value, "");
+  assert.equal(reopened.elements.get("trip-cost-method").value, "rate", "vehicle cost method survives the case handoff");
+  assert.equal(reopened.elements.get("trip-fuel-rate").value, "0.45");
 
   // A manually entered offer remains separate and survives recalculation.
   reopened.edit("br-whole", 2.75); reopened.click("spike-estimate"); reopened.click("spike-back");

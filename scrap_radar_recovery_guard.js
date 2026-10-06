@@ -43,7 +43,7 @@ function ensureLogistics(){
   box.id='br-logistics';box.className='br-logistics';
   box.innerHTML=`
     <h3>🚚 Recovery Logistics</h3>
-    <p>Distance and fuel can change the winning path. MPG and fuel stay synchronized with the Load + Trip Evaluator, but you can enter them right here.</p>
+    <p>Vehicle costs follow the cost method in the Load + Trip Evaluator. Cost per mile replaces MPG fuel costs; they are never added together. MPG and fuel remain editable here.</p>
     <div class="br-logistics-shared">
       <label class="br-shared-field">Vehicle MPG<input id="br-shared-mpg" type="number" min="0" step="any" inputmode="decimal" placeholder="Enter MPG"></label>
       <label class="br-shared-field">Fuel $ / Gallon<input id="br-shared-gas" type="number" min="0" step="any" inputmode="decimal" placeholder="Enter fuel price"></label>
@@ -61,7 +61,7 @@ function ensureLogistics(){
 function tripCost(prefix,mpg,gas){
   const miles=Math.max(0,num('br-'+prefix+'-miles')||0);
   const fees=Math.max(0,num('br-'+prefix+'-fees')||0);
-  const fuel=mpg!==null&&mpg>0&&gas!==null&&gas>=0?(miles*2/mpg)*gas:0;
+  const fuel=window.ScrapRadarOperatingProfile?window.ScrapRadarOperatingProfile.vehicleCost(miles*2,mpg,gas):mpg!==null&&mpg>0&&gas!==null&&gas>=0?(miles*2/mpg)*gas:0;
   return {miles,fees,fuel,total:fuel+fees,travel:Math.max(0,num('br-'+prefix+'-travel')||0)};
 }
 
@@ -140,7 +140,7 @@ function recalc(){
     const best=[...paths].sort((a,b)=>b.score-a.score)[0];
     set('br-decision',planning||paths.length<3?'⏱️ LIMITED PLANNING COMPARISON: '+best.name:'⏱️ ECONOMIC RECOMMENDATION: '+best.name);
     const highText='Highest entered net is '+highest.name+' at '+cash(highest.net)+'. ';
-    const travelText='Fuel is '+(d.gas!==null?cash(d.gas)+'/gal':'not entered')+' and the entered path distances are included. ';
+    const travelText=el('trip-cost-method')?.value==='rate'?'Vehicle costs use the entered cost per mile and round-trip path distances. ':'Fuel is '+(d.gas!==null?cash(d.gas)+'/gal':'not entered')+' and the entered path distances are included. ';
     const timeText=best.minutes>0?'At your '+cash(d.target)+'/hr target, '+best.name+' has the strongest net-after-time score using '+best.minutes.toFixed(0)+' total entered minutes. ':'At your '+cash(d.target)+'/hr target, '+best.name+' preserves the most value after entered logistics and time.';
     set('br-detail',(planning?'Whole-board value is a planning estimate. ':'')+highText+travelText+timeText);
     return;
@@ -162,6 +162,9 @@ function recalc(){
 function schedule(){setTimeout(recalc,0)}
 function bind(){
   ensureLogistics();
+  window.addEventListener('scrapRadarProfileUpdated',schedule);
+  ['trip-cost-method','trip-fuel-rate'].forEach(id=>el(id)?.addEventListener('input',schedule));
+  el('trip-cost-method')?.addEventListener('change',schedule);
   el('br-whole')?.addEventListener('input',e=>{if(e.isTrusted)e.currentTarget.dataset.basis='entered_offer'});
   el('br-shared-mpg')?.addEventListener('input',()=>{syncToEvaluator('br-shared-mpg','trip-mpg');schedule()});
   el('br-shared-gas')?.addEventListener('input',()=>{syncToEvaluator('br-shared-gas','trip-gas');schedule()});

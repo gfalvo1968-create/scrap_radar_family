@@ -55,6 +55,8 @@
         <div class="eval-field"><label for="calc-price">Price basis <span id="calc-unit"></span></label><input id="calc-price" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"><small id="calc-price-basis" class="material-meta">Choose a material to see its price basis.</small></div>
         <div class="eval-divider"><span>TRIP + TIME</span></div>
         <div class="eval-field"><label for="trip-miles">Miles to Buyer, One Way</label><input id="trip-miles" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></div>
+        <div class="eval-field"><label for="trip-cost-method">Vehicle cost method</label><select id="trip-cost-method"><option value="">Choose a cost method</option><option value="mpg">MPG + fuel price</option><option value="rate">Saved / entered cost per mile</option></select></div>
+        <div class="eval-field"><label for="trip-fuel-rate">Vehicle cost per mile $</label><input id="trip-fuel-rate" type="number" min="0" step="any" inputmode="decimal" placeholder="optional"><small class="material-meta">Used only with cost-per-mile method.</small></div>
         <div class="eval-field"><label for="trip-mpg">Vehicle MPG</label><input id="trip-mpg" type="number" min="0" step="any" inputmode="decimal" placeholder="0"></div>
         <div class="eval-field"><label for="trip-gas">Fuel $ / Gallon</label><input id="trip-gas" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
         <div class="eval-field"><label for="trip-other">Tolls / Fees / Other Costs</label><input id="trip-other" type="number" min="0" step="any" inputmode="decimal" placeholder="0.00"></div>
@@ -100,6 +102,8 @@
 </main>
 <script src="board_price_reference.js?v=1"></script>
 <script src="scrap_radar_market.js?v=9"></script>
-<script src="scrap_radar_operating.js?v=18"></script>
+<link rel="stylesheet" href="scrap_radar_profile.css?v=1">
+<script src="scrap_radar_profile.js?v=1"></script>
+<script src="scrap_radar_operating.js?v=19"></script>
 </body>
 </html>

@@ -197,7 +197,7 @@ function update(persist){
   }
   return true;
 }
-function init(){if(!ensure())return;restore();update(true)}
+function init(){if(!ensure())return;restore();update(true);window.ScrapRadarOperatingProfile?.attachRecoveryCosts()}
 window.ScrapRadarGoldScenario={save:function(){return update(true)},refresh:function(){return update(false)}};
 window.addEventListener('scrapRadarMarketUpdated',function(){update(true)});
 window.addEventListener('storage',function(e){if(e.key===KEY||e.key===null){if(validBinding()&&E('spike-gold-scenario'))restore();update(false)}});

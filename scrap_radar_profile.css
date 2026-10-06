@@ -1,0 +1,9 @@
+.sr-profile,.sr-profile-costs{margin:12px 0;padding:12px;border:1px solid #24643c;border-radius:12px;background:#03120c;font-size:1rem}
+.sr-profile summary,.sr-profile-costs summary{cursor:pointer;color:#b4ffbe;font-weight:750;min-height:28px}
+.sr-profile p,.sr-profile-costs p{line-height:1.45;color:#a5cbb5}
+.sr-profile-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.sr-profile label,.sr-profile-costs label{display:block;font-size:.95rem;color:#d3efdb;margin:8px 0}
+.sr-profile input,.sr-profile-costs input{display:block;width:100%;box-sizing:border-box;padding:10px;margin-top:5px;border:1px solid #39874c;border-radius:8px;background:#010b06;color:#f2fff4;font:inherit}
+.sr-profile .mini-btn,.sr-profile-costs .mini-btn{min-height:44px;font-size:.95rem}
+.sr-profile [role=status],.sr-profile-costs [role=status]{font-size:.9rem}
+@media(max-width:760px){.sr-profile-grid{grid-template-columns:1fr}}

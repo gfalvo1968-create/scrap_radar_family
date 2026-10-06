@@ -5,7 +5,7 @@
 (function(){
 'use strict';
 const KEY='scrapRadarSpikeRecoveryPacketV1';
-const RETURN_FIELDS=['br-whole','br-partial-value','br-residual','br-partial-minutes','br-partial-costs','br-full-value','br-full-residual','br-full-minutes','br-full-costs','br-whole-miles','br-whole-travel','br-whole-fees','br-partial-miles','br-partial-travel','br-partial-fees','br-full-miles','br-full-travel','br-full-fees','br-shared-mpg','br-shared-gas','trip-target'];
+const RETURN_FIELDS=['br-whole','br-partial-value','br-residual','br-partial-minutes','br-partial-costs','br-full-value','br-full-residual','br-full-minutes','br-full-costs','br-whole-miles','br-whole-travel','br-whole-fees','br-partial-miles','br-partial-travel','br-partial-fees','br-full-miles','br-full-travel','br-full-fees','br-shared-mpg','br-shared-gas','trip-target','trip-cost-method','trip-fuel-rate'];
 let loadedCaseId=caseId(read());
 const SOURCE_LABELS={
   'hard-drive':'Hard drive',
@@ -45,12 +45,12 @@ function saveReturn(){
   if(!currentPacket())return caseChanged();
   if(window.ScrapRadarGoldScenario?.save()===false){const out=E('spike-estimate-result');if(out)out.textContent='Could not save the metal recovery scenario. Check its message before returning to Board Sense.';return false}
   const packet=currentPacket();if(!packet)return caseChanged();
-  const inputs={};RETURN_FIELDS.forEach(function(id){inputs[id]=numeric(id)});
+  const inputs={};RETURN_FIELDS.forEach(function(id){inputs[id]=id==='trip-cost-method'?(['mpg','rate'].includes(E(id)?.value)?E(id).value:null):numeric(id)});
   packet.scrapRadarReturn={version:1,caseId:caseId(packet),returnedAt:new Date().toISOString(),wholeBasis:E('br-whole')?.dataset.basis||'entered_offer',inputs:inputs};
   return savePacket(packet);
 }
 function fire(node,type){if(node)node.dispatchEvent(new Event(type,{bubbles:true}))}
-function setValue(id,value){if(value==null)return;const n=E(id);if(!n)return;n.value=String(value);fire(n,'input');fire(n,'change')}
+function setValue(id,value){if(value==null)return;const n=E(id);if(!n)return;n.value=String(value);delete n.dataset.profileDefault;fire(n,'input');fire(n,'change')}
 function sourceCue(packet){
   if(!packet)return null;
   const i=packet.identity||{},r=packet.recovery||{};
@@ -168,6 +168,7 @@ function apply(){
     if(e.fullMinutes!=null)setValue('br-full-minutes',e.fullMinutes);
   }
   if(E('spike-board-weight')?.value)estimateWhole();
+  window.ScrapRadarOperatingProfile?.applyDefaults();
   setTimeout(function(){E('board-recovery')&&E('board-recovery').scrollIntoView({behavior:'smooth',block:'start'})},120);
 }
 function fixPageLinks(){

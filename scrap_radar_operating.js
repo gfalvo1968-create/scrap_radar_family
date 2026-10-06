@@ -20,7 +20,8 @@ function calculateOperating(){
   const gross=hasLoad?weight*price:0;
   const roundTrip=oneWay*2;
   const gallons=mpg!==null&&mpg>0?roundTrip/mpg:0;
-  const fuelCost=gas!==null&&gas>=0&&mpg!==null&&mpg>0?gallons*gas:0;
+  const method=el('trip-cost-method')?.value;
+  const fuelCost=window.ScrapRadarOperatingProfile?window.ScrapRadarOperatingProfile.vehicleCost(roundTrip,mpg,gas):gas!==null&&gas>=0&&mpg!==null&&mpg>0?gallons*gas:0;
   const totalCosts=fuelCost+other;
   const net=hasLoad?gross-totalCosts:0;
   const hourly=hasLoad&&minutes!==null&&minutes>0?net/(minutes/60):null;
@@ -28,6 +29,7 @@ function calculateOperating(){
   if(el('calc-value'))el('calc-value').textContent=money(gross);
   if(el('op-roundtrip'))el('op-roundtrip').textContent=fixed(roundTrip,1)+' mi';
   if(el('op-fuel'))el('op-fuel').textContent=money(fuelCost);
+  const costLabel=el('op-fuel')?.parentElement?.querySelector('.label');if(costLabel)costLabel.textContent=method==='rate'?'Vehicle Cost':'Fuel Cost';
   if(el('op-costs'))el('op-costs').textContent=money(totalCosts);
   if(el('op-net'))el('op-net').textContent=money(net);
   if(el('op-hourly'))el('op-hourly').textContent=hourly===null?'—':money(hourly)+'/hr';
@@ -48,9 +50,9 @@ function calculateOperating(){
   if(el('op-detail'))el('op-detail').textContent=detail;
 }
 
-function resetEvaluator(){['calc-weight','trip-miles','trip-mpg','trip-gas','trip-other','trip-minutes','trip-target'].forEach(id=>{const node=el(id);if(node)node.value=''});calculateOperating()}
-function bindEvaluator(){['calc-material','calc-weight','calc-price','trip-miles','trip-mpg','trip-gas','trip-other','trip-minutes','trip-target'].forEach(id=>{const node=el(id);if(!node)return;node.addEventListener('input',calculateOperating);node.addEventListener('change',()=>setTimeout(calculateOperating,0))});el('reset-evaluator')?.addEventListener('click',resetEvaluator);calculateOperating()}
+function resetEvaluator(){['calc-weight','trip-miles','trip-mpg','trip-gas','trip-other','trip-minutes','trip-target','trip-fuel-rate','trip-cost-method'].forEach(id=>{const node=el(id);if(node){node.value='';delete node.dataset.profileDefault}});window.ScrapRadarOperatingProfile?.applyDefaults();calculateOperating()}
+function bindEvaluator(){['calc-material','calc-weight','calc-price','trip-miles','trip-mpg','trip-gas','trip-other','trip-minutes','trip-target','trip-fuel-rate','trip-cost-method'].forEach(id=>{const node=el(id);if(!node)return;node.addEventListener('input',calculateOperating);node.addEventListener('change',()=>setTimeout(calculateOperating,0))});el('reset-evaluator')?.addEventListener('click',resetEvaluator);window.addEventListener('scrapRadarProfileUpdated',calculateOperating);calculateOperating()}
 function loadScript(src,marker){if(document.querySelector('script['+marker+']'))return;const s=document.createElement('script');s.src=src;s.async=false;s.setAttribute(marker,'1');document.head.appendChild(s)}
-function loadModules(){loadScript('scrap_radar_cockpit.js?v=7','data-sr-cockpit');loadScript('scrap_radar_features.js?v=2','data-sr-features');loadScript('scrap_radar_inventory.js?v=1','data-sr-inventory');loadScript('scrap_radar_smart.js?v=2','data-sr-smart');loadScript('scrap_radar_attic.js?v=1','data-sr-attic');loadScript('scrap_radar_recovery_guard.js?v=6','data-sr-recovery-guard');loadScript('scrap_radar_recommendation.js?v=4','data-sr-recommendation');loadScript('scrap_radar_critical.js?v=1','data-sr-critical');loadScript('scrap_radar_critical_help.js?v=1','data-sr-critical-help');loadScript('scrap_radar_source_finder.js?v=1','data-sr-source-finder')}
+function loadModules(){loadScript('scrap_radar_cockpit.js?v=8','data-sr-cockpit');loadScript('scrap_radar_features.js?v=2','data-sr-features');loadScript('scrap_radar_inventory.js?v=1','data-sr-inventory');loadScript('scrap_radar_smart.js?v=2','data-sr-smart');loadScript('scrap_radar_attic.js?v=1','data-sr-attic');loadScript('scrap_radar_recovery_guard.js?v=7','data-sr-recovery-guard');loadScript('scrap_radar_recommendation.js?v=4','data-sr-recommendation');loadScript('scrap_radar_critical.js?v=1','data-sr-critical');loadScript('scrap_radar_critical_help.js?v=1','data-sr-critical-help');loadScript('scrap_radar_source_finder.js?v=1','data-sr-source-finder')}
 document.addEventListener('DOMContentLoaded',()=>{bindEvaluator();loadModules()});
 })();
