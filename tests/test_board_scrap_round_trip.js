@@ -78,6 +78,7 @@ function page(kind, localStorage) {
     Event: class { constructor(type) { this.type = type; this.isTrusted = false; } },
     setTimeout: fn => { fn(); return 1; }, console
   });
+  vm.runInContext(fs.readFileSync("board_price_reference.js", "utf8"), context);
   vm.runInContext(kind === "board" ? boardSource : radarSource, context);
   if(kind === "radar")vm.runInContext(goldSource, context);
   return {
@@ -85,6 +86,7 @@ function page(kind, localStorage) {
     edit(id, value) { elements.get(id).value = String(value); elements.get(id).emit("input"); },
     unit(value) { elements.get("spike-weight-unit").value = value; elements.get("spike-weight-unit").emit("change"); },
     click(id) { return elements.get(id).onclick(); },
+    category(value) { elements.get("spike-buyer-category").value=value; elements.get("spike-buyer-category").emit("change"); },
     goldUnit(value) { elements.get("spike-gold-unit").value = value; elements.get("spike-gold-unit").emit("change"); },
     metalUnit(id, value) { elements.get("spike-"+id+"-unit").value = value; elements.get("spike-"+id+"-unit").emit("change"); },
     market(value) { metalBenchmarks[value.id || "gold"] = value; for (const fn of listeners.get("scrapRadarMarketUpdated") || []) fn({}); },
@@ -108,6 +110,24 @@ function analysis() {
   await original.analyze(analysis());
   original.dispatch("boardSensePlanningUpdated", { detail: { gradeId: "board_mid", weightGrams: null } });
   const firstCaseId = saved.packet().caseId;
+  const categoryStore=storage(),categoryBoard=page("board",categoryStore);
+  await categoryBoard.analyze(analysis());
+  categoryBoard.dispatch("boardSensePlanningUpdated", {detail:{gradeId:"board_mid",weightGrams:42.75}});
+  const categoryRadar=page("radar",categoryStore);
+  assert.equal(categoryStore.packet().planning.buyerCategoryId, undefined, "specific buyer category cannot be inferred from a broad grade");
+  categoryRadar.category("board_cdrom");
+  assert.equal(categoryStore.packet().planning.wholeBoardEstimate.value, .75);
+  assert.equal(categoryStore.packet().planning.wholeBoardEstimate.pricePerLb, 8);
+  assert.equal(categoryStore.packet().planning.gradeId,"board_mid", "buyer selection cannot change the evidence grade");
+  assert.equal(categoryStore.packet().planning.buyerCategoryBasis,"user_selected_unconfirmed");
+  assert.match(categoryRadar.elements.get("spike-estimate-result").innerHTML,/buyer acceptance unconfirmed/);
+  categoryRadar.category("board_hdd_non_sata");
+  assert.equal(categoryStore.packet().planning.wholeBoardEstimate.value,1.88);
+  assert.equal(categoryStore.packet().identity.boardType,"Dense Logic / Controller Board");
+  assert.equal(page("radar",categoryStore).elements.get("spike-buyer-category").value,"board_hdd_non_sata");
+  categoryRadar.category("");
+  assert.equal(categoryStore.packet().planning.wholeBoardEstimate.value,.06);
+
   const radar = page("radar", saved);
   radar.unit("g"); radar.edit("spike-board-weight", 42.75);
   assert.equal(saved.packet().planning.weightGrams, 42.75);
@@ -277,6 +297,11 @@ function analysis() {
   assert.equal(scenarioStore.packet().planning.goldRecoveryScenario.status, "needs_benchmark");
   savedScenario.market({ ...baseGold, stale: true, date: "2026-09-01" });
   assert.match(savedScenario.elements.get("spike-gold-basis").textContent, /stale or unverified/);
+  savedScenario.edit("spike-gold-pay-percent",100); savedScenario.edit("spike-gold-costs",0);
+  assert.equal(scenarioStore.packet().planning.goldRecoveryScenario.netAfterEnteredCosts,null);
+  assert.equal(scenarioStore.packet().planning.materialRecoveryScenario.netAfterEnteredCosts,null);
+  assert.match(savedScenario.elements.get("spike-gold-net-note").textContent,/Refresh Prices/);
+
   savedScenario.market({ ...baseGold, unit: "g", price: 100 });
   assert.equal(savedScenario.elements.get("spike-gold-gross").textContent, "$10.00");
   assert.equal(scenarioStore.packet().economics.fullRecoveryValue, null);
@@ -347,6 +372,8 @@ function analysis() {
   metalsReload.market({ ...baseSilver, unit: "g", price: 2, stale: true, date: null });
   assert.equal(metalsStore.packet().planning.materialRecoveryScenario.grossMetalValue, 7.32);
   assert.match(metalsReload.elements.get("spike-silver-basis").textContent, /stale or unverified/);
+  assert.equal(metalsStore.packet().planning.materialRecoveryScenario.netAfterEnteredCosts,null,"unverified dates must withhold net");
+
   metalsReload.market(baseSilver);
   metalsReload.edit("spike-silver-pay-percent", 101);
   assert.equal(metalsStore.packet().planning.materialRecoveryScenario.netAfterEnteredCosts, null);

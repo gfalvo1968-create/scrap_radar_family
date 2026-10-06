@@ -26,8 +26,8 @@ function goldScenarioHTML(packet){
   if(grams!=null)html+='<br>'+(input.unit==='scale_points'&&amount(input.amount)!=null?safe(input.amount)+' scale point'+(Number(input.amount)===1?'':'s')+' = ':'')+safe(Number(grams.toPrecision(8)))+' grams of recovered 24K gold (assumed)';
   if(s.status==='calculated'&&amount(s.grossMetalValue)!=null&&!(weight>0&&grams>weight)){
     html+='<br><b>Gross metal value:</b> '+money(s.grossMetalValue)+'<br><span class="muted">Saved gold benchmark dated '+safe(q.date||'unverified')+(q.stale?' • stale or unverified; confirm before use':'')+'. Buyer deductions and recovery costs affect proceeds.</span>';
-    if(s.netAfterEnteredCosts!=null&&Number.isFinite(Number(s.netAfterEnteredCosts)))html+='<br>Scenario after entered costs: '+money(s.netAfterEnteredCosts);
-    else html+='<br>Scenario proceeds: enter buyer percentage and costs';
+    if(!q.stale&&q.date&&s.netAfterEnteredCosts!=null&&Number.isFinite(Number(s.netAfterEnteredCosts)))html+='<br>Scenario after entered costs: '+money(s.netAfterEnteredCosts);
+    else html+='<br>Scenario proceeds: '+(q.stale||!q.date?'refresh market prices':'enter buyer percentage and costs');
   }else html+='<br>Gold scenario value unavailable: check the assumed weight and market benchmark.';
   return html+'<br><span class="muted">This board’s actual gold yield remains unmeasured. Recovery payouts stay unpriced until supported by measurements and buyer terms.</span></div>';
 }
@@ -37,6 +37,7 @@ function materialScenarioHTML(packet){
   const labels={gold:'Gold',silver:'Silver',copper:'Copper'},ids=['gold','silver','copper'];
   if(s.materials.length!==3||ids.some(id=>s.materials.filter(row=>row&&row.metal===id).length!==1))return '';
   const rows=ids.map(id=>s.materials.find(row=>row.metal===id));
+  const fresh=rows.every(row=>row.recoveredGrams==null||row.recoveredGrams===0||(!row.benchmark?.stale&&row.benchmark?.date&&Number.isFinite(Date.parse(row.benchmark.date))));
   const grams=rows.map(row=>amount(row.recoveredGrams)),mass=grams.reduce((sum,n)=>sum+(n==null?0:n),0),weight=amount(packet.planning.weightGrams);
   const withinWeight=Number.isFinite(mass)&&!(weight>0&&mass>weight+1e-9*Math.max(1,weight));
   const valid=withinWeight&&['partial','complete'].includes(s.status);
@@ -46,9 +47,9 @@ function materialScenarioHTML(packet){
   html+='</tbody></table></div>';
   if(valid&&amount(s.grossMetalValue)!=null){
     html+='<br><b>'+(s.status==='complete'?'Combined gross metal value':'Priced metal subtotal • partial scenario')+':</b> '+money(s.grossMetalValue);
-    if(s.netAfterEnteredCosts!=null&&Number.isFinite(Number(s.netAfterEnteredCosts)))html+='<br>Scenario after entered costs: '+money(s.netAfterEnteredCosts)+(s.status==='partial'?' (priced metals only; partial estimate)':'');
-    else html+='<br>Scenario proceeds: enter each metal’s buyer percentage and total costs';
-    if(s.hourlyAfterEnteredCosts!=null&&Number.isFinite(Number(s.hourlyAfterEnteredCosts)))html+='<br>After entered costs per hour: '+money(s.hourlyAfterEnteredCosts);
+    if(fresh&&s.netAfterEnteredCosts!=null&&Number.isFinite(Number(s.netAfterEnteredCosts)))html+='<br>Scenario after entered costs: '+money(s.netAfterEnteredCosts)+(s.status==='partial'?' (priced metals only; partial estimate)':'');
+    else html+='<br>Scenario proceeds: '+(!fresh?'refresh market prices':'enter each metal’s buyer percentage and total costs');
+    if(fresh&&s.hourlyAfterEnteredCosts!=null&&Number.isFinite(Number(s.hourlyAfterEnteredCosts)))html+='<br>After entered costs per hour: '+money(s.hourlyAfterEnteredCosts);
   }else html+='<br>Combined value withheld: check recovered amounts, total board weight and benchmarks.';
   rows.forEach(function(row){const q=row.benchmark;if(q)html+='<br><span class="muted">Saved '+labels[row.metal].toLowerCase()+' benchmark dated '+safe(q.date||'unverified')+(q.stale?' • stale or unverified; confirm before use':'')+'.</span>'});
   if(grams.some(n=>n==null))html+='<br>Unknown quantities: '+rows.filter((row,i)=>grams[i]==null).map(row=>labels[row.metal]).join(', ')+'.';
@@ -63,6 +64,7 @@ function returnHTML(packet){
   if(estimate&&amount(estimate.value)!=null&&amount(estimate.pricePerLb)!=null){
     html+='<br><b>Whole-board planning estimate:</b> '+money(estimate.value)+'<br><span class="muted">'+money(estimate.pricePerLb)+'/lb • '+safe(estimate.basis==='saved_quote'?'saved local quote; confirm it is current':'buyer-sample planning rate dated '+(estimate.priceDate||'unknown'))+'. Estimated value is not an exact buyer price.</span>';
   }
+  if(estimate?.buyerCategoryId)html+='<br><b>Selected buyer category:</b> '+safe(estimate.label||estimate.buyerCategoryId)+' • buyer acceptance unconfirmed';
   if(review){
     if(amount(inputs['br-whole'])!=null&&review.wholeBasis==='entered_offer')html+='<br><b>Entered whole-board buyer offer:</b> '+money(inputs['br-whole']);
     const labels=[['br-partial-value','Entered parts payout'],['br-residual','Entered remaining board value'],['br-full-value','Entered material payout'],['br-full-residual','Entered downstream value']];

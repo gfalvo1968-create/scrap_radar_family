@@ -80,11 +80,11 @@ function calculate(){
   const q=window.getScrapRadarMetalBenchmark?.('gold'),price=Number(q?.price);
   const marketUnit=q?.unit,pricePerGram=marketUnit==='troy_oz'?price/TROY_GRAMS:marketUnit==='g'?price:null;
   if(!q?.available||q.price==null||!Number.isFinite(price)||price<=0||pricePerGram==null){s.status='needs_benchmark';return s}
-  s.benchmark={price:price,unit:marketUnit,date:q.date||null,stale:q.stale===true,source:q.source||'Scrap Radar market bridge'};
+  s.benchmark={price:price,unit:marketUnit,date:q.date||null,stale:q.stale===true||!q.date||!Number.isFinite(Date.parse(q.date)),source:q.source||'Scrap Radar market bridge'};
   const gross=grams*pricePerGram;
   if(!Number.isFinite(gross)){s.status='invalid_value';return s}
   s.grossMetalValue=cents(gross);if(s.grossMetalValue==null){s.status='invalid_value';return s}s.status='calculated';
-  if(input.buyerPayPercent!=null&&input.buyerPayPercent<=100&&input.costs!=null){
+  if(!s.benchmark.stale&&input.buyerPayPercent!=null&&input.buyerPayPercent<=100&&input.costs!=null){
     const net=gross*input.buyerPayPercent/100-input.costs;
     if(Number.isFinite(net)){s.netAfterEnteredCosts=cents(net);if(input.minutes>0&&Number.isFinite(net*60/input.minutes))s.hourlyAfterEnteredCosts=cents(net*60/input.minutes)}
   }
@@ -111,7 +111,7 @@ function calculateAdditional(id){
   if(grams===0){row.status='excluded';row.grossMetalValue=0;return row}
   const q=window.getScrapRadarMetalBenchmark?.(id),rate=pricePerGram(q,id);
   if(!q?.available||rate==null){row.status='needs_benchmark';return row}
-  row.benchmark={price:Number(q.price),unit:q.unit,date:q.date||null,stale:q.stale===true||!q.date,source:q.source||'Scrap Radar market bridge'};
+  row.benchmark={price:Number(q.price),unit:q.unit,date:q.date||null,stale:q.stale===true||!q.date||!Number.isFinite(Date.parse(q.date)),source:q.source||'Scrap Radar market bridge'};
   const gross=grams*rate;
   if(!Number.isFinite(gross)){row.status='invalid_value';return row}
   row.grossMetalValue=cents(gross);row.status=row.grossMetalValue==null?'invalid_value':'calculated';return row;
@@ -133,7 +133,8 @@ function calculateBreakdown(gold){
   // Terms differ by metal. Apply each entered percentage before subtracting
   // shared recovery costs once; unpriced entered metal blocks scenario proceeds.
   const termsOK=rows.every(row=>row.input.buyerPayPercent==null||row.input.buyerPayPercent<=100)&&priced.every(row=>row.recoveredGrams===0||row.input.buyerPayPercent!=null);
-  if(!unpriced.length&&termsOK&&gold.input.costs!=null){
+  s.staleBenchmarks=priced.filter(row=>row.benchmark?.stale).map(row=>row.metal);
+  if(!s.staleBenchmarks.length&&!unpriced.length&&termsOK&&gold.input.costs!=null){
     const payout=priced.reduce((sum,row)=>sum+exactGross(row)*(row.recoveredGrams===0?0:row.input.buyerPayPercent/100),0),net=payout-gold.input.costs;
     if(Number.isFinite(net)){s.netAfterEnteredCosts=cents(net);if(gold.input.minutes>0&&Number.isFinite(net*60/gold.input.minutes))s.hourlyAfterEnteredCosts=cents(net*60/gold.input.minutes)}
   }
@@ -165,10 +166,10 @@ function showBreakdown(s){
   if(s.status==='exceeds_board_weight')note='Combined recovered metal exceeds this board’s scale weight. Adjust the assumed quantities before using a total.';
   else if(s.status==='invalid_value')note='Check the assumed recovered weights; one or more amounts are invalid or too large to calculate.';
   else if(s.status!=='needs_yields')note+=' Assumed metal mass: '+Number(s.knownRecoveredGrams.toPrecision(8))+' g.';
-  if(s.materials.some(row=>row.benchmark?.stale))note+=' One or more benchmarks are stale or unverified; confirm before use.';
+  if(s.materials.some(row=>row.benchmark?.stale))note+=' One or more benchmarks are stale or unverified; net proceeds are withheld until fresh prices arrive.';
   text('spike-material-basis',note);
   const invalidTerms=s.materials.some(row=>row.input.buyerPayPercent>100);
-  text('spike-gold-net-note',invalidTerms?'Buyer percentage must be between 0 and 100 for every metal.':s.netAfterEnteredCosts!=null?'Uses each priced metal’s entered buyer percentage; total recovery costs are subtracted once. '+(s.status==='partial'?'Partial estimate only; unknown quantities remain excluded. ':'')+'Actual recovery payouts remain unpriced.':'Enter a buyer percentage for each nonzero priced metal and total costs to see scenario proceeds. Actual recovery payouts remain unpriced; board yields are assumptions.');
+  text('spike-gold-net-note',invalidTerms?'Buyer percentage must be between 0 and 100 for every metal.':s.staleBenchmarks?.length?'Refresh Prices before comparing net proceeds. The dated gross example remains visible; yields and buyer terms are still assumptions.':s.netAfterEnteredCosts!=null?'Uses each priced metal’s entered buyer percentage; total recovery costs are subtracted once. '+(s.status==='partial'?'Partial estimate only; unknown quantities remain excluded. ':'')+'Actual recovery payouts remain unpriced.':'Enter a buyer percentage for each nonzero priced metal and total costs to see scenario proceeds. Actual recovery payouts remain unpriced; board yields are assumptions.');
 }
 function update(persist){
   if(!ensure())return true;

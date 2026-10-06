@@ -62,7 +62,7 @@
     link.target='_top';
     link.textContent='📡 SCRAP RADAR / CASE HANDOFF';
   }
-  function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=16',function(){add(d,'boardBoardPriceReferenceLoader','board_price_reference.js?v=1',function(){add(d,'boardCaseReportLoader','board_case_report.js?v=3');installLimitMessage(d)})})}
+  function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=16',function(){add(d,'boardBoardPriceReferenceLoader','board_price_reference.js?v=2',function(){add(d,'boardCaseReportLoader','board_case_report.js?v=3');installLimitMessage(d)})})}
   function loadSpikeDual(d){add(d,'spikeDualLoader','board_spike_dual.js?v=2')}
   function loadTargetArea(d){add(d,'targetAreaDisplayLoader','board_target_area_patch.js?v=2',function(){loadSpikeDual(d)})}
   frame.addEventListener('load',function(){
@@ -72,7 +72,7 @@
       routeScrapRadar(d);
       add(d,'inspectionTargetLoader','board_inspection_target.js?v=4',function(){loadTargetArea(d)});
       if(d.getElementById('spikeScrapBridgeLoader')){loadTray(d);return}
-      var b=d.createElement('script');b.id='spikeScrapBridgeLoader';b.src='board_scrap_bridge.js?v=11';b.async=false;b.onload=function(){loadTray(d)};b.onerror=function(){console.error('SPIKE Scrap Radar bridge failed to load');loadTray(d)};d.body.appendChild(b);
+      var b=d.createElement('script');b.id='spikeScrapBridgeLoader';b.src='board_scrap_bridge.js?v=12';b.async=false;b.onload=function(){loadTray(d)};b.onerror=function(){console.error('SPIKE Scrap Radar bridge failed to load');loadTray(d)};d.body.appendChild(b);
     }catch(e){console.error('SPIKE Case Tray injection failed',e)}
   });
 })();

@@ -80,7 +80,7 @@ function ensureCard(){
   let card=E('spike-import-card');if(card)return card;
   card=document.createElement('div');card.id='spike-import-card';card.className='decision-box';
   card.style.borderColor='#b44cff';
-  card.innerHTML='<h3 style="margin-top:0">🧠📡 SPIKE CASE HANDOFF</h3><div id="spike-import-detail">No SPIKE case loaded.</div><div id="spike-quick-estimate" style="margin-top:14px;padding:12px;border:1px solid #39ff14;border-radius:10px"><b>⚡ QUICK ESTIMATE</b><div class="muted" style="margin:5px 0 9px">Board identity and grade arrived. A scale weight is the one measurement needed for a whole-board dollar estimate.</div><label for="spike-board-weight">Board weight <input id="spike-board-weight" type="number" min="0" step="any" inputmode="decimal" placeholder="Enter weight" style="max-width:130px"></label> <select id="spike-weight-unit" aria-label="Weight unit"><option value="lb">lb</option><option value="g">grams</option></select><button id="spike-estimate" class="mini-btn" type="button" style="margin-left:8px">Estimate Whole Board</button><div id="spike-estimate-result" class="muted" role="status" aria-live="polite" style="margin-top:8px">Estimated value — not an exact buyer price.</div></div><div class="eval-actions" style="margin-top:10px"><button id="spike-reapply" class="mini-btn" type="button">Reapply SPIKE Values</button><button id="spike-critical" class="mini-btn" type="button">Check Critical Materials</button><button id="spike-clear" class="mini-btn" type="button">Clear SPIKE Case</button><button id="spike-back" class="mini-btn" type="button">Back to Board Sense</button></div>';
+  card.innerHTML='<h3 style="margin-top:0">🧠📡 SPIKE CASE HANDOFF</h3><div id="spike-import-detail">No SPIKE case loaded.</div><div id="spike-quick-estimate" style="margin-top:14px;padding:12px;border:1px solid #39ff14;border-radius:10px"><b>⚡ QUICK ESTIMATE</b><div class="muted" style="margin:5px 0 9px">Board identity and grade arrived. A scale weight is the one measurement needed for a whole-board dollar estimate.</div><label for="spike-board-weight">Board weight <input id="spike-board-weight" type="number" min="0" step="any" inputmode="decimal" placeholder="Enter weight" style="max-width:130px"></label> <select id="spike-weight-unit" aria-label="Weight unit"><option value="lb">lb</option><option value="g">grams</option></select><div style="margin:10px 0"><label for="spike-buyer-category">Buyer category (confirm with buyer) <select id="spike-buyer-category"><option value="">Use SPIKE broad grade</option></select></label><div class="muted" style="margin-top:5px">Choose a specific category only after checking the board and buyer requirements. This selection does not change SPIKE’s identity or recovery grade.</div></div><button id="spike-estimate" class="mini-btn" type="button" style="margin-left:8px">Estimate Whole Board</button><div id="spike-estimate-result" class="muted" role="status" aria-live="polite" style="margin-top:8px">Estimated value — not an exact buyer price.</div></div><div class="eval-actions" style="margin-top:10px"><button id="spike-reapply" class="mini-btn" type="button">Reapply SPIKE Values</button><button id="spike-critical" class="mini-btn" type="button">Check Critical Materials</button><button id="spike-clear" class="mini-btn" type="button">Clear SPIKE Case</button><button id="spike-back" class="mini-btn" type="button">Back to Board Sense</button></div>';
   grid.parentNode.insertBefore(card,grid);
   E('spike-reapply').onclick=apply;
   E('spike-estimate').onclick=estimateWhole;
@@ -89,6 +89,17 @@ function ensureCard(){
     else{clearEstimatedFields();if(clearSavedEstimate()===false)return;const out=E('spike-estimate-result');if(out)out.innerHTML='<b style="color:#ffdf73">Enter this board\'s scale weight to see a dollar total.</b> '+priceText(boardQuote(currentPacket()))}
   });
   E('spike-weight-unit').addEventListener('change',function(){if(Number(E('spike-board-weight')?.value)>0)estimateWhole()});
+  const categories=E('spike-buyer-category');
+  if(categories){
+    categories.innerHTML='<option value="">Use SPIKE broad grade</option>'+(window.ScrapRadarBoardPriceReference?.listCategories?.()||[]).map(function(q){return '<option value="'+safe(q.id)+'">'+safe(q.label)+'</option>'}).join('');
+    categories.addEventListener('change',function(){
+      const packet=currentPacket();if(!packet)return caseChanged();
+      const id=categories.value,quote=window.ScrapRadarBoardPriceReference?.get(id);
+      packet.planning=Object.assign({},packet.planning,{buyerCategoryId:quote?id:null,buyerCategoryBasis:quote?'user_selected_unconfirmed':null});
+      if(savePacket(packet)){if(Number(E('spike-board-weight')?.value)>0)estimateWhole();else render(packet)}
+    });
+  }
+
   E('spike-critical').onclick=openCritical;
   E('spike-clear').onclick=function(){if(read()&&!currentPacket())return caseChanged();localStorage.removeItem(KEY);loadedCaseId='';clearEstimatedFields();render(null)};
   E('spike-back').onclick=function(){if(read()&&!saveReturn())return;window.top.location.href='board_sense_case.html?from=scrap-radar&build='+Date.now()};
@@ -104,15 +115,24 @@ function gradeId(packet){
   return grade==='HIGH'?'board_high':grade==='MEDIUM'?'board_mid':grade==='LOW'?'board_low':null;
 }
 function boardQuote(packet){
+  const category=packet?.planning?.buyerCategoryId,selected=category&&window.ScrapRadarBoardPriceReference?.get(category);
+  if(selected)return {...selected,type:'estimate',labelSource:'User-selected buyer category; acceptance unconfirmed'};
   const id=gradeId(packet);if(!id)return null;
   const q=window.getScrapRadarMaterialQuote&&window.getScrapRadarMaterialQuote(id);
   if(q&&q.price!=null&&Number.isFinite(Number(q.price))&&Number(q.price)>=0)return q;
   const reference=window.ScrapRadarBoardPriceReference?.get(id);
   return reference?{...reference,type:'estimate',labelSource:'Dated U.S. buyer-sample planning estimate'}:null;
 }
+function packetCategory(q){return !!q?.requiresBuyerConfirmation}
+function sampleSource(q){
+  const sample=q?.samples?.[0];if(!sample)return '';
+  const url=String(sample.url||'');
+  if(!['https://boardsort.com/payout.php','https://jrsadvancedrecyclers.com/scrap-metal-prices/'].includes(url))return '';
+  return ' <a href="'+safe(url)+'" target="_blank" rel="noopener noreferrer">'+safe(sample.buyer)+' category and terms</a>.';
+}
 function priceText(q){
   if(!q)return 'A board-grade planning price is unavailable for this case.';
-  return safe(q.label)+' • $'+Number(q.price).toFixed(2)+'/lb • '+(q.type==='local'?'saved local quote (confirm date)':'U.S. buyer-sample planning estimate dated '+safe(q.date||'unknown'))+'. Estimated value is not an exact buyer price.';
+  return safe(q.label)+' • $'+Number(q.price).toFixed(2)+'/lb • '+(q.type==='local'?'saved local quote (confirm date)':'U.S. buyer-sample planning estimate dated '+safe(q.date||'unknown'))+(q.stale?' • dated sample needs refreshing':'')+(packetCategory(q)?' • user-selected category; buyer acceptance unconfirmed':'')+'. Estimated value is not an exact buyer price.'+sampleSource(q);
 }
 function selectMaterialWhenReady(id,tries){
   const sel=E('calc-material');if(!sel||!id)return;
@@ -131,7 +151,7 @@ function estimateWhole(){
   if(raw===''||!Number.isFinite(w)||w<=0){if(out)out.innerHTML='<b style="color:#ffdf73">Tap the white weight box and enter a number greater than zero.</b><br>'+priceText(q);if(input){input.style.outline='3px solid #ffdf73';input.focus()}return}
   if(input)input.style.outline='';
   const total=Math.round((w*Number(q.price)+Number.EPSILON)*100)/100,basis=q.type==='local'?'saved_quote':'planning_estimate';
-  packet.planning=Object.assign({},packet.planning,{gradeId:q.id||gradeId(packet),weightGrams:unit==='g'?entered:entered*453.59237,weightEntry:{value:entered,unit:unit},wholeBoardEstimate:{value:total,basis:basis,pricePerLb:Number(q.price),priceDate:q.date||null,label:q.label||null,source:'Scrap Radar',calculatedAt:new Date().toISOString()}});
+  packet.planning=Object.assign({},packet.planning,{gradeId:gradeId(packet),weightGrams:unit==='g'?entered:entered*453.59237,weightEntry:{value:entered,unit:unit},wholeBoardEstimate:{value:total,basis:basis,pricePerLb:Number(q.price),priceDate:q.date||null,label:q.label||null,source:'Scrap Radar',buyerCategoryId:packet.planning?.buyerCategoryId||null,buyerCategoryBasis:packet.planning?.buyerCategoryBasis||null,calculatedAt:new Date().toISOString()}});
   if(!savePacket(packet))return false;
   ['calc-price','yard-price-1'].forEach(function(id){const n=E(id);if(n)n.dataset.basis=basis});
   const whole=E('br-whole');
@@ -152,6 +172,7 @@ function render(packet){
   d.innerHTML='<b>'+safe(i.boardType||'Unknown Board')+'</b>'+(i.subtype?'<br>Subtype: '+safe(i.subtype):'')+(i.confidence!=null?'<br>Identity confidence: '+safe(i.confidence)+'%':'')+'<br><b>Recovery:</b> Grade '+safe(r.grade||'WITHHELD')+(r.score!=null?' • Score '+safe(r.score):'')+(r.condition?' • '+safe(r.condition):'')+(same.status?'<br><b>Same-board verification:</b> '+safe(same.status)+(same.confidence!=null?' '+safe(same.confidence)+'%':''):'')+(signals.length?'<br><b>SPIKE recovery signals:</b> '+signals.map(safe).join(' • '):'')+'<br><b>Transferred values:</b> '+(e.sellWholeValue!=null?'Whole offer $'+safe(e.sellWholeValue):'No whole offer')+' • '+(e.fullRecoveryValue!=null?'Deeper recovery $'+safe(e.fullRecoveryValue):'No recovery dollars')+' • '+(e.fullMinutes!=null?safe(e.fullMinutes)+' min':'No recovery time')+(cueLabel?'<br><b>Critical-material inspection cue:</b> '+safe(cueLabel)+' <span class="muted">(source clue only, not composition proof)</span>':'')+'<br><span class="muted">SPIKE supplied evidence and previously entered values only. Confirm buyer terms, distance, fuel, processing costs and hourly target here before acting.</span>';
   if(b){b.disabled=false;b.textContent=cueLabel?'Check Critical Materials: '+cueLabel:'Check Critical Materials'}
   const q=boardQuote(packet),weight=E('spike-board-weight'),planning=packet.planning||{},grams=Number(planning.weightGrams),entry=planning.weightEntry;
+  if(E('spike-buyer-category'))E('spike-buyer-category').value=planning.buyerCategoryId||'';
   if(weight&&!weight.value&&grams>0){weight.value=String(entry&&entry.value>0?entry.value:grams);E('spike-weight-unit').value=entry&&['g','lb'].includes(entry.unit)?entry.unit:'g'}
   if(out)out.innerHTML=weight&&weight.value?'<b>Saved board weight received.</b> '+priceText(q):'<b style="color:#ffdf73">Case received. Enter this board\'s scale weight above to see the dollar total.</b><br>'+priceText(q);
 }

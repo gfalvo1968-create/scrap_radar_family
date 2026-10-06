@@ -1,3 +1,5 @@
+Launch status and current setup are tracked in [launch readiness](doc/launch-readiness.md) and [security setup](doc/security-setup.md). Recovery quantities and dollar figures in older planning notes below are illustrative, not measured specimen yields.
+
 # scrap_radar_family
 Scrap Radar Family Design Standards
 
