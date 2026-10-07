@@ -29,3 +29,7 @@ Backend tests cover missing/invalid credentials, authentication outage, confirme
 Owner configured Site URL and exact account.html redirect, Zoho sender support@scrapradarfamily.com, smtp.zoho.com:465 and a private application-specific password. Confirmation and recovery templates retain ConfirmationURL. Delivery and return-link execution remain unverified.
 
 Use account.html?email_test=1 for an explicit prelaunch email test. It enables only signup/recovery UI with a clear unverified-delivery notice. This query flag is public and is not an owner authorization mechanism. Supabase confirmation, rate limits and backend identity validation still apply. The ordinary account page remains gated and email_flows_verified remains false. Test links return to the exact allowlisted account.html page. No paid access or payment is enabled. Remove the opt-in after verification.
+
+
+## October 7: email verification completed
+Owner confirmed signup email return, sign-out and password sign-in, recovery email return, password update, and sign-in with the new password on iPad Chrome. Regular signup and recovery enabled; temporary email_test override removed. Payments and paid access remain disabled.

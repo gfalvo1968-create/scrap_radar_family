@@ -4,7 +4,7 @@ async function main(testMode=false){
  let signupCalls=0,accountHeaders,authCallback;
  const auth={getSession:async()=>({data:{session:null}}),onAuthStateChange:f=>{authCallback=f;},signInWithPassword:async()=>({error:null}),signUp:async()=>{signupCalls++;return {error:null};},signOut:async()=>({error:null})};
  const context={document:{getElementById:node,createElement:()=>node('new')},window:{supabase:{createClient:()=>({auth})}},URL,location:{href:'https://example.test/account.html'+(testMode?'?email_test=1':''),pathname:'/account.html'},history:{replaceState(){}},fetch:async(url,options)=>{
-  if(url==='customer_auth_config.json')return {ok:true,json:async()=>({url:'https://auth.test',publishable_key:'public',market_api:'https://market.test',email_flows_verified:false})};
+  if(url==='customer_auth_config.json')return {ok:true,json:async()=>({url:'https://auth.test',publishable_key:'public',market_api:'https://market.test',email_flows_verified:testMode})};
   accountHeaders=options.headers;return {ok:true,json:async()=>({customer:{email:'verified@example.test'},subscriptions:[],notice:'Payments not enabled'})};
  }};
  vm.runInNewContext(fs.readFileSync('account.js','utf8'),context);await new Promise(r=>setTimeout(r,0));

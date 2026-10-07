@@ -4,9 +4,7 @@
   const el = id => document.getElementById(id);
   const status = message => { el('status').textContent = message; };
   let client, config, busy = false;
-  // Explicit prelaunch opt-in; a UI switch, never an authorization boundary.
-  const emailTest = new URL(location.href).searchParams.get('email_test') === '1';
-  const emailFlowsEnabled = () => Boolean(config?.email_flows_verified || emailTest);
+  const emailFlowsEnabled = () => Boolean(config?.email_flows_verified);
   function lock(value) {
     busy = value;
     ['signIn','signUp','recover','signOut'].forEach(id => {
@@ -59,9 +57,7 @@
       auth: { flowType: 'pkce', persistSession: true, autoRefreshToken: true, detectSessionInUrl: true,
               storageKey: 'scrap-radar-customer-auth-v1' }
     });
-    el('emailSetup').textContent = emailTest
-      ? 'Email test mode: delivery is not yet verified. Use the same browser for confirmation and recovery. No payments or paid access are enabled.'
-      : config.email_flows_verified
+    el('emailSetup').textContent = config.email_flows_verified
       ? 'Use the same browser for email confirmation and password recovery links.'
       : 'New registration and password recovery are awaiting email-delivery and return-link verification. Existing accounts can sign in.';
     client.auth.onAuthStateChange(event => {
