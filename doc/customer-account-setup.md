@@ -23,3 +23,9 @@ The existing-account login path still needs a real consenting tester. No real pe
 Payments, paid entitlement enforcement, 25-case daily enforcement, saved board-case synchronization, receipts, account deletion and the private admin customer dashboard are not implemented by the account page. All displayed membership prices are prelaunch offers. Customer authentication alone never grants paid access.
 
 Backend tests cover missing/invalid credentials, authentication outage, confirmed email requirements, anonymous denial, account isolation, ignored posted IDs, user-metadata privilege attempts and no-store responses. UI tests cover sign-in requests, password clearing, disabled unverified email flows and sign-out clearing. These fixtures do not prove email delivery.
+
+## Owner email verification checkpoint — 2026-10-07
+
+Owner configured Site URL and exact account.html redirect, Zoho sender support@scrapradarfamily.com, smtp.zoho.com:465 and a private application-specific password. Confirmation and recovery templates retain ConfirmationURL. Delivery and return-link execution remain unverified.
+
+Use account.html?email_test=1 for an explicit prelaunch email test. It enables only signup/recovery UI with a clear unverified-delivery notice. This query flag is public and is not an owner authorization mechanism. Supabase confirmation, rate limits and backend identity validation still apply. The ordinary account page remains gated and email_flows_verified remains false. Test links return to the exact allowlisted account.html page. No paid access or payment is enabled. Remove the opt-in after verification.
