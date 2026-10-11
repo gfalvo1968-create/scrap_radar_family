@@ -1,6 +1,14 @@
 /* SPIKE Case Tray v1.2 - multi-board frames stop merging but can keep separate material reports alive. */
 (function(){
 var caseFiles=[];
+var caseRunPending=false;
+function verifiedPhotoCount(payload, submittedCount){
+  var count=payload&&payload.photo_count;
+  if(!Number.isInteger(count)||count!==submittedCount||!Array.isArray(payload.views)||payload.views.length!==count||!payload.combined||typeof payload.combined!=='object'){
+    throw new Error('The server did not confirm all submitted photos. No combined report is shown. Please retry.');
+  }
+  return count;
+}
 var TARGET_KEY='scrapRadarInspectionTargetV1';
 var HANDOFF_KEY='scrapRadarSpikeRecoveryPacketV1';
 function E(id){return document.getElementById(id)}
@@ -95,9 +103,10 @@ function tray(){
   var b=E('caseTray');if(!b)return;
   if(!caseFiles.length){b.innerHTML='<span class="muted">Case tray empty. Add 2–6 photos of the same board.</span>';return}
   b.innerHTML='<b>'+caseFiles.length+'/6 photos loaded</b>'+caseFiles.map(function(f,i){return '<div class="blueprint-item"><span class="blueprint-number">'+(i+1)+'</span><span class="blueprint-title">'+safe(f.name)+'</span> <button type="button" data-rm="'+i+'">Remove</button></div>'}).join('');
-  Array.prototype.forEach.call(b.querySelectorAll('[data-rm]'),function(x){x.onclick=function(){caseFiles.splice(Number(x.getAttribute('data-rm')),1);tray()}})
+  Array.prototype.forEach.call(b.querySelectorAll('[data-rm]'),function(x){x.onclick=function(){if(caseRunPending)return;caseFiles.splice(Number(x.getAttribute('data-rm')),1);tray()}})
 }
 function addFiles(files){
+  if(caseRunPending)return;
   var incoming=Array.prototype.slice.call(files||[]),room=6-caseFiles.length;if(!incoming.length)return;
   if(room<=0){E('uploadStatus').textContent='Case tray already has 6 photos.';return}
   var chosen=incoming.slice(0,room);chosen.forEach(function(f){caseFiles.push(f)});
@@ -205,11 +214,13 @@ function threeAnswersHTML(d){
     '<div class="muted">'+safe(t.separation_rule||'Identity, recovery, and economics are independent answers.')+'</div></div>'
 }
 async function run(){
+  if(caseRunPending)return;
   if(caseFiles.length<2){E('uploadStatus').textContent='Add at least 2 photos of the same board before analysis.';return}
   try{window.dispatchEvent(new CustomEvent('boardSenseCaseReportReset'))}catch(_){}
+  var submittedFiles=caseFiles.slice();caseRunPending=true;
   var btn=E('analyzeCaseBtn');btn.disabled=true;E('uploadStatus').textContent='SPIKE is verifying board identity before reconciling '+caseFiles.length+' views...';
   try{
-    var fd=new FormData();caseFiles.forEach(function(f){fd.append('files',f)});
+    var fd=new FormData();submittedFiles.forEach(function(f){fd.append('files',f)});
     if(E('sameBoardConfirmation')&&E('sameBoardConfirmation').checked)fd.append('operator_same_board_confirmation','true');
     var sell=num('sellValue'),recovered=num('recoveredValue'),minutes=num('laborMinutes');
     if(sell!=null&&sell>0)addField(fd,'current_sell_whole_value',sell);
@@ -217,6 +228,7 @@ async function run(){
     if(minutes!=null&&minutes>=0)addField(fd,'full_minutes',minutes);
     var r=await fetch(API+'/analyze-case',{method:'POST',body:fd});if(!r.ok)throw new Error('HTTP '+r.status);
     var p=await r.json();if(p.status==='error')throw new Error(p.message||'Case analysis failed.');
+    var confirmedPhotoCount=verifiedPhotoCount(p,submittedFiles.length);
     var d=p.combined||{},idg=d.same_board_verification||{},identityBlocked=d.status==='case_identity_failed'||d.status==='case_identity_clarification'||idg.block_reconciliation,objectBlocked=!pcbGate(d).confirmed,blocked=identityBlocked||objectBlocked;
     try{window.dispatchEvent(new CustomEvent('boardSenseCaseReport',{detail:{payload:p,blocked:blocked}}))}catch(_){}
     if(objectBlocked){
@@ -237,11 +249,15 @@ async function run(){
             :'<b>Economics withheld:</b> Board identity must be verified before value paths are compared.';
         }
       }else renderEconomics(d);
-      if(E('predictionBox'))E('predictionBox').innerHTML=(identityBlocked?identityHTML(d)+multiBoardReportHTML(d):'<h3>📸 SPIKE MULTI-PHOTO BOARD CASE</h3>'+identityHTML(d)+'<div class="type-box"><div class="type-name">'+safe(d.board_type||'Unknown')+'</div><b>Photos compared:</b> '+safe(p.photo_count||caseFiles.length)+'<br><b>Grade:</b> '+safe(d.grade||'N/A')+'<br><b>Confidence:</b> '+safe(d.confidence||0)+'%<br><b>Recovery Score:</b> '+safe(d.score||0)+'<br><b>Recommendation:</b> '+safe(d.recommendation||'Manual review required.')+'<br><b>Engine:</b> '+safe(d.model||'Board Sense')+'</div>')+threeAnswersHTML(d);
+      if(E('predictionBox'))E('predictionBox').innerHTML=(identityBlocked?identityHTML(d)+multiBoardReportHTML(d):'<h3>📸 SPIKE MULTI-PHOTO BOARD CASE</h3>'+identityHTML(d)+'<div class="type-box"><div class="type-name">'+safe(d.board_type||'Unknown')+'</div><b>Photos compared:</b> '+safe(confirmedPhotoCount)+'<br><b>Grade:</b> '+safe(d.grade||'N/A')+'<br><b>Confidence:</b> '+safe(d.confidence||0)+'%<br><b>Recovery Score:</b> '+safe(d.score||0)+'<br><b>Recommendation:</b> '+safe(d.recommendation||'Manual review required.')+'<br><b>Engine:</b> '+safe(d.model||'Board Sense')+'</div>')+threeAnswersHTML(d);
       var mr=d.multi_board_material_report||{};
       E('uploadStatus').textContent=identityBlocked?(identityBlockKind(idg)==='multiple'?(mr.status==='SEPARATE_REPORTS_READY'?'Case split: '+safe(mr.board_count)+' separate board reports ready. No identities or values were combined.':'Case stopped: evidence of separate boards in a frame or across views. Review the flagged photos.'):'Case paused: same-board identity is uncertain. Confirm it above if every photo is the same physical board, then analyze again.'):(idg.status==='OPERATOR_CONFIRMED_SAME_BOARD'?'User-confirmed same board. Analysis complete with limited identity confidence.':'Board identity checked. Three-answer board case complete.');
     }
-  }catch(e){E('uploadStatus').textContent='Case analysis failed: '+e.message}finally{btn.disabled=false}
+  }catch(e){
+    try{localStorage.removeItem(HANDOFF_KEY);window.dispatchEvent(new CustomEvent('boardSenseObjectGateBlocked',{detail:{reason:'case_analysis_failed'}}))}catch(_){}
+    if(E('predictionBox'))E('predictionBox').textContent='No verified combined report: '+e.message;
+    ['recoveryBox','reasoningBox','lessonBox','blueprintBox','labBox','economicsBox'].forEach(function(id){if(E(id))E(id).textContent='Withheld: this case did not produce a verified combined report.'});
+    E('uploadStatus').textContent='Case analysis failed: '+e.message}finally{caseRunPending=false;btn.disabled=false}
 }
 function clearMissionState(){
   try{window.dispatchEvent(new CustomEvent('boardSenseCaseReportReset'))}catch(_){}
@@ -262,6 +278,7 @@ function clearMissionState(){
   try{window.dispatchEvent(new CustomEvent('boardSenseNewObject',{detail:{clearedInspectionTarget:true}}))}catch(_){}
 }
 function reset(){
+  if(caseRunPending){E('uploadStatus').textContent='Wait for this analysis to finish before starting a new case.';return}
   caseFiles=[];['casePhoto','casePhotos'].forEach(function(id){var i=E(id);if(i)i.value=''});tray();
   if(E('sameBoardConfirmation'))E('sameBoardConfirmation').checked=false;
   clearMissionState();
