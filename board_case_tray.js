@@ -221,6 +221,8 @@ async function run(){
   var btn=E('analyzeCaseBtn');btn.disabled=true;E('uploadStatus').textContent='SPIKE is verifying board identity before reconciling '+caseFiles.length+' views...';
   try{
     var fd=new FormData();submittedFiles.forEach(function(f){fd.append('files',f)});
+    var itemKind=E('caseItemKind')?E('caseItemKind').value:'auto';
+    fd.append('item_kind',itemKind);
     if(E('sameBoardConfirmation')&&E('sameBoardConfirmation').checked)fd.append('operator_same_board_confirmation','true');
     var sell=num('sellValue'),recovered=num('recoveredValue'),minutes=num('laborMinutes');
     if(sell!=null&&sell>0)addField(fd,'current_sell_whole_value',sell);
@@ -229,13 +231,15 @@ async function run(){
     var r=await fetch(API+'/analyze-case',{method:'POST',body:fd});if(!r.ok)throw new Error('HTTP '+r.status);
     var p=await r.json();if(p.status==='error')throw new Error(p.message||'Case analysis failed.');
     var confirmedPhotoCount=verifiedPhotoCount(p,submittedFiles.length);
+    if(itemKind==='processor'&&(!p.combined||p.combined.status!=='component_inspection'))throw new Error('Processor mode was not confirmed by the server. Reload and retry; no board valuation is shown.');
     var d=p.combined||{},idg=d.same_board_verification||{},identityBlocked=d.status==='case_identity_failed'||d.status==='case_identity_clarification'||idg.block_reconciliation,objectBlocked=!pcbGate(d).confirmed,blocked=identityBlocked||objectBlocked;
     try{window.dispatchEvent(new CustomEvent('boardSenseCaseReport',{detail:{payload:p,blocked:blocked}}))}catch(_){}
     if(objectBlocked){
       try{localStorage.removeItem(HANDOFF_KEY)}catch(_){}
-      if(E('predictionBox'))E('predictionBox').innerHTML=objectGateStopHTML(d);
-      if(E('economicsBox'))E('economicsBox').innerHTML='<b>Economics withheld:</b> SPIKE did not confirm a circuit board.';
-      E('uploadStatus').textContent='Analysis stopped: this item is not confirmed as a circuit board.';
+      clearMissionState();
+      if(E('predictionBox'))E('predictionBox').innerHTML=d.status==='component_inspection'?'<h3>Processor inspection</h3><div class="type-box"><b>'+safe(d.board_type)+'</b><br>Photos inspected: '+safe(confirmedPhotoCount)+'<br>Identity basis: your item selection; automatic recognition unconfirmed.<br>'+safe(d.recommendation)+'</div>'+threeAnswersHTML(d):objectGateStopHTML(d);
+      if(E('economicsBox'))E('economicsBox').innerHTML=d.status==='component_inspection'?'<b>Processor value withheld:</b> Obtain a processor-specific buyer quote and verify its condition. Gold quantity remains unmeasured.':'<b>Economics withheld:</b> SPIKE did not confirm a circuit board.';
+      E('uploadStatus').textContent=d.status==='component_inspection'?'Processor inspection complete. Board grades, board prices, and board handoff are disabled.':'Analysis stopped: this item is not confirmed as a circuit board.';
       try{window.dispatchEvent(new CustomEvent('boardSenseObjectGateBlocked',{detail:{reason:'pcb_not_confirmed'}}))}catch(_){}
     }else{
       if(typeof renderBoardData==='function'&&!blocked)renderBoardData(d);
@@ -281,6 +285,7 @@ function reset(){
   if(caseRunPending){E('uploadStatus').textContent='Wait for this analysis to finish before starting a new case.';return}
   caseFiles=[];['casePhoto','casePhotos'].forEach(function(id){var i=E(id);if(i)i.value=''});tray();
   if(E('sameBoardConfirmation'))E('sameBoardConfirmation').checked=false;
+  if(E('caseItemKind'))E('caseItemKind').value='auto';
   clearMissionState();
   if(E('sellValue'))E('sellValue').value='0';if(E('recoveredValue'))E('recoveredValue').value='0';if(E('laborMinutes'))E('laborMinutes').value='';
   E('uploadStatus').textContent='New board/object ready. Prior inspection mission cleared. Add 2–6 photos of one board.';
@@ -291,6 +296,7 @@ function install(){
   var a=E('boardImageA');if(!a)return;var s=a.closest('section');if(!s)return;
   ensureBreakdownPanel();
   s.innerHTML='<h2>📷 SPIKE Multi-Photo Board Case</h2><p><b>One physical board, several views.</b> SPIKE verifies case identity first, then gives three separate answers: identity, recovery, and economics.</p><div class="side-box"><b>Fast batch:</b> Select 2–6 saved photos together.<br><input type="file" id="casePhotos" accept="image/*" multiple><button type="button" id="addCasePhotosBtn">＋ Add Selected Photos</button><br><br><b>Single-photo fallback:</b><br><input type="file" id="casePhoto" accept="image/*"><button type="button" id="addCasePhotoBtn">＋ Add One Photo</button><div id="caseTray" style="margin-top:12px"></div></div><p><label><input type="checkbox" id="sameBoardConfirmation"> I confirm every photo shows the same physical board (front, back, or close-up).</label><br><small>Use this when SPIKE is uncertain. It cannot override clear evidence of separate boards; the result is marked user-confirmed.</small></p><div class="scan-actions"><button type="button" id="analyzeCaseBtn">Verify & Analyze Board Case</button><button type="button" id="resetCaseBtn">Start New Board</button></div><p id="uploadStatus">Ready. Add 2–6 photos of one board.</p>';
+  var choice=document.createElement('p');choice.innerHTML='<label>Item being inspected <select id="caseItemKind"><option value="auto">Whole board / automatic detection</option><option value="processor">Loose processor / CPU (I identified it)</option></select></label><br><small>Use processor mode for opened or damaged CPU packages. This records your identification and withholds board pricing.</small>';s.insertBefore(choice,E('casePhotos').closest('.side-box'));
   E('addCasePhotosBtn').onclick=addBatch;E('addCasePhotoBtn').onclick=addSingle;E('analyzeCaseBtn').onclick=run;E('resetCaseBtn').onclick=reset;tray();
   var v=document.querySelector('.version-stamp');if(v)v.textContent='Harbor Rich Dashboard • SPIKE Case Tray v1.2 • Stop Merge / Keep Investigating'
 }
