@@ -185,10 +185,14 @@ function updatePlanning(detail){
     try{localStorage.setItem(KEY,JSON.stringify(saved));latest=saved;render(saved,false)}catch(_){}
   }
 }
+function processorHandoffMessage(){
+    const s=E('spikeScrapBridgeStatus');
+    if(s)s.innerHTML='<b>PROCESSOR INSPECTION:</b> This report records your CPU identification. Whole-board grading and pricing do not apply. Processor transfer to Scrap Radar is not available yet; obtain a processor-specific buyer quote.';
+}
 function capture(payload){
   if(inspectionActive()){parkForInspection();return}
   const d=payload&&payload.combined;
-  if(isBlocked(payload,d)){try{localStorage.removeItem(KEY)}catch(_){}latest=null;render(null,true);return}
+  if(isBlocked(payload,d)){try{localStorage.removeItem(KEY)}catch(_){}latest=null;render(null,true);if(d&&d.status==='component_inspection')processorHandoffMessage();return}
   const packet=normalize(payload);if(packet)save(packet);
 }
 function send(event){
@@ -219,7 +223,12 @@ function init(){
   const saved=readSaved();if(saved){latest=saved;render(saved,false)}
   if(saved&&returnedValues(saved)&&/[?&]from=scrap-radar(?:&|$)/.test(window.top&&window.top.location?window.top.location.search:''))setTimeout(function(){const card=E('spikeScrapBridge');if(card)card.scrollIntoView({behavior:'auto',block:'center'})},300);
 }
-window.addEventListener('boardSenseObjectGateBlocked',function(){try{localStorage.removeItem(KEY)}catch(_){}latest=null;render(null,true)});
+window.addEventListener('boardSenseObjectGateBlocked',function(event){
+  try{localStorage.removeItem(KEY)}catch(_){}latest=null;render(null,true);
+  if(event.detail&&event.detail.reason==='processor_inspection'){
+    processorHandoffMessage();
+  }
+});
 window.addEventListener('boardSensePlanningUpdated',function(e){updatePlanning(e.detail)});
 window.addEventListener('boardSenseCaseReportReset',function(){
   pendingPlanning=null;latest=null;

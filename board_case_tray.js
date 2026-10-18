@@ -213,6 +213,10 @@ function threeAnswersHTML(d){
     '<div class="lab-card"><b>3. ECONOMICS - What should we do with it?</b><br>'+economicsAnswerHTML(d,e)+'</div>'+
     '<div class="muted">'+safe(t.separation_rule||'Identity, recovery, and economics are independent answers.')+'</div></div>'
 }
+function reportHeading(processor){
+  var box=E('predictionBox'),section=box&&box.closest('section'),heading=section&&section.querySelector('h2');
+  if(heading)heading.textContent=processor?'🔍 Processor Inspection Report':'🔍 Board Investigation Report';
+}
 async function run(){
   if(caseRunPending)return;
   if(caseFiles.length<2){E('uploadStatus').textContent='Add at least 2 photos of the same board before analysis.';return}
@@ -232,15 +236,17 @@ async function run(){
     var p=await r.json();if(p.status==='error')throw new Error(p.message||'Case analysis failed.');
     var confirmedPhotoCount=verifiedPhotoCount(p,submittedFiles.length);
     if(itemKind==='processor'&&(!p.combined||p.combined.status!=='component_inspection'))throw new Error('Processor mode was not confirmed by the server. Reload and retry; no board valuation is shown.');
+    reportHeading(p.combined&&p.combined.status==='component_inspection');
     var d=p.combined||{},idg=d.same_board_verification||{},identityBlocked=d.status==='case_identity_failed'||d.status==='case_identity_clarification'||idg.block_reconciliation,objectBlocked=!pcbGate(d).confirmed,blocked=identityBlocked||objectBlocked;
     try{window.dispatchEvent(new CustomEvent('boardSenseCaseReport',{detail:{payload:p,blocked:blocked}}))}catch(_){}
     if(objectBlocked){
       try{localStorage.removeItem(HANDOFF_KEY)}catch(_){}
       clearMissionState();
+      reportHeading(d.status==='component_inspection');
       if(E('predictionBox'))E('predictionBox').innerHTML=d.status==='component_inspection'?'<h3>Processor inspection</h3><div class="type-box"><b>'+safe(d.board_type)+'</b><br>Photos inspected: '+safe(confirmedPhotoCount)+'<br>Identity basis: your item selection; automatic recognition unconfirmed.<br>'+safe(d.recommendation)+'</div>'+threeAnswersHTML(d):objectGateStopHTML(d);
       if(E('economicsBox'))E('economicsBox').innerHTML=d.status==='component_inspection'?'<b>Processor value withheld:</b> Obtain a processor-specific buyer quote and verify its condition. Gold quantity remains unmeasured.':'<b>Economics withheld:</b> SPIKE did not confirm a circuit board.';
       E('uploadStatus').textContent=d.status==='component_inspection'?'Processor inspection complete. Board grades, board prices, and board handoff are disabled.':'Analysis stopped: this item is not confirmed as a circuit board.';
-      try{window.dispatchEvent(new CustomEvent('boardSenseObjectGateBlocked',{detail:{reason:'pcb_not_confirmed'}}))}catch(_){}
+      try{window.dispatchEvent(new CustomEvent('boardSenseObjectGateBlocked',{detail:{reason:d.status==='component_inspection'?'processor_inspection':'pcb_not_confirmed'}}))}catch(_){}
     }else{
       if(typeof renderBoardData==='function'&&!blocked)renderBoardData(d);
       if(!blocked)renderComponentBreakdown(d,p);
@@ -264,6 +270,7 @@ async function run(){
     E('uploadStatus').textContent='Case analysis failed: '+e.message}finally{caseRunPending=false;btn.disabled=false}
 }
 function clearMissionState(){
+  reportHeading(false);
   try{window.dispatchEvent(new CustomEvent('boardSenseCaseReportReset'))}catch(_){}
   try{localStorage.removeItem(TARGET_KEY);localStorage.removeItem(HANDOFF_KEY)}catch(_){}
   try{window.ScrapRadarInspectionTarget=null}catch(_){}
