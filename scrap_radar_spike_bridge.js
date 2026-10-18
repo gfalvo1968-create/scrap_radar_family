@@ -108,6 +108,7 @@ function ensureCard(){
 }
 function gradeId(packet){
   const p=packet||{},id=p.planning&&p.planning.gradeId;
+  if(/motherboard|computer mainboard/i.test(String((p.identity||{}).boardType||'')))return null;
   if(['board_high','board_mid','board_low','cell_phone_boards'].includes(id))return id;
   const type=String((p.identity||{}).boardType||'').toLowerCase();
   if(/cell phone|smartphone/.test(type))return 'cell_phone_boards';
@@ -201,3 +202,4 @@ function init(){ensureCard();fixPageLinks();const packet=read();render(packet);c
 window.addEventListener('storage',function(e){if((e.key===KEY||e.key===null)&&caseId(read())!==loadedCaseId){caseChanged();if(E('spike-estimate'))E('spike-estimate').disabled=true}});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
+

@@ -110,6 +110,21 @@ function analysis() {
   await original.analyze(analysis());
   original.dispatch("boardSensePlanningUpdated", { detail: { gradeId: "board_mid", weightGrams: null } });
   const firstCaseId = saved.packet().caseId;
+  const motherboardStore=storage(),motherboardPage=page("board",motherboardStore);
+  const motherboardAnalysis=analysis();
+  motherboardAnalysis.combined.board_type="Motherboard / Main Logic Board";
+  motherboardAnalysis.combined.grade="LOW";
+  await motherboardPage.analyze(motherboardAnalysis);
+  motherboardPage.dispatch("boardSensePlanningUpdated",{detail:{gradeId:"board_low",weightGrams:453.59237}});
+  const motherboardRadar=page("radar",motherboardStore);
+  assert.equal(motherboardStore.packet().planning.wholeBoardEstimate,undefined,
+    "even a stale LOW grade mapping cannot automatically price a motherboard");
+  assert.match(motherboardRadar.elements.get("spike-estimate-result").innerHTML,/unavailable|unpriced|price/i);
+  motherboardRadar.category("board_peripheral_high");
+  assert.equal(motherboardStore.packet().planning.wholeBoardEstimate.pricePerLb,5.25,
+    "an explicit buyer category still supports a labeled planning estimate");
+  assert.equal(motherboardStore.packet().recovery.grade,"LOW");
+
   const phoneStore=storage(),phoneBoard=page("board",phoneStore);
   const phoneAnalysis=analysis();phoneAnalysis.combined.grade="LOW";
   await phoneBoard.analyze(phoneAnalysis);
@@ -463,3 +478,4 @@ function analysis() {
   assert.equal(metalsStore.getItem(KEY), newBefore, "old material scenario tabs cannot overwrite or clear a new physical board");
   console.log("Board/Scrap Radar round trip and metal scenarios: per-metal units and buyer terms, full-precision totals, shared costs, missing inputs/prices, case isolation, resets and storage errors passed");
 })().catch(error => { console.error(error); process.exitCode = 1; });
+
