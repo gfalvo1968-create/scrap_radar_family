@@ -213,6 +213,13 @@ function threeAnswersHTML(d){
     '<div class="lab-card"><b>3. ECONOMICS - What should we do with it?</b><br>'+economicsAnswerHTML(d,e)+'</div>'+
     '<div class="muted">'+safe(t.separation_rule||'Identity, recovery, and economics are independent answers.')+'</div></div>'
 }
+function processorMarkingsHTML(d){
+  var m=d.processor_markings||{},c=m.candidates||[],h='<div class="decision-box"><b>CPU lettering check:</b> '+safe(m.status||'unavailable');
+  if(c.length)h+='<br><b>Family candidates:</b> '+c.map(safe).join(', ');
+  (m.views||[]).forEach(function(v){if((v.observed_text||[]).length)h+='<div class="lab-card"><b>Lettering read in photo '+safe(v.view_number)+':</b><br>'+v.observed_text.map(safe).join('<br>')+'</div>'});
+  h+='<p>'+safe(m.message||'No CPU family could be read. Add a straight-on close-up of the marked lid.')+'</p><small>Lettering candidates need your confirmation. Exact model, same-item identity, condition and metal content remain unverified.</small></div>';
+  return h;
+}
 function reportHeading(processor){
   var box=E('predictionBox'),section=box&&box.closest('section'),heading=section&&section.querySelector('h2');
   if(heading)heading.textContent=processor?'🔍 Processor Inspection Report':'🔍 Board Investigation Report';
@@ -243,7 +250,7 @@ async function run(){
       try{localStorage.removeItem(HANDOFF_KEY)}catch(_){}
       clearMissionState();
       reportHeading(d.status==='component_inspection');
-      if(E('predictionBox'))E('predictionBox').innerHTML=d.status==='component_inspection'?'<h3>Processor inspection</h3><div class="type-box"><b>'+safe(d.board_type)+'</b><br>Photos inspected: '+safe(confirmedPhotoCount)+'<br>Identity basis: your item selection; automatic recognition unconfirmed.<br>'+safe(d.recommendation)+'</div>'+threeAnswersHTML(d):objectGateStopHTML(d);
+      if(E('predictionBox'))E('predictionBox').innerHTML=d.status==='component_inspection'?'<h3>Processor inspection</h3><div class="type-box"><b>'+safe(d.board_type)+'</b><br>Photos inspected: '+safe(confirmedPhotoCount)+'<br>Identity basis: your item selection; see the separate lettering check below.<br>'+safe(d.recommendation)+'</div>'+processorMarkingsHTML(d)+threeAnswersHTML(d):objectGateStopHTML(d);
       if(E('economicsBox'))E('economicsBox').innerHTML=d.status==='component_inspection'?'<b>Processor value withheld:</b> Obtain a processor-specific buyer quote and verify its condition. Gold quantity remains unmeasured.':'<b>Economics withheld:</b> SPIKE did not confirm a circuit board.';
       E('uploadStatus').textContent=d.status==='component_inspection'?'Processor inspection complete. Board grades, board prices, and board handoff are disabled.':'Analysis stopped: this item is not confirmed as a circuit board.';
       try{window.dispatchEvent(new CustomEvent('boardSenseObjectGateBlocked',{detail:{reason:d.status==='component_inspection'?'processor_inspection':'pcb_not_confirmed'}}))}catch(_){}
