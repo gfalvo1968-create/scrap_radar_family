@@ -192,7 +192,7 @@ function multiBoardReportHTML(d){
       '<br><b>Identity:</b> '+safe(b.identity||'Unresolved')+
       (b.confidence!=null?'<br><b>Confidence:</b> '+safe(b.confidence)+'%':'')+
       '<br><b>Grade:</b> '+safe(b.grade||'UNRESOLVED')+
-      (b.recovery_score!=null?'<br><b>Recovery Score:</b> '+safe(b.recovery_score):'')+
+      (b.recovery_score!=null?'<br><b>Observed-feature score:</b> '+safe(b.recovery_score):'')+
       (b.condition?'<br><b>Condition:</b> '+safe(b.condition):'')+
       (b.specimen_completeness?'<br><b>Completeness:</b> '+safe(b.specimen_completeness):'')+
       (b.remaining_value_verdict?'<br><b>Remaining Value:</b> '+safe(b.remaining_value_verdict):'')+
@@ -209,7 +209,7 @@ function threeAnswersHTML(d){
   if(!t.identity&&!t.recovery&&!t.economics&&!d.recovery_economics)return '';
   return '<div class="decision-box"><h3>🧠 SPIKE: THREE DIFFERENT ANSWERS</h3>'+
     '<div class="lab-card"><b>1. IDENTITY - What is it?</b><br>'+safe(i.answer||d.board_type||'Unresolved')+(i.subtype?'<br><b>Subtype:</b> '+safe(i.subtype):'')+(i.confidence!=null?'<br><b>Confidence:</b> '+safe(i.confidence)+'%':'')+'</div>'+
-    '<div class="lab-card"><b>2. RECOVERY - What value is physically supported?</b><br><b>Grade:</b> '+safe(r.grade||d.grade||'WITHHELD')+(r.score!=null?'<br><b>Recovery Score:</b> '+safe(r.score):(d.score!=null?'<br><b>Recovery Score:</b> '+safe(d.score):''))+(r.condition?'<br><b>Condition:</b> '+safe(r.condition):'')+(r.remaining_opportunity?'<br><b>Remaining Opportunity:</b> '+safe(r.remaining_opportunity):'')+'</div>'+
+    '<div class="lab-card"><b>2. RECOVERY - What value is physically supported?</b><br><b>Grade:</b> '+safe(r.grade||d.grade||'WITHHELD')+(r.score!=null?'<br><b>Observed-feature score:</b> '+safe(r.score):(d.score!=null?'<br><b>Observed-feature score:</b> '+safe(d.score):''))+(r.condition?'<br><b>Condition:</b> '+safe(r.condition):'')+(r.remaining_opportunity?'<br><b>Remaining Opportunity:</b> '+safe(r.remaining_opportunity):'')+'</div>'+
     '<div class="lab-card"><b>3. ECONOMICS - What should we do with it?</b><br>'+economicsAnswerHTML(d,e)+'</div>'+
     '<div class="muted">'+safe(t.separation_rule||'Identity, recovery, and economics are independent answers.')+'</div></div>'
 }
@@ -266,7 +266,7 @@ async function run(){
             :'<b>Economics withheld:</b> Board identity must be verified before value paths are compared.';
         }
       }else renderEconomics(d);
-      if(E('predictionBox'))E('predictionBox').innerHTML=(identityBlocked?identityHTML(d)+multiBoardReportHTML(d):'<h3>📸 SPIKE MULTI-PHOTO BOARD CASE</h3>'+identityHTML(d)+'<div class="type-box"><div class="type-name">'+safe(d.board_type||'Unknown')+'</div><b>Photos compared:</b> '+safe(confirmedPhotoCount)+'<br><b>Grade:</b> '+safe(d.grade||'N/A')+'<br><b>Confidence:</b> '+safe(d.confidence||0)+'%<br><b>Recovery Score:</b> '+safe(d.score||0)+'<br><b>Recommendation:</b> '+safe(d.recommendation||'Manual review required.')+'<br><b>Engine:</b> '+safe(d.model||'Board Sense')+'</div>')+threeAnswersHTML(d);
+      if(E('predictionBox'))E('predictionBox').innerHTML=(identityBlocked?identityHTML(d)+multiBoardReportHTML(d):'<h3>📸 SPIKE MULTI-PHOTO BOARD CASE</h3>'+identityHTML(d)+'<div class="type-box"><div class="type-name">'+safe(d.board_type||'Unknown')+'</div><b>Photos compared:</b> '+safe(confirmedPhotoCount)+'<br><b>Grade:</b> '+safe(d.grade||'N/A')+'<br><b>Confidence:</b> '+safe(d.confidence||0)+'%<br><b>Observed-feature score:</b> '+safe(d.score||0)+'<br><b>Recommendation:</b> '+safe(d.recommendation||'Manual review required.')+'<br><b>Engine:</b> '+safe(d.model||'Board Sense')+'</div>')+threeAnswersHTML(d);
       var mr=d.multi_board_material_report||{};
       E('uploadStatus').textContent=identityBlocked?(identityBlockKind(idg)==='multiple'?(mr.status==='SEPARATE_REPORTS_READY'?'Case split: '+safe(mr.board_count)+' separate board reports ready. No identities or values were combined.':'Case stopped: evidence of separate boards in a frame or across views. Review the flagged photos.'):'Case paused: same-board identity is uncertain. Confirm it above if every photo is the same physical board, then analyze again.'):(idg.status==='OPERATOR_CONFIRMED_SAME_BOARD'?'User-confirmed same board. Analysis complete with limited identity confidence.':'Board identity checked. Three-answer board case complete.');
     }
