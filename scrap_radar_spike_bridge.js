@@ -159,7 +159,7 @@ function estimateWhole(){
   if(whole&&((packet.economics||{}).sellWholeValue==null)&&(whole.value===''||whole.dataset.spikeEstimated===whole.value)){whole.dataset.basis=basis;setEstimatedValue('br-whole',total.toFixed(2))}
   selectMaterialWhenReady(q.id,0);setEstimatedValue('calc-weight',w);setValue('calc-price',Number(q.price).toFixed(2));
   setEstimatedValue('yard-weight',w);setValue('yard-price-1',Number(q.price).toFixed(2));
-  if(out)out.innerHTML='<b>Estimated whole-board value: $'+total.toFixed(2)+'</b> ('+entered+' '+(unit==='g'?'grams ≈ ':'lb = ')+w.toFixed(3)+' lb × $'+Number(q.price).toFixed(2)+'/lb). '+priceText(q);
+  if(out)out.innerHTML='<b>Estimated whole-board value: $'+total.toFixed(2)+'</b> ('+entered+' '+(unit==='g'?'grams ≈ ':unit==='oz'?'oz ≈ ':'lb = ')+w.toFixed(3)+' lb × $'+Number(q.price).toFixed(2)+'/lb). '+priceText(q);
   [['calc-price','spike-calc-basis'],['yard-price-1','spike-yard-basis']].forEach(function(pair){const input=E(pair[0]);if(!input)return;let note=E(pair[1]);if(!note){note=document.createElement('small');note.id=pair[1];input.insertAdjacentElement('afterend',note)}note.textContent=q.type==='local'?'Saved local quote; confirm it is current.':'Planning estimate from dated U.S. buyer samples; replace with an actual quote when available.'});
 }
 function render(packet){
@@ -176,7 +176,7 @@ function render(packet){
   if(b){b.disabled=false;b.textContent=cueLabel?'Check Critical Materials: '+cueLabel:'Check Critical Materials'}
   const q=boardQuote(packet),weight=E('spike-board-weight'),planning=packet.planning||{},grams=Number(planning.weightGrams),entry=planning.weightEntry;
   if(E('spike-buyer-category'))E('spike-buyer-category').value=planning.buyerCategoryId||'';
-  if(weight&&!weight.value&&grams>0){weight.value=String(entry&&entry.value>0?entry.value:grams);E('spike-weight-unit').value=entry&&['g','lb'].includes(entry.unit)?entry.unit:'g'}
+  if(weight&&!weight.value&&grams>0){weight.value=String(entry&&entry.value>0?entry.value:grams);E('spike-weight-unit').value=entry&&['g','lb','oz'].includes(entry.unit)?entry.unit:'g'}
   if(out)out.innerHTML=weight&&weight.value?'<b>Saved board weight received.</b> '+priceText(q):'<b style="color:#ffdf73">Case received. Enter this board\'s scale weight above to see the dollar total.</b><br>'+priceText(q);
 }
 function apply(){
