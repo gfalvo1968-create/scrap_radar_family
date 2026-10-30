@@ -22,13 +22,7 @@ function render(){
  }).join('');
  body.innerHTML='<p><b>Historical scenarios only.</b> No category is verified for this board. Reference date: '+safe(ref.asOf)+'. Confirm current buyer prices, grade definitions and preparation requirements before using any rate.</p>'+
  '<div style="overflow-x:auto"><table border="1" cellpadding="6" style="border-collapse:collapse"><thead><tr><th>Example category</th><th>Sample rate</th><th>Gross scenario</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
- '<p>Gross examples exclude fees, shipping and labor. This comparison does not set a grade, update the sale estimate or change the SPIKE case.</p>'+ 
- '<section style="margin-top:14px;padding:10px;border:1px solid #627950;border-radius:8px"><b>🧠 Buyer category matching lesson</b>'+
- '<p><b>General circuit board:</b> Check connector plating, processor packages, board population and whether the buyer accepts this assembly intact. Grade cannot be inferred from density alone.</p>'+
- '<p><b>Peripheral board:</b> Look for a recognizable add-in/peripheral function, edge connector and the buyer\'s specific inclusion and removal rules. An embedded controller is not automatically a peripheral board.</p>'+
- '<p><b>Telecom board:</b> Verify equipment origin, model markings, backplane connectors and the buyer\'s telecom definition. A dense logic board is not automatically telecom grade.</p>'+
- '<p><b>What we know:</b> SPIKE describes this case as a dense logic/controller board, with identity confidence 62% and grade under manual review. <b>None of these buyer categories is confirmed.</b></p>'+
- '<p><b>Next evidence:</b> clear front/back photos, manufacturer/model markings, connector close-ups, daughterboard count, heatsinks/steel attachments, and a buyer\'s written grading requirements.</p></section>';
+ '<p>Gross examples exclude fees, shipping and labor. This comparison does not set a grade, update the sale estimate or change the SPIKE case.</p>' '<p>Category matching lesson is shown separately below the estimate controls.</p>';
 }
 function init(){
  var card=el('spike-import-card'),quick=el('spike-quick-estimate');
