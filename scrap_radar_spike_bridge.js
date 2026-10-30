@@ -212,7 +212,20 @@ function apply(){
 function fixPageLinks(){
   document.querySelectorAll('a[href]').forEach(function(a){const h=a.getAttribute('href')||'';if(h&&h.charAt(0)!=='#')a.setAttribute('target','_top')});
 }
-function init(){ensureCard();fixPageLinks();const packet=read();render(packet);const qs=new URLSearchParams(location.search);if(packet&&(qs.get('source')==='spike'||window.top!==window))setTimeout(apply,120)}
+function init(){
+  if(!ensureCard()){
+    if(!window.__spikeRetryCount)window.__spikeRetryCount=0;
+    if(window.__spikeRetryCount++<50){setTimeout(init,150);return}
+    console.error('SPIKE: recovery panel unavailable after retries');
+    return;
+  }
+  if(window.__spikeInitialized)return;
+  window.__spikeInitialized=true;
+  fixPageLinks();
+  const packet=read();render(packet);
+  const qs=new URLSearchParams(location.search);
+  if(packet&&(qs.get('source')==='spike'||window.top!==window))setTimeout(apply,120);
+}
 window.addEventListener('storage',function(e){if((e.key===KEY||e.key===null)&&caseId(read())!==loadedCaseId){caseChanged();if(E('spike-estimate'))E('spike-estimate').disabled=true}});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
