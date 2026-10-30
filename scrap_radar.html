@@ -124,6 +124,10 @@
   coach.src='scrap_radar_spike_evidence_coach.js?v=3';
   coach.onerror=function(){console.warn('SPIKE evidence coach unavailable; handoff remains usable')};
   document.body.appendChild(coach);
+  var verification=document.createElement('script');
+  verification.src='scrap_radar_spike_verification.js?v=1';
+  verification.onerror=function(){console.warn('SPIKE verification checklist unavailable')};
+  document.body.appendChild(verification);
 })();
 </script>
 </body>
