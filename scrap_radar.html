@@ -110,14 +110,14 @@
   if(new URLSearchParams(location.search).get('source')!=='spike')return;
   if(document.getElementById('spike-import-card'))return;
   var script=document.createElement('script');
-  script.src='scrap_radar_spike_bridge.js?v=22';
+  script.src='scrap_radar_spike_bridge.js?v=23';
   script.onload=function(){
     if(!document.getElementById('spike-import-card'))console.warn('SPIKE bridge loaded but handoff card not present');
   };
   script.onerror=function(){console.error('SPIKE bridge failed to load')};
   document.body.appendChild(script);
   var compare=document.createElement('script');
-  compare.src='scrap_radar_spike_buyer_compare.js?v=1';
+  compare.src='scrap_radar_spike_buyer_compare.js?v=2';
   compare.onerror=function(){console.warn('SPIKE buyer comparison unavailable; core handoff unaffected')};
   document.body.appendChild(compare);
 })();
