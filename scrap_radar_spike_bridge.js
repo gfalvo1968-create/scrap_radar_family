@@ -82,6 +82,14 @@ function ensureCard(){
   card.style.borderColor='#b44cff';
   card.innerHTML='<h3 style="margin-top:0">🧠📡 SPIKE CASE HANDOFF</h3><div id="spike-import-detail">No SPIKE case loaded.</div><div id="spike-quick-estimate" style="margin-top:14px;padding:12px;border:1px solid #39ff14;border-radius:10px"><b>⚡ QUICK ESTIMATE</b><div id="spike-estimate-intro" class="muted" style="margin:5px 0 9px">Enter a scale weight. A whole-board price also requires a supported buyer grade or an explicitly selected buyer category.</div><label for="spike-board-weight">Board weight <input id="spike-board-weight" type="number" min="0" step="any" inputmode="decimal" placeholder="Enter weight" style="max-width:130px"></label> <select id="spike-weight-unit" aria-label="Weight unit"><option value="lb">lb</option><option value="oz">oz</option><option value="g">grams</option></select><div style="margin:10px 0"><label for="spike-buyer-category">Buyer category (confirm with buyer) <select id="spike-buyer-category"><option value="">Use SPIKE broad grade</option></select></label><div class="muted" style="margin-top:5px">Choose a specific category only after checking the board and buyer requirements. This selection does not change SPIKE’s identity or recovery grade.</div></div><button id="spike-estimate" class="mini-btn" type="button" style="margin-left:8px">Estimate Whole Board</button><div id="spike-estimate-result" class="muted" role="status" aria-live="polite" style="margin-top:8px">Estimated value — not an exact buyer price.</div></div><div class="eval-actions" style="margin-top:10px"><button id="spike-reapply" class="mini-btn" type="button">Reapply SPIKE Values</button><button id="spike-critical" class="mini-btn" type="button">Check Critical Materials</button><button id="spike-clear" class="mini-btn" type="button">Clear SPIKE Case</button><button id="spike-back" class="mini-btn" type="button">Back to Board Sense</button></div>';
   grid.parentNode.insertBefore(card,grid);
+  const quickCoach=E('spike-quick-estimate');
+  if(quickCoach&&!E('spike-evidence-coach')){
+    const section=document.createElement('details');
+    section.id='spike-evidence-coach';
+    section.style.cssText='margin-top:12px;padding:12px;border:1px solid #668a9c;border-radius:8px';
+    section.innerHTML='<summary style="cursor:pointer;color:#a8e8ff">🔎 SPIKE case-specific evidence screening</summary><div id="spike-evidence-coach-body">Loading case evidence…</div>';
+    quickCoach.appendChild(section);
+  }
   const priceLesson=E('spike-quick-estimate');
   if(priceLesson&&!E('spike-grade-lesson')){
     const box=document.createElement('details');
