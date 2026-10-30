@@ -190,7 +190,7 @@ function render(packet){
   const estimate=E('spike-estimate'),out=E('spike-estimate-result');
   if(estimate)estimate.disabled=!packet;
   ['spike-board-weight','spike-weight-unit','spike-buyer-category'].forEach(function(id){const input=E(id);if(input)input.disabled=!packet});
-  const intro=E('spike-estimate-intro');if(intro)intro.textContent=packet?'Board identity and grade arrived. Enter a scale weight to calculate a whole-board planning estimate.':'Send a board case from Board Sense to use its grade and scale weight here.';
+  const intro=E('spike-estimate-intro');if(intro)intro.textContent=packet?'Board identity received. Buyer grade may still require review. Enter a scale weight and verify a buyer category before using a whole-board planning estimate.':'Send a board case from Board Sense to use its grade and scale weight here.';
   if(!packet){d.innerHTML='<b>No SPIKE case loaded.</b> Analyze a board in Board Sense, then use Send Case to Scrap Radar.';if(out)out.textContent='Send a verified board case to see its grade and planning price.';if(b){b.disabled=true;b.textContent='Check Critical Materials'}return}
   const i=packet.identity||{},r=packet.recovery||{},e=packet.economics||{},same=packet.sameBoard||{};
   const signals=(r.signals||[]).slice(0,6),cue=sourceCue(packet),cueLabel=cue?SOURCE_LABELS[cue]:null;
