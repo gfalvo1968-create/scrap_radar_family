@@ -110,7 +110,7 @@
   if(new URLSearchParams(location.search).get('source')!=='spike')return;
   if(document.getElementById('spike-import-card'))return;
   var script=document.createElement('script');
-  script.src='scrap_radar_spike_bridge.js?v=21';
+  script.src='scrap_radar_spike_bridge.js?v=22';
   script.onload=function(){
     if(!document.getElementById('spike-import-card'))console.warn('SPIKE bridge loaded but handoff card not present');
   };
