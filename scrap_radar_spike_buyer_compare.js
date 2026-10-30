@@ -22,7 +22,7 @@ function render(){
  }).join('');
  body.innerHTML='<p><b>Historical scenarios only.</b> No category is verified for this board. Reference date: '+safe(ref.asOf)+'. Confirm current buyer prices, grade definitions and preparation requirements before using any rate.</p>'+
  '<div style="overflow-x:auto"><table border="1" cellpadding="6" style="border-collapse:collapse"><thead><tr><th>Example category</th><th>Sample rate</th><th>Gross scenario</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
- '<p>Gross examples exclude fees, shipping and labor. This comparison does not set a grade, update the sale estimate or change the SPIKE case.</p>' '<p>Category matching lesson is shown separately below the estimate controls.</p>';
+ '<p>Gross examples exclude fees, shipping and labor. This comparison does not set a grade, update the sale estimate or change the SPIKE case.</p>'+ '<p>Category matching lesson is shown separately below the estimate controls.</p>';
 }
 function init(){
  var card=el('spike-import-card'),quick=el('spike-quick-estimate');
