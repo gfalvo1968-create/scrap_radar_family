@@ -116,6 +116,10 @@
   };
   script.onerror=function(){console.error('SPIKE bridge failed to load')};
   document.body.appendChild(script);
+  var compare=document.createElement('script');
+  compare.src='scrap_radar_spike_buyer_compare.js?v=1';
+  compare.onerror=function(){console.warn('SPIKE buyer comparison unavailable; core handoff unaffected')};
+  document.body.appendChild(compare);
 })();
 </script>
 </body>
