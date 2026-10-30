@@ -105,5 +105,18 @@
 <link rel="stylesheet" href="scrap_radar_profile.css?v=2">
 <script src="scrap_radar_profile.js?v=2"></script>
 <script src="scrap_radar_operating.js?v=19"></script>
+<script>
+(function(){
+  if(new URLSearchParams(location.search).get('source')!=='spike')return;
+  if(document.getElementById('spike-import-card'))return;
+  var script=document.createElement('script');
+  script.src='scrap_radar_spike_bridge.js?v=21';
+  script.onload=function(){
+    if(!document.getElementById('spike-import-card'))console.warn('SPIKE bridge loaded but handoff card not present');
+  };
+  script.onerror=function(){console.error('SPIKE bridge failed to load')};
+  document.body.appendChild(script);
+})();
+</script>
 </body>
 </html>
