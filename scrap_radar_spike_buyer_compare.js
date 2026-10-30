@@ -27,7 +27,7 @@ function render(){
 function init(){
  var card=el('spike-import-card'),quick=el('spike-quick-estimate');
  if(!card||!quick){if(retries++<70)setTimeout(init,150);return}
- if(el('spike-buyer-scenarios'))return;
+ if(el('spike-buyer-scenarios')){['spike-board-weight','spike-weight-unit'].forEach(function(id){var n=el(id);if(n){n.addEventListener('input',render);n.addEventListener('change',render)}});render();return;}
  var details=document.createElement('details');
  details.id='spike-buyer-scenarios';
  details.style.cssText='margin-top:12px;padding:10px;border:1px solid #7b8641;border-radius:8px';
