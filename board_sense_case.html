@@ -26,7 +26,29 @@
     btn.id='boardSenseTesterAccessBtn';
     btn.type='button';
     var saved='';try{saved=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}
-    btn.textContent=saved?'✅ Tester Access Saved':'🛠 Tester Access';
+    btn.textContent=saved?'⏳ Checking Tester Access':'🛠 Tester Access';
+    btn.title='Checks authorization with the Board Sense server. Saved does not mean verified.';
+    var checkSequence=0;
+    async function verifyTesterKey(){
+      var sequence=++checkSequence;
+      var key='';try{key=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}
+      if(!key){btn.textContent='🛠 Tester Access';return;}
+      btn.textContent='⏳ Verifying Tester';
+      try{
+        var response=await w.fetch('https://boardsense.scrapradarfamily.com/free-usage',{method:'GET',cache:'no-store'});
+        var payload=await response.json();
+        if(sequence!==checkSequence)return;
+        var usage=payload&&payload.free_usage;
+        if(response.ok&&usage&&usage.reason==='authorized_tester_bypass'){
+          btn.textContent='✅ Tester Verified';
+        }else if(usage&&usage.reason==='usage_backend_unavailable'){
+          btn.textContent='⚠ Tester Check Unavailable';
+        }else{
+          btn.textContent='⚠ Tester Key Not Recognized';
+        }
+      }catch(_){if(sequence===checkSequence)btn.textContent='⚠ Tester Check Unavailable';}
+    }
+    verifyTesterKey();
     btn.style.cssText='position:fixed;right:12px;bottom:12px;z-index:99999;padding:10px 14px;border-radius:12px;border:1px solid #39ff14;background:#111;color:#39ff14;font-weight:700;box-shadow:0 0 14px rgba(57,255,20,.35)';
     btn.onclick=function(){
       var existing='';try{existing=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}
@@ -35,9 +57,9 @@
       if(entered===null)return;
       entered=String(entered).trim();
       try{
-        if(existing&&!entered){btn.textContent='✅ Tester Access Saved';return;}
-        if(entered.toUpperCase()==='CLEAR'){w.localStorage.removeItem(TESTER_STORAGE_KEY);btn.textContent='🛠 Tester Access';return;}
-        if(entered){w.localStorage.setItem(TESTER_STORAGE_KEY,entered);btn.textContent='✅ Tester Access Saved';}
+        if(existing&&!entered){verifyTesterKey();return;}
+        if(entered.toUpperCase()==='CLEAR'){w.localStorage.removeItem(TESTER_STORAGE_KEY);verifyTesterKey();return;}
+        if(entered){w.localStorage.setItem(TESTER_STORAGE_KEY,entered);verifyTesterKey();}
       }catch(_){w.alert('Tester key could not be saved on this browser.');}
     };
     d.body.appendChild(btn);
