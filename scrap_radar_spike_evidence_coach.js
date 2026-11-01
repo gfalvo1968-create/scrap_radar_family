@@ -8,7 +8,7 @@ function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){retur
 function packet(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(_){return null}}
 function text(p){var i=p.identity||{},r=p.recovery||{};return [i.boardType,i.subtype,(r.signals||[]).join(' ')].filter(Boolean).join(' ').toLowerCase()}
 function render(){
- var box=el('spike-evidence-coach-body');if(!box)return;
+ var box=el('spike-evidence-coach-report');if(!box)return;
  var p=packet();if(!p){box.textContent='No SPIKE case is loaded. Send a board from Board Sense to see case-specific screening.';return}
  var i=p.identity||{},r=p.recovery||{},t=text(p),grade=String(r.grade||'').toUpperCase();
  var telecom=/telecom|telephone|switching|pbx|network backplane/.test(t);
@@ -55,6 +55,7 @@ function init(){
  section.style.cssText='margin-top:12px;padding:12px;border:1px solid #668a9c;border-radius:8px';
  var summary=document.createElement('summary');summary.textContent='🔎 SPIKE case-specific evidence screening';summary.style.cursor='pointer';summary.style.color='#a8e8ff';
  var body=document.createElement('div');body.id='spike-evidence-coach-body';
+ var report=document.createElement('div');report.id='spike-evidence-coach-report';body.appendChild(report);
  section.appendChild(summary);section.appendChild(body);quick.appendChild(section);render();
  window.addEventListener('storage',render);
 }
