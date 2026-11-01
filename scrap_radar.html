@@ -120,18 +120,20 @@
   compare.src='scrap_radar_spike_buyer_compare.js?v=4';
   compare.onerror=function(){console.warn('SPIKE buyer comparison unavailable; core handoff unaffected')};
   document.body.appendChild(compare);
-  var coach=document.createElement('script');
-  coach.src='scrap_radar_spike_evidence_coach.js?v=3';
-  coach.onerror=function(){console.warn('SPIKE evidence coach unavailable; handoff remains usable')};
-  document.body.appendChild(coach);
-  var verification=document.createElement('script');
-  verification.src='scrap_radar_spike_verification.js?v=1';
-  verification.onerror=function(){console.warn('SPIKE verification checklist unavailable')};
-  document.body.appendChild(verification);
-  var transfer=document.createElement('script');
-  transfer.src='scrap_radar_spike_evidence_transfer.js?v=1';
-  transfer.onerror=function(){console.warn('SPIKE evidence transfer view unavailable')};
-  document.body.appendChild(transfer);
+  // Load dependent evidence panels in order, avoiding iPad script timing races.
+  function loadSpikeScript(src,done){
+    var script=document.createElement('script');script.src=src;
+    script.onload=function(){if(done)done()};
+    script.onerror=function(){console.warn('Optional SPIKE panel failed: '+src);if(done)done()};
+    document.body.appendChild(script);
+  }
+  loadSpikeScript('scrap_radar_spike_evidence_coach.js?v=3',function(){
+    loadSpikeScript('scrap_radar_spike_verification.js?v=1',function(){
+      loadSpikeScript('scrap_radar_spike_evidence_transfer.js?v=2',function(){
+        loadSpikeScript('scrap_radar_spike_photo_review.js?v=2');
+      });
+    });
+  });
 })();
 </script>
 </body>
