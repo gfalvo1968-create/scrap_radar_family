@@ -50,7 +50,7 @@ function render(){
 function init(){
  var quick=el('spike-quick-estimate');
  if(!quick){if(tries++<80)setTimeout(init,150);return}
- if(el('spike-evidence-coach')){render();return}
+ if(el('spike-evidence-coach')){var existing=el('spike-evidence-coach');var body=el('spike-evidence-coach-body');if(!body){body=document.createElement('div');body.id='spike-evidence-coach-body';existing.appendChild(body)}var report=el('spike-evidence-coach-report');if(!report){report=document.createElement('div');report.id='spike-evidence-coach-report';body.textContent='';body.appendChild(report)}render();window.addEventListener('storage',render);return}
  var section=document.createElement('details');section.id='spike-evidence-coach';
  section.style.cssText='margin-top:12px;padding:12px;border:1px solid #668a9c;border-radius:8px';
  var summary=document.createElement('summary');summary.textContent='🔎 SPIKE case-specific evidence screening';summary.style.cursor='pointer';summary.style.color='#a8e8ff';
