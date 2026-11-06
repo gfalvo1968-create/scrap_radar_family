@@ -8,7 +8,7 @@ function valid(manifest,packet){
  if(!manifest||manifest.version!==2||!packet||!packet.caseId||manifest.caseId!==String(packet.caseId)||manifest.caseCreatedAt!==packet.createdAt)return false;
  if(!Number.isFinite(manifest.expiresAt)||Date.now()>=manifest.expiresAt||manifest.expiresAt-Date.now()>60*60*1000)return false;
  if(!Array.isArray(manifest.photos)||manifest.photos.length<2||manifest.photos.length>6)return false;
- return manifest.photos.every(function(photo,i){return photo&&photo.view===i+1&&typeof photo.image==='string'&&/^data:image\\/jpeg;base64,/.test(photo.image)&&photo.image.length<2300000});
+ return manifest.photos.every(function(photo,i){return photo&&photo.view===i+1&&typeof photo.image==='string'&&photo.image.startsWith('data:image/jpeg;base64,')&&photo.image.length<2300000});
 }
 function mount(){
  var host=document.getElementById('spike-phase7b');
