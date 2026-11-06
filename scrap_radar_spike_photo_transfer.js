@@ -1,8 +1,15 @@
-/* Phase 7C: read only case-matched session previews. */
+/* Phase 7C: read case-matched temporary on-device previews; never fetch or upload photographs. */
 (function(){
 'use strict';
-var KEY='scrapRadarSpikeRecoveryPacketV1',PHOTOS='scrapRadarSpikePhotoPreviewsV1',tries=0;
+var KEY='scrapRadarSpikeRecoveryPacketV1',PHOTOS='scrapRadarSpikePhotoPreviewsV1',CACHE='scrapRadarSpikePhotoPreviewCacheV2',tries=0;
 function read(storage,key){try{return JSON.parse(storage.getItem(key)||'null')}catch(_){return null}}
+function discard(){try{sessionStorage.removeItem(PHOTOS)}catch(_){}try{localStorage.removeItem(CACHE)}catch(_){}}
+function valid(manifest,packet){
+ if(!manifest||manifest.version!==2||!packet||!packet.caseId||manifest.caseId!==String(packet.caseId)||manifest.caseCreatedAt!==packet.createdAt)return false;
+ if(!Number.isFinite(manifest.expiresAt)||Date.now()>=manifest.expiresAt||manifest.expiresAt-Date.now()>60*60*1000)return false;
+ if(!Array.isArray(manifest.photos)||manifest.photos.length<2||manifest.photos.length>6)return false;
+ return manifest.photos.every(function(photo,i){return photo&&photo.view===i+1&&typeof photo.image==='string'&&/^data:image\\/jpeg;base64,/.test(photo.image)&&photo.image.length<2300000});
+}
 function mount(){
  var host=document.getElementById('spike-phase7b');
  if(!host){if(tries++<100)setTimeout(mount,200);return}
@@ -14,10 +21,11 @@ function mount(){
  host.insertAdjacentElement('afterend',section);
  function render(){
   gallery.replaceChildren();
-  var packet=read(localStorage,KEY),manifest=read(sessionStorage,PHOTOS);
-  if(!packet||!packet.caseId){status.textContent='No transferred case. Original photos unavailable.';return}
-  if(!manifest||manifest.version!==1||manifest.caseId!==String(packet.caseId)||!Array.isArray(manifest.photos)||manifest.photos.length<2||manifest.photos.length>6){status.textContent='Original photos not available in this tab. Use Phase 7B to select photos manually.';return}
-  status.textContent=manifest.photos.length+' original case view previews matched to case '+packet.caseId+'. These are reduced-size, unverified previews, not visual analysis or buyer grading.';
+  var packet=read(localStorage,KEY),manifest=read(sessionStorage,PHOTOS),cached=read(localStorage,CACHE);
+  if(!packet||!packet.caseId){discard();status.textContent='No transferred case. Original photos unavailable.';return}
+  if(!valid(manifest,packet))manifest=valid(cached,packet)?cached:null;
+  if(!manifest){discard();status.textContent='Original previews expired or unavailable. Return to Board Sense and transfer a fresh case, or select photos manually in Phase 7B.';return}
+  status.textContent=manifest.photos.length+' original case views matched to case '+packet.caseId+'. Temporary reduced-size previews on this device (up to one hour), unverified; no new visual analysis or buyer grading.';
   manifest.photos.forEach(function(photo,i){
    if(!photo||photo.view!==i+1||typeof photo.image!=='string'||!/^data:image\/jpeg;base64,/.test(photo.image))return;
    var fig=document.createElement('figure');fig.style.margin='0';
