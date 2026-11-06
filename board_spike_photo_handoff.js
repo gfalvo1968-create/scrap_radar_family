@@ -1,9 +1,10 @@
-/* Phase 7C: case-scoped, session-only previews. No uploads or assays. */
+/* Phase 7C: case-scoped temporary on-device previews, for ordinary tab navigation. No uploads or assays. */
 (function(){
 'use strict';
-var PACKET='scrapRadarSpikeRecoveryPacketV1',PREVIEWS='scrapRadarSpikePhotoPreviewsV1',generation=0;
+var PACKET='scrapRadarSpikeRecoveryPacketV1',PREVIEWS='scrapRadarSpikePhotoPreviewsV1',CACHE='scrapRadarSpikePhotoPreviewCacheV2',TTL=60*60*1000,generation=0;
 function read(){try{return JSON.parse(localStorage.getItem(PACKET)||'null')}catch(_){return null}}
-function clear(){generation++;try{sessionStorage.removeItem(PREVIEWS)}catch(_){}}
+function discard(){try{sessionStorage.removeItem(PREVIEWS)}catch(_){}try{localStorage.removeItem(CACHE)}catch(_){}}
+function clear(){generation++;discard();}
 function shrink(file){
  return new Promise(function(resolve,reject){
   var url=URL.createObjectURL(file),img=new Image();
@@ -25,7 +26,7 @@ window.addEventListener('boardSenseObjectGateBlocked',clear);
 window.addEventListener('boardSenseCasePhotosReady',async function(event){
  var files=event.detail&&event.detail.files;
  if(!Array.isArray(files)||files.length<2||files.length>6)return;
- var token=++generation;try{sessionStorage.removeItem(PREVIEWS)}catch(_){}
+ var token=++generation;discard();
  var packet=null;
  for(var i=0;i<30;i++){
   packet=read();
@@ -42,7 +43,12 @@ window.addEventListener('boardSenseCasePhotosReady',async function(event){
    previews.push({view:n+1,image:data});
   }
   if(token!==generation||!read()||String(read().caseId)!==id)return;
-  sessionStorage.setItem(PREVIEWS,JSON.stringify({version:1,caseId:id,photos:previews,source:'Board Sense case tray; unverified previews'}));
- }catch(_){try{sessionStorage.removeItem(PREVIEWS)}catch(e){}}
+  var savedAt=Date.now();
+  var manifest={version:2,caseId:id,caseCreatedAt:packet.createdAt,savedAt:savedAt,expiresAt:savedAt+TTL,photos:previews,source:'Board Sense case tray; reduced unverified previews'};
+  // A privacy-limited cache: only for the current case, for up to one hour.
+  // The browser may reject storage; never break the actual board handoff.
+  try{localStorage.setItem(CACHE,JSON.stringify(manifest))}catch(_){}
+  try{sessionStorage.setItem(PREVIEWS,JSON.stringify(manifest))}catch(_){}
+ }catch(_){discard();}
 });
 })();
