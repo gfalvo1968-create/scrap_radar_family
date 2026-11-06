@@ -34,7 +34,7 @@ function mount(){
   });
  }
  render();var count=0;var poll=setInterval(function(){render();if(++count>=25)clearInterval(poll)},250);
- window.addEventListener('focus',render);window.addEventListener('storage',render);
+ window.addEventListener('focus',render);window.addEventListener('storage',render);window.addEventListener('scrapRadarSpikeCaseChanged',render);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
 })();
