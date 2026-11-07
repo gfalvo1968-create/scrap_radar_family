@@ -14,7 +14,7 @@ function numeric(id){const v=E(id)?.value,n=Number(v);return v!=null&&String(v).
 function cash(v){return Number.isFinite(v)?'$'+v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):'—'}
 function cents(v){const n=Math.round((v+Number.EPSILON)*100)/100;return Number.isFinite(n)?n:null}
 function text(id,value){const e=E(id);if(e)e.textContent=value}
-function validBinding(){return token(read())===loadedCase}
+function validBinding(){return !!loadedCase && token(read())===loadedCase}
 function additionalMetalHTML(id){
   const label=LABELS[id];
   return '<div style="margin-top:12px;padding:10px;border:1px solid #625b38;border-radius:8px"><label for="spike-'+id+'-amount">Recovered '+label.toLowerCase()+' (assumed) <input id="spike-'+id+'-amount" type="number" min="0" step="any" inputmode="decimal" placeholder="Enter amount" style="max-width:130px"></label> '+
@@ -55,7 +55,7 @@ function ensure(){
 function restore(){
   const p=read(),s=p?.planning?.goldRecoveryScenario;
   const input=s&&s.version===1&&s.kind==='hypothetical'&&s.caseId===token(p)?s.input:null;
-  E('spike-gold-amount').value=input?(input.amount==null?'':String(input.amount)):'1';
+  E('spike-gold-amount').value=input?(input.amount==null?'':String(input.amount)):'';
   E('spike-gold-unit').value=input&&['scale_points','g','mg'].includes(input.unit)?input.unit:'scale_points';
   [['spike-gold-pay-percent','buyerPayPercent'],['spike-gold-costs','costs'],['spike-gold-minutes','minutes']].forEach(function(pair){E(pair[0]).value=input&&input[pair[1]]!=null?String(input[pair[1]]):''});
   const saved=p?.planning?.materialRecoveryScenario;
@@ -176,7 +176,7 @@ function update(persist){
   const whole=numeric('br-whole');text('spike-gold-whole',whole!=null?cash(whole):'—');
   text('spike-gold-whole-label',E('br-whole')?.dataset.basis==='entered_offer'?'Sell whole (entered offer)':'Sell whole (planning)');
   const bound=validBinding();IDS.concat(['spike-gold-one-point']).forEach(function(id){E(id).disabled=!bound});
-  if(!bound){['spike-gold-gross','spike-gold-net','spike-silver-gross','spike-copper-gross','spike-material-gross'].forEach(function(id){text(id,'—')});text('spike-gold-hourly','');text('spike-gold-basis','The saved board case changed. Reload Scrap Radar before saving a scenario.');text('spike-material-basis','The saved board case changed. Reload before entering recovery amounts.');return false}
+  if(!bound){['spike-gold-gross','spike-gold-net','spike-silver-gross','spike-copper-gross','spike-material-gross'].forEach(function(id){text(id,'—')});text('spike-gold-hourly','');text('spike-gold-basis',loadedCase?'The saved board case changed. Reload Scrap Radar before saving a scenario.':'No Board Sense case is loaded. Send a board case before entering recovery scenarios.');text('spike-material-basis',loadedCase?'The saved board case changed. Reload before entering recovery amounts.':'No case loaded. Hypothetical recovered-metal values are unavailable.');return false}
   const s=calculate(),breakdown=calculateBreakdown(s);text('spike-gold-gross',s.grossMetalValue!=null?cash(s.grossMetalValue):'—');
   let note='Enter an assumed recovered gold weight.';
   if(s.status==='exceeds_board_weight')note='Assumed recovered gold exceeds this board’s scale weight. Enter an amount within the board weight.';
