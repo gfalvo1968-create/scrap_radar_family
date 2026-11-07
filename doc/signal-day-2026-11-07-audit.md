@@ -145,3 +145,15 @@ Railway control-plane inspection confirms:
 **Next controlled check:** visit `https://boardsense-stageing.up.railway.app/health` directly from a normal browser on a non-restricted network; capture whether JSON loads and total elapsed time if available. Do not send POST / analyze, change quotas, or expose tester credentials. Then use a trusted monitor or approved test runner to collect cold-start latency and small staging-only traffic observations.
 
 Status: staging environment **reported online**, reachability/cold-start **not yet independently verified**.
+
+## November 7 owner iPad confirmation: staging health reachable
+
+At 11:16 AM Eastern on November 7, Jerry supplied a screenshot from iPad Chrome accessing `https://boardsense-stageing.up.railway.app/health`. Visible application JSON:
+
+```json
+{"status":"ok","service":"Board Sense","release":"board-speaker-routing-v0.1","processor_markings_reader":true}
+```
+
+This confirms the staging hostname resolved and the health endpoint returned expected service JSON **from the owner's iPad**. It does not measure response latency, cold-start time, throughput, scan processing, or database availability. Previous failures to resolve the hostname in an isolated sandbox should not be interpreted as global DNS failure.
+
+**Next check:** bounded read-only health response timing on an approved test client, followed by staging-only quota/database concurrency tests after verifying isolated quota setup. Do not consume or reset public allowance.
