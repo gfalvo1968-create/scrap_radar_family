@@ -110,7 +110,7 @@
   if(new URLSearchParams(location.search).get('source')!=='spike')return;
   if(document.getElementById('spike-import-card'))return;
   var script=document.createElement('script');
-  script.src='scrap_radar_spike_bridge.js?v=27';
+  script.src='scrap_radar_spike_bridge.js?v=28';
   script.onload=function(){
     if(!document.getElementById('spike-import-card'))console.warn('SPIKE bridge loaded but handoff card not present');
   };
@@ -127,9 +127,9 @@
     script.onerror=function(){console.warn('Optional SPIKE panel failed: '+src);if(done)done()};
     document.body.appendChild(script);
   }
-  loadSpikeScript('scrap_radar_spike_evidence_coach.js?v=4',function(){
+  loadSpikeScript('scrap_radar_spike_evidence_coach.js?v=5',function(){
     loadSpikeScript('scrap_radar_spike_verification.js?v=1',function(){
-      loadSpikeScript('scrap_radar_spike_evidence_transfer.js?v=2',function(){
+      loadSpikeScript('scrap_radar_spike_evidence_transfer.js?v=3',function(){
         loadSpikeScript('scrap_radar_spike_photo_review.js?v=2',function(){loadSpikeScript('scrap_radar_spike_photo_transfer.js?v=3');});
       });
     });
