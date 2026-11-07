@@ -14,7 +14,7 @@
 
 <a href="account.html" class="portal">👤 YOUR ACCOUNT</a>
 <a href="board_sense_case.html" class="portal boardsense-btn">🧠 BOARD SENSE</a>
-<a id="mainTesterDoor" href="board_sense_case.html?tester=1" class="portal boardsense-btn" hidden>🔐 BOARD SENSE TESTER DOOR</a>
+
 <a href="scrap_radar.html" class="portal radar-btn">📡 OPEN SCRAP RADAR</a>
 </div>
 <section class="hero">
@@ -35,22 +35,16 @@ hard work, vision, and the belief that humans and AI can build together.</p>
 hard work, curiosity, and long nights learning.</p>
 </section>
 <section class="signbook" id="signal-log">
-<h2>Signal Log</h2>
-<input id="signalName" placeholder="Your Name">
-<textarea id="signalMessage" placeholder="Your signal to the island..."></textarea>
+<h2>Signal Log Preview</h2><p style="font-size:1rem;margin:10px auto;max-width:650px">Try leaving a note. It is saved on this device only, not sent to other visitors or posted publicly. A moderated community guestbook is planned.</p>
+<input id="signalName" placeholder="Your Name" maxlength="50" autocomplete="off">
+<textarea id="signalMessage" placeholder="Your signal to the island..." maxlength="160"></textarea>
 <div class="button-center">
-<button onclick="transmitSignal()">Transmit Signal</button>
+<button onclick="transmitSignal()">Save Device Note</button>
 <a href="hall.html" class="wall-button">ENTER THE WALL<br><span class="wall-subtitle">Where Every Name Lives On</span></a>
 </div>
 <div id="signalWall"></div>
 </section>
 <script src="script.js"></script>
-<script>
-try{
-  if(localStorage.getItem('boardSenseTesterKeyV1')){
-    document.getElementById('mainTesterDoor').hidden=false;
-  }
-}catch(_){}
-</script>
+
 </body>
 </html>
