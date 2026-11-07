@@ -121,3 +121,14 @@ The privacy and limitations drafts are reachable from the home, Future, and Welc
 - The test source and GitHub workflow are on **`feature/phase-7d-phone-family-evidence`**, while Railway staging still deploys **`main`**. Never treat staging telemetry as evidence that the new branch's tests passed.
 - No GitHub Actions workflow result or combined status was returned for test commit `0b67973a35e5473a52a70a9949819af43a0f2ab7`. CI test results are pending/unverified. Before a release, run the offline tests in a trusted runner and review artifacts, then deploy a reviewed backend candidate into isolated staging for low-volume measurements.
 - We made no Railway deployment, traffic-generating scan, quota reset, database mutation, or production change during this check.
+
+## November 7 verified execution: offline tests passed, staging DNS blocked
+
+- Executed the actual `gfalvo1968-create/Board_Sense` development source in an ephemeral Vercel sandbox, checked out from `feature/phase-7d-phone-family-evidence`. Python 3.14.4, pytest 8.4.2, FastAPI 0.142.2 and Starlette 1.7.0 used with no production secrets.
+- **Initial test result: 3 passed, 1 failed.** The failure came from the test fixture: `BOARD_SENSE_ENV` is read at module import time; setting the environment variable later did not affect the already-loaded constant. This was a test setup problem rather than a demonstrated production quota bug.
+- Corrected fixture by explicitly monkeypatching `gate.BOARD_SENSE_ENV` to `production`; reran: **4 passed in 0.18 seconds**. Correction committed to the backend feature branch as `ba260b6a2db1a34f1dd5f398376d25d571707381`. These tests mock the atomic quota backend and do not establish live-database concurrency throughput.
+- Railway confirms staging domain `boardsense-stageing.up.railway.app` is Railway managed and targets port 8080, but sandbox DNS resolution for that hostname failed (`curl` status 000; no connect or response timing). Control hostname DNS lookups for github.com and pypi.org succeeded. Neither staging cold-start latency nor app-layer availability was measured.
+- No live Board Sense upload, real quota consumption, production traffic burst, Railway deployment, or configuration change was performed.
+- **Next:** resolve staging DNS/public reachability in provider configuration, then make one read-only `/health` request, record first-byte latency, and only afterward proceed to a bounded staging test with an isolated quota store.
+
+**Updated verdict:** Offline quota regression logic passes (4/4); staging cold-start and real capacity remain **NOT VERIFIED**.
