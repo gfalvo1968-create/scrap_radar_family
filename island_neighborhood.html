@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Explore the interactive Scrap Radar Family Island neighborhood map: Welcome Hall, Board Sense, Scrap Radar, future homes, marketplace and school.">
+<title>Island Neighborhood Map | Scrap Radar Family</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#eaffef;color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#071d23}
+header{text-align:center;padding:27px 16px 19px;background:radial-gradient(ellipse at center top,#17534f,#071d23 74%)}
+header h1{color:#adffdf;font-size:clamp(2rem,5vw,3.4rem);margin:9px 0}header p{max-width:700px;margin:12px auto;line-height:1.55;font-size:1.05rem}
+nav{display:flex;justify-content:center;gap:13px;flex-wrap:wrap;padding:12px}
+a{color:#a4ffe4}nav a{padding:9px 13px;border:1px solid #86ddbe;border-radius:999px;text-decoration:none}
+a:focus-visible{outline:4px solid #ffe18a;outline-offset:3px}
+.notice{max-width:900px;margin:0 auto 18px;padding:12px 16px;background:#29291b;border:1px solid #bda65b;border-radius:12px;line-height:1.5}
+.map-shell{max-width:1050px;margin:0 auto;padding:12px;background:linear-gradient(#0b6270,#0a566b);border:3px solid #1b8886;border-radius:28px;box-shadow:0 14px 40px #0009}
+.map{position:relative;min-height:790px;border-radius:21px;overflow:hidden;background:radial-gradient(ellipse at 51% 72%,#75c16e 0 43%,#2c8e67 71%,#1b6f77 72%,#1588a0 84%,#12657e 100%)}
+.map:before{content:"";position:absolute;inset:0;background-image:radial-gradient(#f8fff4 1px,transparent 2px);background-size:38px 42px;opacity:.17;pointer-events:none}
+.path{position:absolute;top:7%;left:46%;width:12%;height:90%;border-radius:55% 45% 55% 40%;background:linear-gradient(90deg,#c49b56,#eed99a 25%,#fae4ab 55%,#d6b874);transform:rotate(-10deg);box-shadow:0 0 20px #5b6a3740;pointer-events:none}
+.path:before,.path:after{content:"";position:absolute;height:12%;width:290%;background:#f0d493;top:31%;left:-92%;transform:rotate(22deg);border-radius:50%;z-index:0}.path:after{top:67%;transform:rotate(-25deg)}
+.palms{position:absolute;inset:0;pointer-events:none;display:flex;justify-content:space-between;align-items:center;padding:0 2%;font-size:clamp(2.5rem,7vw,5rem);opacity:.85;text-shadow:0 3px 9px #184e32}
+.spot{position:absolute;display:block;width:31%;min-height:132px;border-radius:18px;background:linear-gradient(145deg,#113e37ee,#092b32f5);border:2px solid #ffdda0;color:#f4fff8;text-align:center;text-decoration:none;padding:14px 10px 12px;box-shadow:0 8px 20px #06232c9c;transition:transform .2s}
+.spot:hover,.spot:focus-visible{transform:translateY(-4px) scale(1.02);background:#13524a}
+.spot .building{display:block;font-size:2.3rem;line-height:1.1;margin:0 0 7px}.spot strong{display:block;font-size:clamp(.9rem,1.9vw,1.18rem);line-height:1.2}.spot small{display:block;color:#e7dfba;font-size:.78rem;margin-top:7px;line-height:1.32}
+.open{border-color:#80ffb8}.future{border-style:dashed}
+.homes{top:5%;left:3%}.market{top:5%;right:3%}.welcome{top:26%;left:3%}.board{top:26%;right:3%}.school{top:48%;left:3%}.radar{top:48%;right:3%}.rescue{top:70%;left:3%}.labs{top:70%;right:3%}
+.center-mark{position:absolute;top:43%;left:39%;width:22%;padding:12px 6px;border-radius:50%;border:3px solid #faf2ab;background:#175d4a;text-align:center;color:#fff7ce;font-weight:900;font-size:.85rem;box-shadow:0 0 18px #0005;pointer-events:none}
+.legend{max-width:1050px;margin:20px auto 40px;padding:0 17px}.legend p{line-height:1.7}.legend h2{color:#a6fbd3}.legend .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:14px}
+.tile{background:#10363d;border:1px solid #477e70;border-radius:15px;padding:18px}.tile h3{margin:4px 0 7px}.tile p{margin:0;line-height:1.55}.tile a{display:inline-block;margin-top:10px}
+footer{padding:22px;text-align:center;border-top:1px solid #356f66}
+@media(max-width:620px){.map{min-height:1000px}.spot{width:41%;min-height:160px;padding:10px 6px}.homes,.welcome,.school,.rescue{left:2%}.market,.board,.radar,.labs{right:2%}.homes,.market{top:4%}.welcome,.board{top:28%}.school,.radar{top:52%}.rescue,.labs{top:76%}.spot .building{font-size:2.1rem}.spot strong{font-size:.95rem}.spot small{font-size:.72rem}.center-mark{top:49%;left:43%;width:14%;font-size:.65rem;padding:9px 3px}.path{width:13%;left:44%}}
+</style></head>
+<body>
+<header><div style="color:#ffd999;letter-spacing:.14em;font-weight:800;font-size:.82rem">SCRAP RADAR FAMILY ISLAND</div><h1>🏝️ The Neighborhood Map</h1><p>Follow the path, tap a destination, and help us imagine what the Island can become. Every building has a purpose, and every person matters.</p>
+<nav><a href="island_portal.html">🏝️ Sandy path</a><a href="island_future.html">🌱 Island future tour</a><a href="index.html">📡 Main entrance</a></nav></header>
+<div class="notice">🚧 <strong>Neighborhood preview:</strong> Launch planned November 19, 2026, subject to final checks. Solid green-bordered destinations link to existing pages. Dashed destinations explain future plans and do not represent active member services.</div>
+<main>
+<section class="map-shell" aria-label="Clickable map of Scrap Radar Family Island neighborhood">
+<div class="map">
+<div class="path"></div><div class="palms" aria-hidden="true"><span>🌴</span><span>🌴</span></div>
+<a class="spot future homes" href="#homes"><span class="building">🏡</span><strong>Member Homes</strong><small>Future neighborhood • preview</small></a>
+<a class="spot future market" href="#market"><span class="building">🏪</span><strong>Island Marketplace</strong><small>Future stores • preview</small></a>
+<a class="spot open welcome" href="welcome_hall.html"><span class="building">🏛️</span><strong>Welcome Hall</strong><small>Open existing room</small></a>
+<a class="spot open board" href="board_sense_case.html"><span class="building">🧠</span><strong>Board Sense</strong><small>Existing tool • testing</small></a>
+<a class="spot future school" href="#school"><span class="building">🏫</span><strong>Island School</strong><small>Future lessons • preview</small></a>
+<a class="spot open radar" href="scrap_radar.html"><span class="building">📡</span><strong>Scrap Radar</strong><small>Existing tool • testing</small></a>
+<a class="spot future rescue" href="#rescue"><span class="building">🛟</span><strong>Equipment Rescue</strong><small>Future workshop • preview</small></a>
+<a class="spot future labs" href="#labs"><span class="building">🔬</span><strong>Recovery Labs</strong><small>Future training • preview</small></a>
+<div class="center-mark">💚<br>FIVE<br>FAMILIES</div>
+</div></section>
+<section class="legend"><h2>Explore the planned buildings</h2><p>Tap any future building on the map to jump to its preview below. Actual housing, store accounts, checkout, and training services are not available yet.</p>
+<div class="tiles">
+<article id="homes" class="tile"><h3>🏡 Member Homes • Planned</h3><p>A place for member profiles, achievements, and eventually personalized spaces. We must build authenticated accounts and privacy protections first.</p></article>
+<article id="market" class="tile"><h3>🏪 Island Marketplace • Planned</h3><p>A future space for approved members and businesses to present equipment, tools, and materials. Selling and payment features are not active.</p></article>
+<article id="school" class="tile"><h3>🏫 Island School • Planned</h3><p>Lessons in safe scrap sorting, material identification, market decisions, reuse and understanding valuable components.</p></article>
+<article id="rescue" class="tile"><h3>🛟 Equipment &amp; Property Rescue • Planned</h3><p>Explore the value of intact equipment, reusable parts, and responsibly recovered materials before committing to dismantling.</p></article>
+<article id="labs" class="tile"><h3>🔬 Recovery Labs • Planned</h3><p>Training with carefully reviewed guidance and safety requirements. No hazardous processing demonstrations or instructions here yet.</p></article>
+<article class="tile"><h3>💚 The Five Families Mission</h3><p>Our long-term aim is to create five dependable, fairly paid jobs that help five families achieve greater stability. This is a goal, not a current employment offer.</p><a href="island_future.html">Read our full mission</a></article>
+</div></section></main><footer>Scrap Radar Family • The Island Neighborhood • <a href="island_portal.html">Return to the sandy path</a></footer>
+</body></html>
