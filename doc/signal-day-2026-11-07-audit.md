@@ -50,3 +50,55 @@ Important: An earlier `vercel.json` status-only routing rule returned HTTP 404 *
 ## Release decision
 
 **NOT LAUNCH CLEARED.** Test visitor routes and Hall deny-all response passed HTTP fetch checks. Privacy/terms, production parity, security ownership and multiuser capacity remain open. The owner's earlier iPad tests covered navigation only, not all these gates.
+
+## November 7 follow-up: privacy, backend readiness, and test-page verification
+
+**New test deployment:** `scrap-radar-family-phase7c-test-gwx19x7mp.vercel.app`, commit `c829985982e25181bbe67cbe66e3c1b2b4815bad`.
+
+| Request | Result |
+| --- | --- |
+| Home, Island Future, Welcome Hall | 200 |
+| `/privacy.html` | 200; clearly labeled preliminary, not final policy |
+| `/terms.html` | 200; preliminary limitations, not finalized contract |
+| AI Hall and one Hall records path | 403, plain refusal body |
+
+The privacy and limitations drafts are reachable from the home, Future, and Welcome Hall pages. This **closes only the missing-page HTTP issue**, not owner approval, legal review, retention verification, or deletion-contact readiness.
+
+**Verified from Board Sense source (not a live capacity experiment):**
+
+- `routes/free_usage_gate.py` derives a pseudonymous visitor key by hashing an IP address with a configured salt.
+- The public daily allowance defaults to one board. Authorized tester bypass requires a server-side secret match in a request header.
+- The production usage claim uses a Supabase RPC, `claim_board_sense_free_use`, before analysis and does not fall back to local JSON if that backend fails.
+- Production usage backend unavailability is a fail-closed 503; used allowance returns 429.
+- Analysis can generate public-by-link blueprint files under the `/blueprints` static route. **Actual server deletion and retention timelines still require examination and verification.**
+- Coarse location/referral info can be stored with local development usage records. Provider logs and production operational telemetry remain unverified.
+
+**Railway status inspected on November 7:**
+
+| Service | Environment | Last listed deployment state |
+| --- | --- | --- |
+| Board Sense | Stageing | SUCCESS, November 1 (main b451a899) |
+| Board Sense | production | SLEEPING, November 1 (same main revision) |
+| Scrap Radar backend | production | SUCCESS, October 10 (main 50fc710a) |
+
+`SLEEPING` is a Railway state and **does not alone prove an outage**. Controlled cold-start and concurrent-request observations are still required.
+
+### Safe capacity rehearsal protocol (not yet executed)
+
+1. Verify the staging backend has an independent quota database or isolated test identities. Never consume or reset public customer quota during the rehearsal.
+2. Confirm budget, concurrency ceiling, provider costs, and observability before issuing test requests.
+3. At the unit/integration level, race eight claims for the **same synthetic visitor** with a quota of one; expect exactly one successful claim and seven rejections. This historically passed in October, but re-run against the launch candidate.
+4. Test read-only `/health` and `/free-usage` endpoints separately from full-photo processing and measure cold-start time, 429, 503, timeout, and user messaging. Do not assume a successful 200 document means analyses work.
+5. In staging, use a few bounded full analyses with representative permitted images; verify abort, service recovery, quota persistence, and processing cost before changing limits.
+6. Test the final visitor flow on iPad, Android/iPhone, and a clean signed-out browser. Confirm free allowance, sponsor/footer pages, and payment/account disabled states.
+7. Only after steps 1–6, approve a specific low-risk load profile. No uncontrolled production stress test.
+
+### Outstanding approval items
+
+- Determine and publish the real Board Sense image and blueprint lifetime (including failed requests, old files, logs and provider backups).
+- Confirm legal entity/contact, privacy contact, deletion request procedure, and approved terms.
+- Decide whether AI Hall remains disabled or gets a fully authenticated owner/collaborator gate.
+- Verify MFA and origin protection settings in owner services without revealing credentials.
+- Verify staging/production parity and go/no-go process for November 19.
+
+**Decision remains NOT LAUNCH CLEARED.**
