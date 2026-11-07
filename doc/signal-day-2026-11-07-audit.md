@@ -132,3 +132,16 @@ The privacy and limitations drafts are reachable from the home, Future, and Welc
 - **Next:** resolve staging DNS/public reachability in provider configuration, then make one read-only `/health` request, record first-byte latency, and only afterward proceed to a bounded staging test with an isolated quota store.
 
 **Updated verdict:** Offline quota regression logic passes (4/4); staging cold-start and real capacity remain **NOT VERIFIED**.
+
+## November 7 follow-up: staging host diagnosis
+
+Railway control-plane inspection confirms:
+- Staging environment `Stageing`: **online**, **1/1 replicas running**, **0 crashes**, **0 failed deployments** in the observed status window, and **no pending changes**.
+- Latest staging deployment: `5693e859-c8d3-4eb4-b9d7-b23dcd9032b1`, SUCCESS, November 1.
+- Railway-managed domain `boardsense-stageing.up.railway.app` targets application port **8080**; service configuration and managed-domain registration agree.
+- The independent shell/network test failed to resolve **google.com** and the production Board Sense domain as well as the staging address. Therefore the shell's staging DNS failure is **not evidence that Railway staging DNS is globally broken**.
+- Independent web inspection also could not retrieve the staging health route; actual HTTP response and cold-start duration remain **UNVERIFIED**. No Railway restart, DNS mutation, or release was undertaken.
+
+**Next controlled check:** visit `https://boardsense-stageing.up.railway.app/health` directly from a normal browser on a non-restricted network; capture whether JSON loads and total elapsed time if available. Do not send POST / analyze, change quotas, or expose tester credentials. Then use a trusted monitor or approved test runner to collect cold-start latency and small staging-only traffic observations.
+
+Status: staging environment **reported online**, reachability/cold-start **not yet independently verified**.
