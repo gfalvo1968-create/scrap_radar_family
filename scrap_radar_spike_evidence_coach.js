@@ -20,6 +20,7 @@ function render(){
  var notes=[];
  if(reported)notes.push('<b>Owner-reported equipment origin:</b> '+esc(reported)+' (user statement only; not independently verified and not a buyer grade).');
  if(telecom)notes.push('<b>Telecom candidate:</b> SPIKE text mentions telecom-related equipment. Verify origin, markings, connectors and the buyer\'s category before treating this as telecom grade.');
+ else if(/telecom|verizon|cell tower|tower equipment|telephone|switching/i.test(reported))notes.push('<b>Telecom origin reported, not verified:</b> Investigate supporting documentation and buyer rules. No telecom grade or price is assigned.');
  else notes.push('<b>Telecom:</b> No explicit telecom origin found in the transferred case description. Do not use telecom prices solely because the board is dense.');
  if(peripheral)notes.push('<b>Peripheral candidate:</b> SPIKE text mentions a peripheral/add-in function. Confirm the board type and buyer requirements.');
  else notes.push('<b>Peripheral:</b> No clear add-in/peripheral function established by the transferred description.');
