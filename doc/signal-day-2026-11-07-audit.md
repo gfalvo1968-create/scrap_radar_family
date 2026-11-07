@@ -102,3 +102,13 @@ The privacy and limitations drafts are reachable from the home, Future, and Welc
 - Verify staging/production parity and go/no-go process for November 19.
 
 **Decision remains NOT LAUNCH CLEARED.**
+
+## November 7: Bounded capacity rehearsal preparation
+
+- **Backend development repo:** `gfalvo1968-create/Board_Sense`, branch `feature/phase-7d-phone-family-evidence`.
+- Added `tests/test_launch_quota_concurrency.py` at commit `7d212bb31af1fa8177caa0b186c58043e4a51646`: four offline regression tests covering (1) eight parallel claims by one synthetic visitor, (2) fail-closed database outage without local fallback, (3) user-agent / X-Forwarded-For spoofing, (4) exact tester-secret validation.
+- Added GitHub Actions workflow `.github/workflows/offline-launch-quota.yml` at commit `0b67973a35e5473a52a70a9949819af43a0f2ab7`, scoped to the development branch. No production credentials, database calls, actual customer scans or real image processing.
+- **Execution status:** The test code and CI configuration are committed. No passing CI run has been verified; GitHub combined commit statuses did not expose any results yet. Do not mark load capacity passed based only on these commits.
+- Railway staging's last deploy shows app startup messages. Production was reported sleeping at the deployment snapshot. Production deploy logs included automated probing of unrelated paths but are not by themselves evidence of an outage or capacity result.
+- Health endpoint could not be reached through the available public HTTP access here. No live `/health` latency or public `/free-usage` observation is claimed.
+- **Next gates:** verify test runner results, then bounded staging cold-start timing and service-observability under an approved test budget. No uncontrolled production traffic.
