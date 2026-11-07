@@ -130,7 +130,7 @@ function ensureCard(){
   }
 
   E('spike-critical').onclick=openCritical;
-  E('spike-clear').onclick=function(){if(read()&&!currentPacket())return caseChanged();localStorage.removeItem(KEY);try{localStorage.removeItem('scrapRadarSpikePhotoPreviewCacheV2')}catch(_){}try{sessionStorage.removeItem('scrapRadarSpikePhotoPreviewsV1')}catch(_){}window.dispatchEvent(new Event('scrapRadarSpikeCaseChanged'));loadedCaseId='';clearEstimatedFields();render(null)};
+  E('spike-clear').onclick=function(){if(read()&&!currentPacket())return caseChanged();localStorage.removeItem(KEY);try{localStorage.removeItem('scrapRadarCaseReportedOriginV1')}catch(_){}try{localStorage.removeItem('scrapRadarSpikePhotoPreviewCacheV2')}catch(_){}try{sessionStorage.removeItem('scrapRadarSpikePhotoPreviewsV1')}catch(_){}window.dispatchEvent(new Event('scrapRadarSpikeCaseChanged'));loadedCaseId='';clearEstimatedFields();render(null)};
   E('spike-back').onclick=function(){if(read()&&!saveReturn())return;window.top.location.href='board_sense_case.html?from=scrap-radar&build='+Date.now()};
   E('br-whole')?.addEventListener('input',function(e){if(e.isTrusted){delete this.dataset.spikeEstimated;this.dataset.basis='entered_offer'}});
   return card;
