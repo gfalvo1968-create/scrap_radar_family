@@ -1,16 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "routes": [
-    {
-      "src": "^/ai_hall(?:\\.html|\\.js|\\.css)?$",
-      "status": 404
-    },
-    {
-      "src": "^/ai_hall_records(?:/.*)?$",
-      "status": 404
-    },
-    {
-      "handle": "filesystem"
-    }
-  ]
+  "proxy": {
+    "entrypoint": "proxy.js",
+    "matcher": [
+      "/ai_hall",
+      "/ai_hall.html",
+      "/ai_hall.js",
+      "/ai_hall.css",
+      "/ai_hall_records/:path*"
+    ]
+  }
 }
