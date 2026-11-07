@@ -11,12 +11,12 @@ a{color:#a4ffe4}nav a{padding:9px 13px;border:1px solid #86ddbe;border-radius:99
 a:focus-visible{outline:4px solid #ffe18a;outline-offset:3px}
 .notice{max-width:900px;margin:0 auto 18px;padding:12px 16px;background:#29291b;border:1px solid #bda65b;border-radius:12px;line-height:1.5}
 .map-shell{max-width:1050px;margin:0 auto;padding:12px;background:linear-gradient(#0b6270,#0a566b);border:3px solid #1b8886;border-radius:28px;box-shadow:0 14px 40px #0009}
-.map{position:relative;min-height:790px;border-radius:21px;overflow:hidden;background:radial-gradient(ellipse at 51% 72%,#75c16e 0 43%,#2c8e67 71%,#1b6f77 72%,#1588a0 84%,#12657e 100%)}
-.map:before{content:"";position:absolute;inset:0;background-image:radial-gradient(#f8fff4 1px,transparent 2px);background-size:38px 42px;opacity:.17;pointer-events:none}
-.path{position:absolute;top:7%;left:46%;width:12%;height:90%;border-radius:55% 45% 55% 40%;background:linear-gradient(90deg,#c49b56,#eed99a 25%,#fae4ab 55%,#d6b874);transform:rotate(-10deg);box-shadow:0 0 20px #5b6a3740;pointer-events:none}
+.map{position:relative;min-height:790px;border-radius:21px;overflow:hidden;background:#207c6e url('island_neighborhood_scene.svg') center/cover no-repeat}
+ .map:before{content:"";position:absolute;inset:0;background-image:radial-gradient(#f8fff4 1px,transparent 2px);background-size:38px 42px;opacity:.17;pointer-events:none}
+.path{display:none;position:absolute;top:7%;left:46%;width:12%;height:90%;border-radius:55% 45% 55% 40%;background:linear-gradient(90deg,#c49b56,#eed99a 25%,#fae4ab 55%,#d6b874);transform:rotate(-10deg);box-shadow:0 0 20px #5b6a3740;pointer-events:none}
 .path:before,.path:after{content:"";position:absolute;height:12%;width:290%;background:#f0d493;top:31%;left:-92%;transform:rotate(22deg);border-radius:50%;z-index:0}.path:after{top:67%;transform:rotate(-25deg)}
-.palms{position:absolute;inset:0;pointer-events:none;display:flex;justify-content:space-between;align-items:center;padding:0 2%;font-size:clamp(2.5rem,7vw,5rem);opacity:.85;text-shadow:0 3px 9px #184e32}
-.spot{position:absolute;display:block;width:31%;min-height:132px;border-radius:18px;background:linear-gradient(145deg,#113e37ee,#092b32f5);border:2px solid #ffdda0;color:#f4fff8;text-align:center;text-decoration:none;padding:14px 10px 12px;box-shadow:0 8px 20px #06232c9c;transition:transform .2s}
+.palms{display:none;position:absolute;inset:0;pointer-events:none;display:flex;justify-content:space-between;align-items:center;padding:0 2%;font-size:clamp(2.5rem,7vw,5rem);opacity:.85;text-shadow:0 3px 9px #184e32}
+.spot{position:absolute;display:block;width:31%;min-height:132px;border-radius:18px;background:linear-gradient(145deg,#113e37ed,#092b32ef);border:2px solid #ffdda0;color:#f4fff8;text-align:center;text-decoration:none;padding:14px 10px 12px;box-shadow:0 8px 20px #06232c9c;transition:transform .2s}
 .spot:hover,.spot:focus-visible{transform:translateY(-4px) scale(1.02);background:#13524a}
 .spot .building{display:block;font-size:2.3rem;line-height:1.1;margin:0 0 7px}.spot strong{display:block;font-size:clamp(.9rem,1.9vw,1.18rem);line-height:1.2}.spot small{display:block;color:#e7dfba;font-size:.78rem;margin-top:7px;line-height:1.32}
 .open{border-color:#80ffb8}.future{border-style:dashed}
@@ -30,7 +30,7 @@ footer{padding:22px;text-align:center;border-top:1px solid #356f66}
 <body>
 <header><div style="color:#ffd999;letter-spacing:.14em;font-weight:800;font-size:.82rem">SCRAP RADAR FAMILY ISLAND</div><h1>🏝️ The Neighborhood Map</h1><p>Follow the path, tap a destination, and help us imagine what the Island can become. Every building has a purpose, and every person matters.</p>
 <nav><a href="island_portal.html">🏝️ Sandy path</a><a href="island_future.html">🌱 Island future tour</a><a href="index.html">📡 Main entrance</a></nav></header>
-<div class="notice">🚧 <strong>Neighborhood preview:</strong> Launch planned November 19, 2026, subject to final checks. Solid green-bordered destinations link to existing pages. Dashed destinations explain future plans and do not represent active member services.</div>
+<div class="notice">🎨 Illustrated scenery is a new scalable web-map rendition; the earlier detailed concept artwork remains our visual reference.<br>🚧 <strong>Neighborhood preview:</strong> Launch planned November 19, 2026, subject to final checks. Solid green-bordered destinations link to existing pages. Dashed destinations explain future plans and do not represent active member services.</div>
 <main>
 <section class="map-shell" aria-label="Clickable map of Scrap Radar Family Island neighborhood">
 <div class="map">
