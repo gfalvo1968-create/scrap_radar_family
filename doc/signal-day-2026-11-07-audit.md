@@ -112,3 +112,12 @@ The privacy and limitations drafts are reachable from the home, Future, and Welc
 - Railway staging's last deploy shows app startup messages. Production was reported sleeping at the deployment snapshot. Production deploy logs included automated probing of unrelated paths but are not by themselves evidence of an outage or capacity result.
 - Health endpoint could not be reached through the available public HTTP access here. No live `/health` latency or public `/free-usage` observation is claimed.
 - **Next gates:** verify test runner results, then bounded staging cold-start timing and service-observability under an approved test budget. No uncontrolled production traffic.
+
+## November 7 follow-up: staging service baseline and workflow status
+
+- Railway's `Stageing` environment (project `hearty-quietude`, service `Board_Sense`) is live, latest deployment SUCCESS from `main` revision `b451a899ea58c0a4d12d82f94acf771780f4be03` on November 1. There are no staged Railway configuration changes.
+- The recent one-hour staging metric sample (61 observations) shows approximately 0.00137 CPU usage average and 0.0545 GB average memory. These are idle/low-load observations, **not** throughput measurements.
+- Dedicated staging URL is `boardsense-stageing.up.railway.app`; direct `/health` and `/free-usage` could not be accessed through available public HTTP tools, so no cold-start timing or response code was established.
+- The test source and GitHub workflow are on **`feature/phase-7d-phone-family-evidence`**, while Railway staging still deploys **`main`**. Never treat staging telemetry as evidence that the new branch's tests passed.
+- No GitHub Actions workflow result or combined status was returned for test commit `0b67973a35e5473a52a70a9949819af43a0f2ab7`. CI test results are pending/unverified. Before a release, run the offline tests in a trusted runner and review artifacts, then deploy a reviewed backend candidate into isolated staging for low-volume measurements.
+- We made no Railway deployment, traffic-generating scan, quota reset, database mutation, or production change during this check.
