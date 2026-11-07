@@ -26,7 +26,7 @@
 </header>
 
 <section class="panel">
-  <h2>📷 Two-Sided Board Scan</h2>
+  <h2>📷 Two-Sided Board Scan</h2><p style="color:#ffe6a0;border:1px solid #b69a54;background:#28200e;border-radius:10px;padding:11px;line-height:1.5">🔒 <b>Photo privacy:</b> Upload only circuit-board photos without people, addresses, labels containing personal information, or private documents. Images are processed by our service and may generate shareable blueprint links. Server retention and deletion details are still being verified. <a href="privacy.html" style="color:#afffda;text-decoration:underline">Read our prelaunch data-handling notice</a>.</p>
   <p id="scanInstruction"><b>Step 1:</b> Choose or take a photo of Side A.</p>
   <div class="side-box"><b>Side A</b><br><input type="file" id="boardImageA" accept="image/*"><div id="sideAStatus" class="muted">Waiting for Side A.</div></div>
   <div id="sideBWrap" class="side-box"><b>Side B</b><p>🔄 Flip the <b>same board</b>, then choose or take a photo of the other side.</p><input type="file" id="boardImageB" accept="image/*"><div id="sideBStatus" class="muted">Waiting for Side B.</div></div>
@@ -34,7 +34,7 @@
   <p id="uploadStatus">Ready for Side A.</p>
 </section>
 
-<section class="panel spike-panel"><h2>🔍⚡ Spike Glass</h2><p>Point at a board, chip, connector, or component and ask: <b>What am I looking at?</b></p><input type="file" id="spikeImage" accept="image/*"><button id="spikeBtn" type="button">Open Spike Glass</button><p id="spikeStatus">Recognition mode ready.</p><div id="spikeBox">Spike Glass recognition candidates will appear here.</div></section>
+<section class="panel spike-panel"><h2>🔍⚡ Spike Glass</h2><p style="font-size:.9rem;color:#ffe6a0">Only upload objects you have permission to photograph. Avoid personal data. <a href="privacy.html" style="color:#afffda">Data-handling notice</a>.</p><p>Point at a board, chip, connector, or component and ask: <b>What am I looking at?</b></p><input type="file" id="spikeImage" accept="image/*"><button id="spikeBtn" type="button">Open Spike Glass</button><p id="spikeStatus">Recognition mode ready.</p><div id="spikeBox">Spike Glass recognition candidates will appear here.</div></section>
 <section class="panel blueprint-panel"><h2>📐 Board Blueprint</h2><p>The blueprint is generated from your uploaded board photo so numbered markers show important detected regions.</p><div id="blueprintBox"><p class="muted">Analyze a board to generate its visual map.</p></div></section>
 <section class="panel market-panel"><h2>📡 Scrap Radar Market Intelligence</h2><button id="refreshMarketBtn" type="button">↻ Refresh Market</button><div id="marketBox">Market intelligence ready to load.</div></section>
 <section class="panel lab-panel"><h2>🧪 Recovery Lab Console</h2><div id="labBox">Scan an item to route it into the right recovery labs.</div><div class="economics-grid"><label>Sell Whole Value ($)<input id="sellValue" type="number" step="0.01" value="0"></label><label>Recovered Value ($)<input id="recoveredValue" type="number" step="0.01" value="0"></label><label>Labor Minutes<input id="laborMinutes" type="number" min="0" placeholder="Enter minutes for this board"></label></div><button id="compareBtn" type="button">⏱️ Worth My Time?</button><div id="economicsBox" class="decision-box">Add values above to compare selling whole against recovery labor.</div></section>
