@@ -157,3 +157,16 @@ At 11:16 AM Eastern on November 7, Jerry supplied a screenshot from iPad Chrome 
 This confirms the staging hostname resolved and the health endpoint returned expected service JSON **from the owner's iPad**. It does not measure response latency, cold-start time, throughput, scan processing, or database availability. Previous failures to resolve the hostname in an isolated sandbox should not be interpreted as global DNS failure.
 
 **Next check:** bounded read-only health response timing on an approved test client, followed by staging-only quota/database concurrency tests after verifying isolated quota setup. Do not consume or reset public allowance.
+
+## November 8 verification: staging remains online, quota backend parity unresolved
+
+- Railway Stageing environment currently reports `online`, 1 running replica, 0 crashed, no pending changes, and no reported recent failed deployments.
+- 24-hour Railway samples: average CPU usage approximately `0.001409` (provider metric units) and average memory `0.0577 GB`. These are low-load measurements, not throughput.
+- Stageing service configuration lists variable names `BOARD_SENSE_TESTER_KEY`, `SCRAP_RADAR_API_URL`, and `SERPAPI_KEY`. It **does not list** `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` / `SUPABASE_SECRET_KEY`, or `BOARD_SENSE_VISITOR_SALT` for this environment.
+- The currently deployed staging source is the backend `main` branch, not the feature branch where the corrected offline rehearsal tests were committed.
+- Attempts to fetch `/health` and `/free-usage` in the web retrieval environment remain inaccessible. The owner had earlier verified `/health` from a real iPad; no current response-time measurement or `/free-usage` HTTP status was independently established.
+- No CI status or pull-request-associated workflow run was returned for corrected test commit `ba260b6a2db1a34f1dd5f398376d25d571707381`. The prior isolated execution remains the direct 4/4 passing evidence.
+- **Controlled test gate:** Do not test real concurrent quota claims against this staging environment as though it were production. First provision an isolated quota DB (or an explicitly mocked test backend) and align the deployed candidate branch; confirm there is no shared production quota state, capture approved request counts and spend ceilings, then run measured staging checks.
+- No credentials were displayed, and no Railway configuration or production service was changed.
+
+**Release status:** NOT CLEARED. Staging health and offline logic are encouraging, but real quota-storage integration, startup latency and traffic capacity need measurable evidence.
