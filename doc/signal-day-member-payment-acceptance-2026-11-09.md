@@ -40,3 +40,11 @@
 - Live secrets/roles must never be copied into repo or public documents.
 
 This note is a checklist, not a passing test report. No payment or production mutation was performed.
+
+## November 9 owner iPad account-flow evidence
+
+- Screenshot at 1:34 AM Eastern: email confirmation led to a GitHub Pages account page with a signed-in session and a clear 'No paid membership is attached to this account' response. The callback landing on GitHub Pages rather than the originally tested Vercel site requires final-domain redirect review.
+- Screenshot at 1:37 AM Eastern: after signing out and returning to `scrap-radar-family-phase7c-test.vercel.app`, the account page showed a signed-in session, 'Signed in.' status, the expected account identifier and an empty paid-membership state.
+- **Passed (manual owner observation):** return password sign-in to Vercel test site, display of authenticated account and no automatic paid entitlement.
+- **Not established:** signup email timing and every redirect step, password recovery, customer account security under adversarial conditions, PayPal payment, server webhook verification, paid entitlement activation, cancellation or renewal.
+- Account screenshots contained a test login email. This audit records observations without copying that personal address.
