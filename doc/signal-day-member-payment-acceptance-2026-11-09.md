@@ -48,3 +48,18 @@ This note is a checklist, not a passing test report. No payment or production mu
 - **Passed (manual owner observation):** return password sign-in to Vercel test site, display of authenticated account and no automatic paid entitlement.
 - **Not established:** signup email timing and every redirect step, password recovery, customer account security under adversarial conditions, PayPal payment, server webhook verification, paid entitlement activation, cancellation or renewal.
 - Account screenshots contained a test login email. This audit records observations without copying that personal address.
+
+## November 9 backend source inspection: sandbox pilot already exists
+
+**Correct Railway production service source:** `gfalvo1968-create/Scrapradar-backend` (note lowercase d and hyphen), project `sparkling-manifestation`, service `Scrapradar-backend`; Railway has live `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_ENVIRONMENT`, `PAYPAL_SANDBOX_WEBHOOK_ID` variable names (values not viewed or disclosed), with a successful October 10 deployment. Do **not** mistake separate `ScrapRadar-Backend2` repo for deployed code.
+
+**Implemented in deployed source:**
+- `customer_accounts.py` validates Bearer tokens against Supabase Auth, demands confirmed email, and returns customer-specific `GET /api/account`.
+- `paypal_checkout.py` exposes owner-only sandbox `/api/paypal/pilot/checkout`, `/intents/{intent}`, and signed `/webhook`; sandbox mode required, matching owner account enforced, accepted approval URL allowlisted; writes only `paypal_pilot_*` tables and explicitly refuses any production entitlement.
+- `sandbox_checkout.html` / JS already exist in frontend but are not public paid checkout.
+- `PAYPAL_SANDBOX.md` documents owner iPad October 8 successful sandbox tests across all three prices with ACTIVE state, recorded test payments and cancellation observations. October 10 webhook registration included seven subscription events plus PAYMENT.SALE.COMPLETED; real signed webhook delivery still unverified, and no live payment-to-app permission wiring exists.
+- `membership_records.py` is an isolated customer ledger, and `/api/account` returns `checkout_enabled: false`, `paid_access_enabled: false`, `usage.enforcement: not_connected`. This is an intentional fail-closed state.
+
+**Critical gap for Nov 19 paid launch:** reliable server-side PayPal live-mode subscription lifecycle + verified and reconciled webhooks + entitlements actually checked by both product backends + 25-per-day usage allowance, cancellation, refund, and payment failure handling. None should be inferred from the sandbox pilot.
+
+**No production changes made in this inspection.** Leave public checkout and paid access off until an isolated integration test and reviewed release approval.
