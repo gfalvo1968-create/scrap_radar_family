@@ -95,9 +95,17 @@ function pcbGate(d){
   var insufficient=signals.indexOf('INSUFFICIENT BOARD EVIDENCE')>=0||signals.indexOf('NOT ENOUGH EVIDENCE')>=0;
   return {confirmed:!(explicitBlock||unknownType||insufficient),type:type,grade:grade};
 }
-function objectGateStopHTML(d){
+function objectGateStopHTML(d,p){
   var t=d&&d.three_answers||{},i=t.identity||{},confidence=d&&d.confidence!=null?d.confidence:i.confidence;
-  return '<h3>🛑 ANALYSIS STOPPED — PCB NOT CONFIRMED</h3><div class="decision-box"><b>What SPIKE found:</b> '+safe(i.answer||d.board_type||'Unknown object')+(confidence!=null?' • '+safe(confidence)+'% confidence':'')+'<br><br>This item does not have enough circuit-board evidence. Board grading, recovery reasoning, economics, same-board verification, and Scrap Radar handoff were withheld.<br><br><b>Next step:</b> If this is a circuit board, retake clear photos showing the complete component side and board edges.</div>';
+  var views=(p&&Array.isArray(p.views))?p.views:[];
+  var diagnostics=views.map(function(view,index){
+    var gate=view&&view.object_gate||{},mode=String(gate.mode||'unknown').toLowerCase();
+    if(mode==='board')return '';
+    var score=Number(gate.board_likelihood);
+    return '<li><b>Photo '+safe(view.view_number||index+1)+': '+safe(view.board||'unnamed')+'</b> — '+safe(gate.label||'Unclassified')+(Number.isFinite(score)?' (PCB evidence score '+safe(score)+')':'')+'</li>';
+  }).filter(Boolean);
+  var diagnosticHTML=diagnostics.length?'<p><b>Photos needing PCB review:</b></p><ul>'+diagnostics.join('')+'</ul>':'<p>Photo-level data does not identify a rejected view. Review the case identity and object-gate details.</p>';
+  return '<h3>🛑 ANALYSIS STOPPED — PCB NOT CONFIRMED</h3><div class="decision-box"><b>What SPIKE found:</b> '+safe(i.answer||d.board_type||'Unknown object')+(confidence!=null?' • '+safe(confidence)+'% confidence':'')+'<br>'+diagnosticHTML+'Board grading, recovery reasoning, economics, and Scrap Radar handoff were withheld.<br><br><b>Next step:</b> If all photos document one circuit board, review the listed images and add a clearer exposed-component view. Never assume a mixed-board case is safe to combine.</div>';
 }
 function tray(){
   var b=E('caseTray');if(!b)return;
@@ -250,7 +258,7 @@ async function run(){
       try{localStorage.removeItem(HANDOFF_KEY)}catch(_){}
       clearMissionState();
       reportHeading(d.status==='component_inspection');
-      if(E('predictionBox'))E('predictionBox').innerHTML=d.status==='component_inspection'?'<h3>Processor inspection</h3><div class="type-box"><b>'+safe(d.board_type)+'</b><br>Photos inspected: '+safe(confirmedPhotoCount)+'<br>Identity basis: your item selection; see the separate lettering check below.<br>'+safe(d.recommendation)+'</div>'+processorMarkingsHTML(d)+threeAnswersHTML(d):objectGateStopHTML(d);
+      if(E('predictionBox'))E('predictionBox').innerHTML=d.status==='component_inspection'?'<h3>Processor inspection</h3><div class="type-box"><b>'+safe(d.board_type)+'</b><br>Photos inspected: '+safe(confirmedPhotoCount)+'<br>Identity basis: your item selection; see the separate lettering check below.<br>'+safe(d.recommendation)+'</div>'+processorMarkingsHTML(d)+threeAnswersHTML(d):objectGateStopHTML(d,p);
       if(E('economicsBox'))E('economicsBox').innerHTML=d.status==='component_inspection'?'<b>Processor value withheld:</b> Obtain a processor-specific buyer quote and verify its condition. Gold quantity remains unmeasured.':'<b>Economics withheld:</b> SPIKE did not confirm a circuit board.';
       E('uploadStatus').textContent=d.status==='component_inspection'?'Processor inspection complete. Board grades, board prices, and board handoff are disabled.':'Analysis stopped: this item is not confirmed as a circuit board.';
       try{window.dispatchEvent(new CustomEvent('boardSenseObjectGateBlocked',{detail:{reason:d.status==='component_inspection'?'processor_inspection':'pcb_not_confirmed'}}))}catch(_){}
