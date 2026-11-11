@@ -105,7 +105,7 @@ function objectGateStopHTML(d,p){
     return '<li><b>Photo '+safe(view.view_number||index+1)+': '+safe(view.board||'unnamed')+'</b> — '+safe(gate.label||'Unclassified')+(Number.isFinite(score)?' (PCB evidence score '+safe(score)+')':'')+'</li>';
   }).filter(Boolean);
   var diagnosticHTML=diagnostics.length?'<p><b>Photos needing PCB review:</b></p><ul>'+diagnostics.join('')+'</ul>':'<p>Photo-level data does not identify a rejected view. Review the case identity and object-gate details.</p>';
-  return '<h3>🛑 ANALYSIS STOPPED — PCB NOT CONFIRMED</h3><div class="decision-box"><b>What SPIKE found:</b> '+safe(i.answer||d.board_type||'Unknown object')+(confidence!=null?' • '+safe(confidence)+'% confidence':'')+'<br>'+diagnosticHTML+'Board grading, recovery reasoning, economics, and Scrap Radar handoff were withheld.<br><br><b>Next step:</b> If all photos document one circuit board, review the listed images and add a clearer exposed-component view. Never assume a mixed-board case is safe to combine.</div>';
+  return '<h3>🛑 ANALYSIS STOPPED — PCB NOT CONFIRMED</h3><div class="decision-box"><b>What SPIKE found:</b> '+safe(i.answer||d.board_type||'Unknown object')+(confidence!=null?' • '+safe(confidence)+'% confidence':'')+'<br>'+diagnosticHTML+'Board grading, recovery reasoning, economics, and Scrap Radar handoff were withheld.<br><br><b>Next step:</b> Each uploaded photo must visibly contain the same physical PCB. An empty laptop chassis after removal is useful disassembly context, but is not a board image for this case. Replace any no-board view with a clear component-side or back-side photo; never combine different boards.</div>';
 }
 function tray(){
   var b=E('caseTray');if(!b)return;
