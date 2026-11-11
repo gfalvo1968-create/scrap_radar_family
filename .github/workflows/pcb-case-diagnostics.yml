@@ -1,0 +1,32 @@
+name: PCB case diagnostic regression
+on:
+  push:
+    branches:
+      - fix/show-object-gate-failing-views
+  workflow_dispatch:
+
+jobs:
+  frontend-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check JavaScript syntax
+        run: node --check board_case_tray.js
+      - name: Run photo-level object-gate UI regression
+        run: node tests/test_object_gate_report.js
+      - name: Run handoff regression
+        run: node tests/test_board_scrap_handoff.js
+      - name: Run round trip regression
+        run: node tests/test_board_scrap_round_trip.js
+      - name: Run complete JavaScript regression suite
+        run: |
+          for test_file in tests/test_*.js; do
+            echo "Running $test_file"
+            node "$test_file"
+          done

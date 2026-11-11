@@ -50,6 +50,7 @@ function page(kind, localStorage) {
     dispatchEvent(event) { event.currentTarget = this; for (const fn of this.listeners.get(event.type) || []) fn.call(this, event); }
     emit(name, trusted = true) { this.dispatchEvent({ type: name, isTrusted: trusted }); }
     insertAdjacentElement() {}
+    appendChild(child) { if (!this.children) this.children = []; this.children.push(child); child.parentNode = this; return child; }
     scrollIntoView() {}
     focus() {}
     setAttribute() {}
