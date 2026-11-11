@@ -24,3 +24,9 @@ jobs:
         run: node tests/test_board_scrap_handoff.js
       - name: Run round trip regression
         run: node tests/test_board_scrap_round_trip.js
+      - name: Run complete JavaScript regression suite
+        run: |
+          for test_file in tests/test_*.js; do
+            echo "Running $test_file"
+            node "$test_file"
+          done
