@@ -2,6 +2,16 @@
 (function(){
   var frame=document.getElementById('bs');
   var TESTER_STORAGE_KEY='boardSenseTesterKeyV1';
+  // Never attach a tester secret to arbitrary fetch targets.
+  function testerKeyAllowed(input){
+    var target=typeof input==='string'?input:input&&input.url;
+    if(typeof target!=='string')return false;
+    try{
+      var url=new URL(target,'https://gfalvo1968-create.github.io');
+      return url.protocol==='https:'&&url.hostname==='boardsense.scrapradarfamily.com'&&
+        !url.port&&/^\\/(?:analyze|analyze-case|analyze-pair|analyze-spike-pair)$/.test(url.pathname);
+    }catch(_){return false}
+  }
   function add(d,id,src,onload){if(d.getElementById(id)){if(onload)onload();return}var s=d.createElement('script');s.id=id;s.src=src;s.async=false;if(onload)s.onload=onload;d.body.appendChild(s)}
   function installTesterAccess(d){
     var w=d.defaultView;if(!w)return;
@@ -11,8 +21,8 @@
         init=init||{};
         var key='';
         try{key=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}
-        if(key){
-          var headers=new w.Headers(init.headers||{});
+        if(key&&testerKeyAllowed(input)){
+          var headers=new w.Headers(init.headers||(input&&input.headers)||{});
           headers.set('x-board-sense-tester-key',key);
           init.headers=headers;
         }
