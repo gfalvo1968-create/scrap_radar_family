@@ -113,13 +113,33 @@ function tray(){
   b.innerHTML='<b>'+caseFiles.length+'/6 photos loaded</b>'+caseFiles.map(function(f,i){return '<div class="blueprint-item"><span class="blueprint-number">'+(i+1)+'</span><span class="blueprint-title">'+safe(f.name)+'</span> <button type="button" data-rm="'+i+'">Remove</button></div>'}).join('');
   Array.prototype.forEach.call(b.querySelectorAll('[data-rm]'),function(x){x.onclick=function(){if(caseRunPending)return;caseFiles.splice(Number(x.getAttribute('data-rm')),1);tray()}})
 }
+// Mirror the server upload limits for fast feedback. The server remains
+// authoritative and checks actual decoded image contents, not just the name.
+var CASE_IMAGE_MAX_BYTES=10*1024*1024;
+var CASE_IMAGE_EXTENSIONS=/\\.(jpe?g|png|webp|bmp|tiff?)$/i;
+function caseFileError(file){
+  var name=String(file&&file.name||'');
+  if(!CASE_IMAGE_EXTENSIONS.test(name))return name+': unsupported image format. Use JPEG, PNG, WebP, BMP, or TIFF. Convert HEIC photos to JPEG first.';
+  if(!file||!Number.isFinite(file.size)||file.size<=0)return name+': image is empty or unreadable.';
+  if(file.size>CASE_IMAGE_MAX_BYTES)return name+': larger than the 10 MB per-photo limit. Resize or export a smaller copy.';
+  return '';
+}
 function addFiles(files){
   if(caseRunPending)return;
   var incoming=Array.prototype.slice.call(files||[]),room=6-caseFiles.length;if(!incoming.length)return;
   if(room<=0){E('uploadStatus').textContent='Case tray already has 6 photos.';return}
-  var chosen=incoming.slice(0,room);chosen.forEach(function(f){caseFiles.push(f)});
-  var skipped=incoming.length-chosen.length;
-  E('uploadStatus').textContent=chosen.length+' photo'+(chosen.length===1?'':'s')+' added. '+caseFiles.length+'/6 loaded.'+(skipped?' '+skipped+' extra skipped.':'');tray()
+  var accepted=[],warnings=[],skipped=0;
+  incoming.forEach(function(f){
+    var error=caseFileError(f);
+    if(error){warnings.push(error);return}
+    if(accepted.length>=room){skipped++;return}
+    accepted.push(f)
+  });
+  accepted.forEach(function(f){caseFiles.push(f)});
+  var status=accepted.length+' photo'+(accepted.length===1?'':'s')+' added. '+caseFiles.length+'/6 loaded.';
+  if(skipped)status+=' '+skipped+' extra skipped (six-photo limit).';
+  if(warnings.length)status+=' '+warnings.join(' ');
+  E('uploadStatus').textContent=status;tray()
 }
 function addSingle(){var i=E('casePhoto');if(i&&i.files&&i.files.length){addFiles(i.files);i.value=''}}
 function addBatch(){var i=E('casePhotos');if(i&&i.files&&i.files.length){addFiles(i.files);i.value=''}}
