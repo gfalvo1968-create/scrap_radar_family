@@ -259,7 +259,7 @@ function caseUploadError(status,payload){
   var supplied=payload&&typeof payload.message==='string'?payload.message:
     typeof details==='string'?details:'';
   if(status===429||payload&&payload.status==='limit_reached')
-    return supplied||'Today\\'s free board analysis has been used. Return tomorrow or sign in with your plan.';
+    return supplied||"Today's free board analysis has been used. Return tomorrow or sign in with your plan.";
   if(status===413)return 'Upload too large. Each image must be no larger than 10 MB. Reduce the photo size and try again.';
   if(status===415)return 'Image format not supported. Use JPEG, PNG, WebP, BMP, or TIFF. Convert HEIC first.';
   if(status===503||payload&&payload.status==='temporarily_unavailable')
