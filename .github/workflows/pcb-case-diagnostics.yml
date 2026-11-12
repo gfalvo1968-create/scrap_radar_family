@@ -2,7 +2,11 @@ name: PCB case diagnostic regression
 on:
   push:
     branches:
-      - fix/show-object-gate-failing-views
+      - main
+      - ci/launch-frontend-regressions
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
