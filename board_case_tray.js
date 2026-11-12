@@ -252,6 +252,22 @@ function reportHeading(processor){
   var box=E('predictionBox'),section=box&&box.closest('section'),heading=section&&section.querySelector('h2');
   if(heading)heading.textContent=processor?'🔍 Processor Inspection Report':'🔍 Board Investigation Report';
 }
+// Server response details are shown as text, never inserted as HTML.
+// Only use clearly bounded, customer-safe messages for failed requests.
+function caseUploadError(status,payload){
+  var details=payload&&payload.detail;
+  var supplied=payload&&typeof payload.message==='string'?payload.message:
+    typeof details==='string'?details:'';
+  if(status===429||payload&&payload.status==='limit_reached')
+    return supplied||'Today\\'s free board analysis has been used. Return tomorrow or sign in with your plan.';
+  if(status===413)return 'Upload too large. Each image must be no larger than 10 MB. Reduce the photo size and try again.';
+  if(status===415)return 'Image format not supported. Use JPEG, PNG, WebP, BMP, or TIFF. Convert HEIC first.';
+  if(status===503||payload&&payload.status==='temporarily_unavailable')
+    return supplied||'Board Sense is temporarily unavailable. Your case was not verified; try again later.';
+  if(status===400||status===422)return supplied||'The server could not accept this case. Check the photos and try again.';
+  if(status>=500)return 'Board Sense had a server problem. No verified report was produced. Try again later.';
+  return supplied||'Case request failed (HTTP '+status+'). No verified report was produced.';
+}
 async function run(){
   if(caseRunPending)return;
   if(caseFiles.length<2){E('uploadStatus').textContent='Add at least 2 photos of the same board before analysis.';return}
@@ -267,8 +283,12 @@ async function run(){
     if(sell!=null&&sell>0)addField(fd,'current_sell_whole_value',sell);
     if(recovered!=null&&recovered>0)addField(fd,'full_recovery_value',recovered);
     if(minutes!=null&&minutes>=0)addField(fd,'full_minutes',minutes);
-    var r=await fetch(API+'/analyze-case',{method:'POST',body:fd});if(!r.ok)throw new Error('HTTP '+r.status);
-    var p=await r.json();if(p.status==='error')throw new Error(p.message||'Case analysis failed.');
+    var r=await fetch(API+'/analyze-case',{method:'POST',body:fd});
+    var p;
+    try{p=await r.json()}catch(_){p=null}
+    if(!r.ok)throw new Error(caseUploadError(r.status,p));
+    if(!p||typeof p!=='object')throw new Error('The server returned an unreadable result. No board report was accepted.');
+    if(p.status==='error'||p.status==='limit_reached'||p.status==='temporarily_unavailable')throw new Error(caseUploadError(r.status,p));
     var confirmedPhotoCount=verifiedPhotoCount(p,submittedFiles.length);
     if(itemKind==='processor'&&(!p.combined||p.combined.status!=='component_inspection'))throw new Error('Processor mode was not confirmed by the server. Reload and retry; no board valuation is shown.');
     reportHeading(p.combined&&p.combined.status==='component_inspection');
