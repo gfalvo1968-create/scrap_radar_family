@@ -9,7 +9,7 @@
     try{
       var url=new URL(target,'https://gfalvo1968-create.github.io');
       return url.protocol==='https:'&&url.hostname==='boardsense.scrapradarfamily.com'&&
-        !url.port&&/^\\/(?:analyze|analyze-case|analyze-pair|analyze-spike-pair)$/.test(url.pathname);
+        !url.port&&['/analyze','/analyze-case','/analyze-pair','/analyze-spike-pair'].indexOf(url.pathname)!==-1;
     }catch(_){return false}
   }
   function add(d,id,src,onload){if(d.getElementById(id)){if(onload)onload();return}var s=d.createElement('script');s.id=id;s.src=src;s.async=false;if(onload)s.onload=onload;d.body.appendChild(s)}
