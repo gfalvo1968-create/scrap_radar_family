@@ -116,7 +116,7 @@ function tray(){
 // Mirror the server upload limits for fast feedback. The server remains
 // authoritative and checks actual decoded image contents, not just the name.
 var CASE_IMAGE_MAX_BYTES=10*1024*1024;
-var CASE_IMAGE_EXTENSIONS=/\\.(jpe?g|png|webp|bmp|tiff?)$/i;
+var CASE_IMAGE_EXTENSIONS=/\.(jpe?g|png|webp|bmp|tiff?)$/i;
 function caseFileError(file){
   var name=String(file&&file.name||'');
   if(!CASE_IMAGE_EXTENSIONS.test(name))return name+': unsupported image format. Use JPEG, PNG, WebP, BMP, or TIFF. Convert HEIC photos to JPEG first.';
