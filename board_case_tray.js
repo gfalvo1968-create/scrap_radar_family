@@ -294,6 +294,7 @@ async function run(){
     reportHeading(p.combined&&p.combined.status==='component_inspection');
     var d=p.combined||{},idg=d.same_board_verification||{},identityBlocked=d.status==='case_identity_failed'||d.status==='case_identity_clarification'||idg.block_reconciliation,objectBlocked=!pcbGate(d).confirmed,blocked=identityBlocked||objectBlocked;
     try{window.dispatchEvent(new CustomEvent('boardSenseCaseReport',{detail:{payload:p,blocked:blocked}}))}catch(_){}
+    if(!blocked){try{window.dispatchEvent(new CustomEvent('boardSenseCasePhotosReady',{detail:{files:submittedFiles,photoCount:confirmedPhotoCount}}))}catch(_){}}
     if(objectBlocked){
       try{localStorage.removeItem(HANDOFF_KEY)}catch(_){}
       clearMissionState();
