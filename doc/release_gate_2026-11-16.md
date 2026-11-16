@@ -60,3 +60,11 @@ This checkpoint distinguishes *passing automation and online staging* from *veri
 - Never claim completed tasks merely because CI passes. Evidence must track what actually ran and where.
 - Preserve November 19 goal without confusing a free preview with a verified paid launch.
 - Keep SPIKE Discovery Engine, Music Room, future AI Hall / Journal work in the Attic until public core is dependable.
+
+## November 16, 1:45 PM — owner iPad public case check
+
+- **PASS:** The public `board_sense_case.html` interface displayed correctly and accepted `IMG_5864.jpeg` and `IMG_5865.jpeg` into a 2/6 case tray. The checkbox was unchecked.
+- **BLOCKED / review:** The same screenshot showed `Analysis stopped: this item is not confirmed as a circuit board.` This message is assigned by the live `board_case_tray.js` code after the server returns a case response, but the screenshot did not include the lower detailed report, so it does **not** establish which photo-level PCB gate or cross-view identity test caused the halt.
+- **Specific frontend diagnostic:** The current public code applies `pcbGate(combined)` even when `combined.status == case_identity_failed`. Identity-placeholder results can therefore receive a generic non-PCB message, masking a different same-board-identity failure. This is a wording/routing flaw, not proof the underlying safety gate failed.
+- **Change staged for review:** [Draft PR #28](https://github.com/gfalvo1968-create/scrap_radar_family/pull/28) separates identity review from actual non-board view rejection without changing backend grade/economics/handoff. Its pull-request regression run passed. **Not merged or live.**
+- **Next owner action:** Do not resubmit or consume another allowance; scroll down to the existing Board Investigation Report and photograph the actual object-gate and identity details, if present. Then determine whether `IMG_5864.jpeg` was classified as unknown / PCB-like or merely insufficient for independent same-board verification.
