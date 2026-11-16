@@ -25,4 +25,6 @@ assert.match(report, /Photo 3: &lt;unsafe&gt;\.jpg/);
 assert.doesNotMatch(report, /Photo 1: front\.jpeg/);
 assert.doesNotMatch(report, /<unsafe>/);
 assert.match(report, /Scrap Radar handoff were withheld/);
+assert.doesNotMatch(report, /empty laptop chassis/i);
+assert.match(report, /If it shows a real PCB, retake it with better lighting/);
 console.log('Object gate per-view report smoke test passed');
