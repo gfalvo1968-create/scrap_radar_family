@@ -410,3 +410,10 @@ Keep specialized programs focused while sharing the same decision philosophy:
 - **Farm Radar:** agricultural buyer comparison, hauling economics, inventory, storage/drying costs, and sell/store/haul decision support using the shared economic engine
 
 Future programs should share a common economics layer wherever practical so each can compare **reuse, repair, repurpose, sale, harvest, recovery, stockpile, and disposal** using time and net value rather than scrap price alone.
+
+
+---
+
+## November 2026 — Learning & Discovery Attic Notes
+
+See [Learning, Trust, Discovery & Music (November 16, 2026)](attic_2026-11-16_learning_family_discovery_music.md) for the high-priority SPIKE Discovery Engine / evening Journal concept, respectful human–AI collaboration, family values, and the Scrap Radar Family music-album plan. These are post-launch ideas and must not displace November 19 release safety and readiness.
