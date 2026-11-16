@@ -1,5 +1,7 @@
 # Scrap Radar launch readiness
 
+> **November 16, 2026 current gate:** See [Signal Day release gate and production-verification checklist](release_gate_2026-11-16.md). This October baseline remains historical; later staging tests alone do not clear the November 19 public release.
+
 Reviewed October 6, 2026. Working launch target: November 19, 2026.
 
 ## October release
