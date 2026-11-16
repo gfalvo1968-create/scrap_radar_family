@@ -95,6 +95,22 @@ function pcbGate(d){
   var insufficient=signals.indexOf('INSUFFICIENT BOARD EVIDENCE')>=0||signals.indexOf('NOT ENOUGH EVIDENCE')>=0;
   return {confirmed:!(explicitBlock||unknownType||insufficient),type:type,grade:grade};
 }
+function caseObjectBlock(d,p,identityBlocked){
+  // A combined identity placeholder (e.g. "Same-Board Identity Uncertain")
+  // is not evidence that an individual photo is a non-PCB object.
+  if(!identityBlocked)return !pcbGate(d).confirmed;
+  var idg=(d&&d.same_board_verification)||(d&&d.case_analysis||{}).identity_gate||{};
+  if(String(idg.status||'').toUpperCase()==='NON_BOARD_VIEW_REQUIRES_RETAKE')return true;
+  var views=Array.isArray(p&&p.views)?p.views:[];
+  return views.some(function(view){
+    var gate=view&&view.object_gate||{};
+    var mode=String(gate.mode||'').toLowerCase();
+    var status=String(gate.status||'').toUpperCase();
+    return mode==='component'||mode==='unknown'||gate.block_downstream===true||
+      gate.confirmed_pcb===false||
+      ['REJECTED','BLOCKED','NON_PCB','NOT_A_PCB','UNKNOWN_OBJECT'].indexOf(status)>=0;
+  });
+}
 function objectGateStopHTML(d,p){
   var t=d&&d.three_answers||{},i=t.identity||{},confidence=d&&d.confidence!=null?d.confidence:i.confidence;
   var views=(p&&Array.isArray(p.views))?p.views:[];
@@ -292,7 +308,7 @@ async function run(){
     var confirmedPhotoCount=verifiedPhotoCount(p,submittedFiles.length);
     if(itemKind==='processor'&&(!p.combined||p.combined.status!=='component_inspection'))throw new Error('Processor mode was not confirmed by the server. Reload and retry; no board valuation is shown.');
     reportHeading(p.combined&&p.combined.status==='component_inspection');
-    var d=p.combined||{},idg=d.same_board_verification||{},identityBlocked=d.status==='case_identity_failed'||d.status==='case_identity_clarification'||idg.block_reconciliation,objectBlocked=!pcbGate(d).confirmed,blocked=identityBlocked||objectBlocked;
+    var d=p.combined||{},idg=d.same_board_verification||{},identityBlocked=d.status==='case_identity_failed'||d.status==='case_identity_clarification'||idg.block_reconciliation,objectBlocked=caseObjectBlock(d,p,identityBlocked),blocked=identityBlocked||objectBlocked;
     try{window.dispatchEvent(new CustomEvent('boardSenseCaseReport',{detail:{payload:p,blocked:blocked}}))}catch(_){}
     if(objectBlocked){
       try{localStorage.removeItem(HANDOFF_KEY)}catch(_){}
@@ -316,7 +332,7 @@ async function run(){
       }else renderEconomics(d);
       if(E('predictionBox'))E('predictionBox').innerHTML=(identityBlocked?identityHTML(d)+multiBoardReportHTML(d):'<h3>📸 SPIKE MULTI-PHOTO BOARD CASE</h3>'+identityHTML(d)+'<div class="type-box"><div class="type-name">'+safe(d.board_type||'Unknown')+'</div><b>Photos compared:</b> '+safe(confirmedPhotoCount)+'<br><b>Grade:</b> '+safe(d.grade||'N/A')+'<br><b>Confidence:</b> '+safe(d.confidence||0)+'%<br><b>Observed-feature score:</b> '+safe(d.score||0)+'<br><b>Recommendation:</b> '+safe(d.recommendation||'Manual review required.')+'<br><b>Engine:</b> '+safe(d.model||'Board Sense')+'</div>')+threeAnswersHTML(d);
       var mr=d.multi_board_material_report||{};
-      E('uploadStatus').textContent=identityBlocked?(identityBlockKind(idg)==='multiple'?(mr.status==='SEPARATE_REPORTS_READY'?'Case split: '+safe(mr.board_count)+' separate board reports ready. No identities or values were combined.':'Case stopped: evidence of separate boards in a frame or across views. Review the flagged photos.'):'Case paused: same-board identity is uncertain. Confirm it above if every photo is the same physical board, then analyze again.'):(idg.status==='OPERATOR_CONFIRMED_SAME_BOARD'?'User-confirmed same board. Analysis complete with limited identity confidence.':'Board identity checked. Three-answer board case complete.');
+      E('uploadStatus').textContent=identityBlocked?(identityBlockKind(idg)==='multiple'?(mr.status==='SEPARATE_REPORTS_READY'?'Case split: '+safe(mr.board_count)+' separate board reports ready. No identities or values were combined.':'Case stopped: evidence of separate boards in a frame or across views. Review the flagged photos.'):'Case paused: same-board identity is uncertain. Review the evidence below. No recovery grade or economics was combined.'):(idg.status==='OPERATOR_CONFIRMED_SAME_BOARD'?'User-confirmed same board. Review all identity and recovery limits.':'Board identity checked. Three-answer board case complete.');
     }
   }catch(e){
     try{localStorage.removeItem(HANDOFF_KEY);window.dispatchEvent(new CustomEvent('boardSenseObjectGateBlocked',{detail:{reason:'case_analysis_failed'}}))}catch(_){}
