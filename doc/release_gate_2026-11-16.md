@@ -84,3 +84,14 @@ Jerry scrolled to the existing Board Investigation Report without resubmitting. 
 **Fix route:** Guarded Board Sense [draft PR #14](https://github.com/gfalvo1968-create/Board_Sense/pull/14) includes the dark-board `pcb_review` manual-review path and identity safety guards. The patch remains **draft and unmerged**, pending review and controlled promotion. Staging evidence supports non-grading `pcb_review`; real public iPad re-test is still required after an approved release. The Family UI wording PR #28 is a separate improvement, not the primary fix for this screenshot.
 
 **Near-term release blocker:** Public Board Sense must recognize the actual PCB as PCB-like review without granting an unsupported final grade, then complete a controlled full iPad report and Scrap Radar handoff on a sufficiently verified board.
+
+## November 16 afternoon — guarded preview release candidate, exact staging deployment
+
+- Board Sense [draft PR #15](https://github.com/gfalvo1968-create/Board_Sense/pull/15) packages a guarded **free-preview** candidate, cut from the previously tested dark-PCB branch while excluding staging-only index UI, transport tracing and timing logs.
+- Exact release-candidate commit: `cd0bc878c3f133cb65f2c23447aa8db702d70d85`.
+- Candidate's Python workflow completed: **128 tests passed, 9 skipped**. Jekyll CI completed successfully for this exact commit.
+- Separate `Board Sense Launch Staging` Railway service was pinned to the exact candidate commit, deployment `fb2730c9-545d-4cf8-8287-48926fbad3b8`, status **SUCCESS/online**. Runtime logs show application startup and Uvicorn listening on port 8080; remote `/health` from this execution environment was unreachable, so an actual owner-device smoke test is still essential.
+- **Production was not promoted.** Board Sense main's older object-gate false-negative remains live until a reviewed, approved release is deployed.
+- Important capability limitation: full automatic multi-photo identity proof **does not exist yet**; unconfirmed and operator-confirmed multi-photo merges remain blocked from final buyer grade and combined economics. The free preview must disclose this rather than advertising fully automatic combined board valuations.
+- **Next test:** on Jerry's iPad, open `https://boardsensestaging-staging.up.railway.app/`, refresh, then submit `IMG_5864.jpeg` via the **single-photo** Scan Board section once. Expected PCB-like/manual-review classification, 44% or other appropriately low confidence, no automatic final buyer grade or economics. Save screenshot, including text report. New candidate no longer contains the experimental staging-only two-photo form.
+- Follow-up: validate suitable known-board photo and separate-photo review; test distinct and duplicate cases from actual iPad against the exact candidate before discussing promotion. Verify public frontend draft PR #28 if applicable.
