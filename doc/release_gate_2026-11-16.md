@@ -68,3 +68,19 @@ This checkpoint distinguishes *passing automation and online staging* from *veri
 - **Specific frontend diagnostic:** The current public code applies `pcbGate(combined)` even when `combined.status == case_identity_failed`. Identity-placeholder results can therefore receive a generic non-PCB message, masking a different same-board-identity failure. This is a wording/routing flaw, not proof the underlying safety gate failed.
 - **Change staged for review:** [Draft PR #28](https://github.com/gfalvo1968-create/scrap_radar_family/pull/28) separates identity review from actual non-board view rejection without changing backend grade/economics/handoff. Its pull-request regression run passed. **Not merged or live.**
 - **Next owner action:** Do not resubmit or consume another allowance; scroll down to the existing Board Investigation Report and photograph the actual object-gate and identity details, if present. Then determine whether `IMG_5864.jpeg` was classified as unknown / PCB-like or merely insufficient for independent same-board verification.
+
+## November 16, 1:54 PM — public report resolves the earlier ambiguous stop
+
+Jerry scrolled to the existing Board Investigation Report without resubmitting. The screenshot confirmed the following **public** response:
+
+- `ANALYSIS STOPPED — PCB NOT CONFIRMED`
+- `What SPIKE found: Unknown object • 44% confidence`
+- `Photo 1: IMG_5864.jpeg — Unknown object (PCB evidence score 44)`
+- Grade, recovery reasoning, economics, and Scrap Radar handoff were withheld.
+- The screen includes an inapplicable generic example about an empty laptop chassis; the screenshot itself does **not** establish that the owner uploaded a chassis. The previously tested physical item is a PCB.
+
+**Conclusion:** This specific stop is a genuine **public object-gate false negative** on the dark back-side view, not just the frontend identity-placeholder wording issue proposed in Family draft PR #28. Do not report the case as an end-to-end pass or advise another paid/quota-consuming upload.
+
+**Fix route:** Guarded Board Sense [draft PR #14](https://github.com/gfalvo1968-create/Board_Sense/pull/14) includes the dark-board `pcb_review` manual-review path and identity safety guards. The patch remains **draft and unmerged**, pending review and controlled promotion. Staging evidence supports non-grading `pcb_review`; real public iPad re-test is still required after an approved release. The Family UI wording PR #28 is a separate improvement, not the primary fix for this screenshot.
+
+**Near-term release blocker:** Public Board Sense must recognize the actual PCB as PCB-like review without granting an unsupported final grade, then complete a controlled full iPad report and Scrap Radar handoff on a sufficiently verified board.
