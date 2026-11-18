@@ -99,7 +99,7 @@ function ensureCard(){
       '<p><b>General circuit boards:</b> Examine connector plating, chips, board population and buyer preparation rules. Density alone does not prove grade.</p>'+
       '<p><b>Peripheral boards:</b> Verify an add-in or peripheral function, edge connectors and the buyer\'s category requirements. An embedded controller is not automatically a peripheral board.</p>'+
       '<p><b>Telecom boards:</b> Confirm equipment origin, model markings, backplane connectors and the buyer\'s definition. A dense logic board is not automatically telecom grade.</p>'+
-      '<p><b>This case:</b> Controller board identity is tentative (62% confidence); recovery grade remains under manual review. No buyer category is confirmed.</p>'+
+      '<p id="spike-grade-lesson-current"><b>This case:</b> Loading current case information…</p>'+
       '<p><b>Next evidence:</b> front and back photos, manufacturer markings, connectors, attached metal, daughterboards and buyer grading rules.</p>';
     priceLesson.appendChild(box);
   }
@@ -130,7 +130,7 @@ function ensureCard(){
   }
 
   E('spike-critical').onclick=openCritical;
-  E('spike-clear').onclick=function(){if(read()&&!currentPacket())return caseChanged();localStorage.removeItem(KEY);loadedCaseId='';clearEstimatedFields();render(null)};
+  E('spike-clear').onclick=function(){if(read()&&!currentPacket())return caseChanged();localStorage.removeItem(KEY);try{localStorage.removeItem('scrapRadarCaseReportedOriginV1')}catch(_){}try{localStorage.removeItem('scrapRadarSpikePhotoPreviewCacheV2')}catch(_){}try{sessionStorage.removeItem('scrapRadarSpikePhotoPreviewsV1')}catch(_){}window.dispatchEvent(new Event('scrapRadarSpikeCaseChanged'));loadedCaseId='';clearEstimatedFields();render(null)};
   E('spike-back').onclick=function(){if(read()&&!saveReturn())return;window.top.location.href='board_sense_case.html?from=scrap-radar&build='+Date.now()};
   E('br-whole')?.addEventListener('input',function(e){if(e.isTrusted){delete this.dataset.spikeEstimated;this.dataset.basis='entered_offer'}});
   return card;
@@ -206,7 +206,18 @@ function estimateWhole(){
   [['calc-price','spike-calc-basis'],['yard-price-1','spike-yard-basis']].forEach(function(pair){const input=E(pair[0]);if(!input)return;let note=E(pair[1]);if(!note){note=document.createElement('small');note.id=pair[1];input.insertAdjacentElement('afterend',note)}note.textContent=q.type==='local'?'Saved local quote; confirm it is current.':'Planning estimate from dated U.S. buyer samples; replace with an actual quote when available.'});
 }
 function render(packet){
-  ensureCard();const d=E('spike-import-detail'),b=E('spike-critical');if(!d)return;
+  ensureCard();
+  const lesson=E('spike-grade-lesson-current');
+  if(lesson){
+    if(!packet)lesson.textContent='No case loaded. Buyer-category lessons are general guidance only.';
+    else {
+      const i=packet.identity||{},r=packet.recovery||{};
+      lesson.textContent='This case: '+String(i.boardType||'Unknown board')+
+        (i.confidence!=null?' ('+String(i.confidence)+'% identity confidence)':'')+
+        '. SPIKE recovery assessment: '+String(r.grade||'WITHHELD')+
+        ' (not a buyer grade). No buyer category is confirmed.';
+    }
+  }const d=E('spike-import-detail'),b=E('spike-critical');if(!d)return;
   window.ScrapRadarGoldScenario?.refresh();
   const estimate=E('spike-estimate'),out=E('spike-estimate-result');
   if(estimate)estimate.disabled=!packet;

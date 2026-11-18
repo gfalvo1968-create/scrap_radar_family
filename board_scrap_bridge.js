@@ -5,6 +5,8 @@
 (function(){
 'use strict';
 const KEY='scrapRadarSpikeRecoveryPacketV1';
+const PHOTO_CACHE='scrapRadarSpikePhotoPreviewCacheV2',PHOTO_SESSION='scrapRadarSpikePhotoPreviewsV1';
+function clearCasePhotos(){try{localStorage.removeItem(PHOTO_CACHE)}catch(_){}try{sessionStorage.removeItem(PHOTO_SESSION)}catch(_){}}
 const INSPECTION_KEY='scrapRadarInspectionTargetV1';
 let latest=null,pendingPlanning=null;
 function E(id){return document.getElementById(id)}
@@ -136,11 +138,11 @@ function ensureCard(){
   card.innerHTML='<h3>📡 BOARD SENSE ↔ SCRAP RADAR</h3><div id="spikeScrapBridgeStatus" class="muted">Analyze a multi-photo board case to prepare a recovery handoff.</div><div class="scan-actions" style="margin-top:10px"><form id="sendSpikeForm" action="scrap_radar_spike_case.html" method="get" target="_top" style="display:inline"><input type="hidden" name="source" value="spike"><input id="sendSpikeBuild" type="hidden" name="build" value=""><button id="sendSpikeToScrap" type="submit" disabled>Send Case to Scrap Radar</button></form><button id="clearSpikeHandoff" type="button">Clear Saved Handoff</button></div>';
   box.insertAdjacentElement('afterend',card);
   E('sendSpikeForm').onsubmit=send;
-  E('clearSpikeHandoff').onclick=function(){localStorage.removeItem(KEY);latest=null;render(null)};
+  E('clearSpikeHandoff').onclick=function(){localStorage.removeItem(KEY);clearCasePhotos();latest=null;render(null)};
   return card;
 }
 function parkForInspection(){
-  try{localStorage.removeItem(KEY)}catch(_){}
+  try{localStorage.removeItem(KEY);clearCasePhotos()}catch(_){}
   latest=null;ensureCard();
   const s=E('spikeScrapBridgeStatus'),b=E('sendSpikeToScrap');
   if(s)s.innerHTML='<b>INSPECTION MISSION ACTIVE:</b> prior whole-board handoff parked.<br><span class="muted">Finish or clear the Scrap Radar target mission before preparing another board transfer.</span>';
@@ -192,7 +194,7 @@ function processorHandoffMessage(){
 function capture(payload){
   if(inspectionActive()){parkForInspection();return}
   const d=payload&&payload.combined;
-  if(isBlocked(payload,d)){try{localStorage.removeItem(KEY)}catch(_){}latest=null;render(null,true);if(d&&d.status==='component_inspection')processorHandoffMessage();return}
+  if(isBlocked(payload,d)){try{localStorage.removeItem(KEY);clearCasePhotos()}catch(_){}latest=null;render(null,true);if(d&&d.status==='component_inspection')processorHandoffMessage();return}
   const packet=normalize(payload);if(packet)save(packet);
 }
 function send(event){
@@ -224,7 +226,7 @@ function init(){
   if(saved&&returnedValues(saved)&&/[?&]from=scrap-radar(?:&|$)/.test(window.top&&window.top.location?window.top.location.search:''))setTimeout(function(){const card=E('spikeScrapBridge');if(card)card.scrollIntoView({behavior:'auto',block:'center'})},300);
 }
 window.addEventListener('boardSenseObjectGateBlocked',function(event){
-  try{localStorage.removeItem(KEY)}catch(_){}latest=null;render(null,true);
+  try{localStorage.removeItem(KEY);clearCasePhotos()}catch(_){}latest=null;render(null,true);
   if(event.detail&&event.detail.reason==='processor_inspection'){
     processorHandoffMessage();
   }
@@ -232,7 +234,7 @@ window.addEventListener('boardSenseObjectGateBlocked',function(event){
 window.addEventListener('boardSensePlanningUpdated',function(e){updatePlanning(e.detail)});
 window.addEventListener('boardSenseCaseReportReset',function(){
   pendingPlanning=null;latest=null;
-  try{localStorage.removeItem(KEY)}catch(_){}
+  try{localStorage.removeItem(KEY);clearCasePhotos()}catch(_){}
   render(null,false);
 });
 window.addEventListener('storage',function(e){if(e.key===INSPECTION_KEY||e.key===KEY||e.key===null){if(inspectionActive())parkForInspection();else{latest=readSaved();render(latest,false)}}});
