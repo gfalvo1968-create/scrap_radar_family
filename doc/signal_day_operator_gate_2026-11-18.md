@@ -117,6 +117,14 @@ Scope: authenticated GitHub source review of Board Sense guarded candidate `rele
 - **Staging passes now:** owner iPad completed one real board scan and saw an annotated inline blueprint; 134 automated regressions; five safe live GETs verify health, public response privacy, closed legacy image mounts, and anonymous admin rejection.
 - **Still pending:** second scan stale-image reset, physical board identity edge cases on hardware, production origin proxy setup, production cache/retention rollout, Supabase-backed quota behavior and paid entitlement gates, Recovery Intelligence and Scrap Radar handoff. No production changes or promotion have occurred.
 
+### November 18, 11:22 PM ET: second distinct board and blueprint owner-iPad pass
+
+- Owner supplied new staging screenshots at **11:22 PM EST**. Different board image was a prior Google Drive browser screenshot showing a densely populated legacy PCB. Board Sense returned `Circuit board / PCB`, `Board candidate`, **78% confidence**, **Dense Logic / Controller Board**, **MANUAL REVIEW**, and withheld buyer-grade/economic payout pending verification. The page visibly rendered its **Private Board Blueprint** with numbered markers (up to 16 visible).
+- Railway staging corroborates `GET /free-usage` **200** at `2026-11-19T04:20:44Z`, `GET /` **200** at `04:20:56Z`, and `POST /analyze` **200** at `04:21:39Z` (approximately 5.8 seconds), with no retrieved runtime exceptions. These times match the screenshots to within a couple minutes.
+- **PASS:** A different board's own annotated image replaces the first previously tested board's report in the owner-device interface; scan two completed and received a fresh result. The image contains a screenshot of a Google Drive browser tab, which the blueprint faithfully retained as source pixels; this is a user-input quality caveat, not a failure of private delivery.
+- **NOT YET PROVEN BY STILL SCREENSHOTS:** The precise instant the previous preview is cleared during upload, the failure-state clearing behavior, whether cross-customer response caching is absent at all intermediary layers, or whether all numbered component markers are correct. Separate browser automation or video could verify timing; source-side `clearBlueprint` and JavaScript syntax test already passed.
+- **Result:** Two different-board owner-iPad staging scans received successful HTTP 200 and visibly rendered distinct annotated blueprints. Leave paid/production security and Recovery Intelligence/handoff as OPEN blockers; do not promote merely because these tests pass.
+
 ## Release choices for November 19
 
 - **Option A: Public guarded free preview.** Consider only if real iPad upload and report, refusal safety, honest uncertainty, data handling, quota, and any advertised handoff are demonstrably working. Announce the limitations: manual review on dark/unclear views and no automatic multi-photo merged valuation.
