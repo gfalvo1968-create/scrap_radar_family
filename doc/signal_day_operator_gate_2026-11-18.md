@@ -142,6 +142,14 @@ Scope: authenticated GitHub source review of Board Sense guarded candidate `rele
 - **PASS:** negative/unknown-object Recovery Intelligence and blueprint withholding on real owner iPad. **Still pending:** positive recognized-board Recovery Intelligence lab-list display, user experience of manual Scrap Radar link, and cross-domain case handoff (which is not yet active). Do not mislabel the image as a confirmed PCB or classify this as a regression without source-image inspection.
 - No production promotion, price fabrication, or private data reads.
 
+### November 19, 12:12 AM EST: owner-iPad positive Recovery Intelligence acceptance
+
+- User supplied owner-iPad staging screenshots taken at approximately **12:12 AM EST, Nov 19**. The private annotated blueprint renders a small keypad-like circuit board with numbered component inspection overlays, indicating the whole-PCB view gate allowed a blueprint.
+- Recovery Intelligence panel displays **"Board status: MANUAL REVIEW"**, with explicit disclaimer that buyer acceptance and material assay are unverified; a **"Circuit Board Lab"** entry under **"Recovery Labs to review (inspection cues only)"**; appropriate mechanical sorting and inspection caution; **"Economics: unpriced"** with buyer offers, weight, labor, fuel and processing costs identified as missing; and a visible **"Open Scrap Radar for manual economics"** link.
+- **PASS:** positive PCB-route display on a real owner iPad, Recovery Labs inspection cue, safety note, intentionally withheld assay/financial claims, and visual presence of manual Scrap Radar link. Combined with the earlier **46%-confidence unknown-object** negative-path screenshot, both positive and negative Recovery Intelligence display gates have now been observed in staging.
+- Railway staging proxy shows `POST /analyze` **HTTP 200** at `2026-11-19T05:08:22Z`, approximately **5.2 seconds**, with no exceptions identified in the queried runtime logs. Screenshot time around 12:12 AM aligns with this within a few minutes.
+- **Not yet verified:** tapping the manual Scrap Radar link; actual cross-domain case transfer (separate **draft** PR #30 and an inactive sender); confidence/grade accuracy as a scrap buyer would judge it; complete economic workflow, production gate/security/retention, paid billing. The preview must **not** imply end-to-end handoff or public paid readiness. No production changes in this checkpoint.
+
 ## Release choices for November 19
 
 - **Option A: Public guarded free preview.** Consider only if real iPad upload and report, refusal safety, honest uncertainty, data handling, quota, and any advertised handoff are demonstrably working. Announce the limitations: manual review on dark/unclear views and no automatic multi-photo merged valuation.
