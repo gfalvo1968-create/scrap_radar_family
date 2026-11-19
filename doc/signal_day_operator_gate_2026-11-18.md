@@ -49,6 +49,18 @@
 - **PASS:** Single-image iPad scan dispatch and board-object recognition; low-confidence grade guard behaves cautiously without manufacturing an automated buyer category. **NOT PASS:** Full standalone valuation, component-level report, recovery intelligence, or Scrap Radar case handoff. Staging UI's Recovery Intelligence panel still literally states `Recovery information will appear here` and does not prove recovery features are wired.
 - This screenshot reports 33% overall confidence alongside recognized PCB construction. Treat these as separate signals, not a 33% probability the object is a PCB. Investigate report semantics before public claims. Continue to mark full product flow untested.
 
+## November 18 security challenge: read-only source and configuration check
+
+Scope: authenticated GitHub source review of Board Sense guarded candidate `release/guarded-preview-candidate-20261116` and Railway configuration **variable names only**. No payload attacks, production writes, secrets read or deployment.
+
+- **Positive:** `routes/upload_security.py` rejects unsupported suffixes/formats, enforces byte and pixel budgets, generates random storage filenames, validates decodability, and removes temporary uploaded originals after analysis. HTTP body limits apply before multipart parsing. This is source-level inspection, not proof against all malformed inputs.
+- **Positive:** `routes/free_usage_gate.py` applies server-side daily-use checks and reserves usage before analysis. In declared production mode, missing required Supabase credentials or visitor salt causes the quota gate to fail closed. Need test the actual configured production behavior.
+- **Launch security gap / BLOCKED:** `routes/origin_security.py` activates the Cloudflare origin-header gate only when `BOARD_SENSE_ORIGIN_KEY` is set. **Production Railway variable names** visible during review: `BOARD_SENSE_TESTER_KEY`, `BOARD_SENSE_VISITOR_SALT`, `SCRAP_RADAR_API_URL`, `SUPABASE_SECRET_KEY`, `SUPABASE_URL`. `BOARD_SENSE_ORIGIN_KEY` is **absent**. Therefore the optional origin-header protection is currently disabled. Do not turn on the server key until proxy header injection and route testing are correctly configured, or legitimate traffic may receive 403.
+- **Unverified:** Request-origin IP semantics and per-visitor isolation behind Railway proxies, duplicate/mixed photos, non-image edge cases, parallel quotas, reviewer/admin privilege separation, image privacy and retention, and startup failure behavior. A working 10-scan staging quota is not proof that the public one-scan allowance cannot be bypassed.
+- **Privacy review:** `/free-usage` currently returns `visitor_id` to its caller. This is a pseudonymous identifier, not an IP or authentication credential, but consider omitting it from public responses or verifying that disclosure is justified.
+- **Do next:** First check the intended public domain/proxy chain and retention policy; configure matching Cloudflare header transformation and Railway secret in a controlled window; run low-impact negative upload and access tests **on staging** and a single documented production smoke test only after owner authorization. Never use destructive rate flooding.
+- **Release gate:** Security hardening remains **NOT SIGNED OFF**. Findings are from configuration and code, not a completed penetration test.
+
 ## Release choices for November 19
 
 - **Option A: Public guarded free preview.** Consider only if real iPad upload and report, refusal safety, honest uncertainty, data handling, quota, and any advertised handoff are demonstrably working. Announce the limitations: manual review on dark/unclear views and no automatic multi-photo merged valuation.
