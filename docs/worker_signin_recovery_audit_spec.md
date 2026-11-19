@@ -75,3 +75,14 @@ The system is for **fair recognition as well as detecting process variation**. A
 - Avoid perverse incentives: employees should not be rewarded for skipping safety rules, misclassifying input grade, discarding unrecovered residue improperly, or rushing documentation.
 
 Acceptance criteria for a future owner-approved implementation: a sustained ~4% verified improvement on a fair baseline generates a review prompt; isolated/noisy changes and mismatched material do not; confirmed raises update only effective-dated future calculations; workers see the evidence supporting decisions.
+
+### Owner policy: early recognition flag, six-month raise escalation
+
+- **Early recognition:** As soon as a statistically credible sustained positive pattern emerges, raise a positive-performance flag on the owner dashboard. Notify the owner without promising a raise or withholding recognition until six months. Require comparable batches, verified recovery measures, adequate sample size, safety/quality context and opportunities for worker correction.
+- **Six-month escalation:** If the worker maintains documented above-baseline performance for **six consecutive months**, automatically escalate the positive-performance flag to **Raise Review Due** for the owner/supervisor. The recommendation is to evaluate a raise, not to apply an automatic payroll change.
+- **Review packet:** Show the six-month evidence history, fair baseline and batch mix, variance/uncertainty, safety and quality, mentorship contributions, verified incremental contribution margin, current wage, any prior raises, and suggested review options. A missing performance measurement is flagged as incomplete rather than counted against the worker.
+- **Decision record:** The owner approves a raise (with effective date), approves another kind of recognition, documents a reason to defer, or seeks more evidence. Keep the review record visible to the owner and provide the employee an appropriate explanation and appeal/correction mechanism. Set a follow-up for deferred reviews so they do not quietly disappear.
+- **No perverse incentives:** Do not reward unsafe shortcuts, skimped containment, selective reporting or material substitution. Six months of results must be like-for-like, not a naive comparison of gross revenue between dissimilar machines or material grades.
+- **Payroll integrity:** A raise changes the rate history starting on its approved effective date only; never rewrite historic labor-cost snapshots. Future job defaults adopt the new rate after approval.
+
+The 4% improvement referenced in conversation remains an example of a positive trend, not a universal threshold or guarantee of a wage increase.
