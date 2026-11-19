@@ -32,6 +32,15 @@
 
 **Visitor and operational gate:** Test mobile navigation, invalid upload handling, server-side free allowance and that rejected validation does not consume allowance; test cold-start, domain access, support/contact, privacy and retention, reliable rollback. Document the result as PASS / BLOCKED / UNTESTED, not guessed.
 
+## November 18 evening: iPad test completed, confirmed in staging proxy logs
+
+- Repaired `index.html` upload wiring on Board Sense PR #15 commit `4533a2e95e23ba96cc70a0d22e3c2eeae4c4de04`: added missing `uploadStatus`, routed `/analyze` to same-origin staging, and stopped displaying nonexistent estimated payout fields.
+- Exact commit's PCB regression and Jekyll workflows completed successfully. Deployed to **Board Sense Launch Staging only**, Railway deployment `908fd465-4444-4ccf-b18e-33caf7483bbb` SUCCESS, one replica online. Production unchanged.
+- **Owner iPad screenshot evidence, Wednesday November 18, 8:01 PM EST:** URL bar `boardsensestaging-staging.up.railway.app`, selected file `IMG_5864.jpeg`, scan status `Analysis completed for IMG_5864.jpeg.` Board Investigation Report displayed `PCB-like object / manual verification required`, `PCB-like / MANUAL VERIFICATION REQUIRED`, **44% confidence**, buyer grade and recovery economics withheld, plus supporting evidence.
+- Developer console in same screenshot: selected file 8:01:28 PM, `Analysis completed. Object gate: pcb_review` 8:01:32 PM.
+- Railway HTTP request log independently confirms staging `GET /` status **200** at `2026-11-19T01:01:14Z`, and staging `POST /analyze` status **200**, duration **3,493 ms**, at `2026-11-19T01:01:32Z`.
+- **Interpretation: PASS for this narrow staging dark-board object-gate test.** It corrects the prior complete non-PCB rejection for this test photo while withholding unproven economics. Not proof of valid clear-PCB grading, multi-photo same-board identity, public production behavior, Scrap Radar handoff, quota safety, or paid release readiness.
+
 ## Release choices for November 19
 
 - **Option A: Public guarded free preview.** Consider only if real iPad upload and report, refusal safety, honest uncertainty, data handling, quota, and any advertised handoff are demonstrably working. Announce the limitations: manual review on dark/unclear views and no automatic multi-photo merged valuation.
@@ -43,7 +52,7 @@
 | Gate | Current status |
 | --- | --- |
 | Candidate regression and staging infrastructure | PASS |
-| Owner iPad dark-PCB staging report | UNTESTED on exact candidate |
+| Owner iPad dark-PCB staging report | **PASS (Nov 18, 8:01 PM EST)** on repaired staging candidate 4533a2e9; PCB-like / manual verification required, 44%, grade/economics withheld |
 | Owner iPad known-good standalone investigation | UNTESTED |
 | Mixed/duplicate photos on exact owner-device candidate | UNTESTED |
 | Board Sense / Scrap Radar round trip on owner iPad | UNTESTED |
