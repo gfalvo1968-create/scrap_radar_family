@@ -158,6 +158,13 @@ Scope: authenticated GitHub source review of Board Sense guarded candidate `rele
 - **PENDING:** actual visual scroll/anchor arrival at the Board Recovery panel (screenshot is above that panel), ability to enter and calculate a manual three-path case, and **automatic** cross-domain single-board transfer (still unmerged draft PR #30). Do not claim handoff or paid-feature readiness based on navigation.
 - **Production:** Existing Scrap Radar GitHub Pages page was visited but not modified as part of this check. Board Sense production and paid release remain unchanged.
 
+### November 19, 12:23 AM EST: Board Recovery screen owner-iPad display verified
+
+- Owner sent a screenshot of live Scrap Radar Family GitHub Pages `scrap_radar.html#board-recovery` at **12:23 AM EST**. The page shows **Board Recovery** with all three paths: **SELL WHOLE**, **SELECTIVE HARVEST**, and **DEEPER RECOVERY**, with correctly labeled monetary inputs, processing-cost fields, and minutes where applicable.
+- The **RECOVERY RECOMMENDATION** message correctly states that no recovery path has a value yet and requests a board weight or verified buyer/recovery values. The screen above also shows empty **Load + Trip Evaluator** outputs and **$0.00** default placeholders; these are not market quotes or computed profit.
+- **PASS:** navigation and actual visual presence of the manual Board Recovery interface on owner iPad; no fabricated dollars with blank inputs.
+- **PENDING:** verify numerical three-path calculations using clearly labeled synthetic test values, labor/travel assumptions, round-trip correctness, data reset/clear, and whether current manual path carries data back to Board Sense. Automatic single-view cross-domain case transfer remains **draft PR #30, not live**. Neither Board Sense production nor Scrap Radar Family main was changed for this test.
+
 ## Release choices for November 19
 
 - **Option A: Public guarded free preview.** Consider only if real iPad upload and report, refusal safety, honest uncertainty, data handling, quota, and any advertised handoff are demonstrably working. Announce the limitations: manual review on dark/unclear views and no automatic multi-photo merged valuation.
