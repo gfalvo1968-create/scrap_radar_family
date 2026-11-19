@@ -135,6 +135,13 @@ Scope: authenticated GitHub source review of Board Sense guarded candidate `rele
 - **Still PENDING:** owner-iPad acceptance of newly populated Recovery Intelligence section, true live end-to-end cross-domain sender/receiver behavior after coordinated approval and publishing, paid entitlement and checkout, production origin protection, production private photo retention and quotas, and robust price/board-economics handoff. No computed value from a photo is approved.
 - **GO/NO-GO:** This is staging progress, **not** proof of full public paid readiness. Keep family receiver PR #30 and Board Sense PR #15 in draft pending acceptance.
 
+### November 18, 11:58 PM EST: owner-iPad negative-gate test of Recovery Intelligence
+
+- Owner uploaded `IMG_5286.jpeg` to `boardsensestaging-staging.up.railway.app`; screenshot reports `Unknown object`, `PCB check: Not confirmed as a PCB`, confidence **46%**, with buyer grade and recovery economics explicitly **withheld**. The new `Recovery Intelligence` panel says whole-board recovery routing was withheld and assigns **no yield, buyer grade, or dollar estimate**. The private blueprint was also withheld with the expected gating message. This confirms the client display follows the non-PCB/unknown result correctly.
+- Railway staging HTTP logs corroborate `GET /` **200** at `2026-11-19T04:56:42Z` and `POST /analyze` **200** at `04:58:23Z`, approximately **2.5 seconds**. No relevant exception in queried deployment logs. Owner screenshot shows same 11:58 PM time.
+- **PASS:** negative/unknown-object Recovery Intelligence and blueprint withholding on real owner iPad. **Still pending:** positive recognized-board Recovery Intelligence lab-list display, user experience of manual Scrap Radar link, and cross-domain case handoff (which is not yet active). Do not mislabel the image as a confirmed PCB or classify this as a regression without source-image inspection.
+- No production promotion, price fabrication, or private data reads.
+
 ## Release choices for November 19
 
 - **Option A: Public guarded free preview.** Consider only if real iPad upload and report, refusal safety, honest uncertainty, data handling, quota, and any advertised handoff are demonstrably working. Announce the limitations: manual review on dark/unclear views and no automatic multi-photo merged valuation.
