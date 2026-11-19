@@ -3,6 +3,12 @@
 ## Purpose
 The owner wants a repeatable, fair training and productivity review for workers who run the same processor/station regularly. The proposed system automatically attributes **actual job results** to the authenticated worker, not merely the account that happens to be selected in a client-side form.
 
+## Founding principle: evidence informs people
+
+> **We're not trying to replace human judgment. We're trying to give human judgment an honest foundation.**
+
+This principle belongs in both the employee-facing fairness promise and the owner-facing design standards. The system should surface verifiable measurements, traceable corrections, consistent comparisons, positive recognition and six-month raise-review escalations. It must not autonomously accuse, punish, award compensation, or claim that data cannot be manipulated. Workers can review and challenge the evidence; managers must explain decisions. Human accountability remains essential on both sides.
+
 ## Existing staged feature versus future authentication
 - The draft `scrap_radar_labor_presets.js` is **browser-local convenience only**. It remembers worker display names, hourly planning rates and usual process/station assignments.
 - It does **not** sign employees in, verify identity, record actual output, or provide trusted audit history. Anyone using the same browser can change local presets.
