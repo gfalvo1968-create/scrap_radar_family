@@ -189,6 +189,14 @@ Scope: authenticated GitHub source review of Board Sense guarded candidate `rele
 - **Next test:** keep fictional three-path values and **leave all travel/fuel fields blank**, enter **$25/hour** as `Your Target $ / Hour` in the *Load + Trip Evaluator* (`trip-target`), which flows through to Board Recovery. Expected time-adjusted values: sell whole **$10.00** (zero entered work/travel time), selective **$8.83** (`13 - 25*10/60`), deeper **$9.75** (`16 - 25*15/60`). Expected recommended path **SELL WHOLE** despite deeper recovery's $16 raw net. This checks time-value choice. Treat these as hypothetical calculations, not market quotes or profit accounting.
 - Automatic single-view case transfer and production rollout remain blocked; recording successful calculator fixtures does not sign off on public launch.
 
+### November 19, 12:49–12:50 AM EST: owner-iPad target-hour labor comparison PASS
+
+- Owner supplied two live Scrap Radar GitHub Pages iPad screenshots at about **12:49–12:50 AM EST**. Operating rates show **Target pay per hour $25**, and the main Load + Trip Evaluator shows **Your Target $ / Hour 25**. No trip mileage, fuel values or separate travel time were entered in this fixture.
+- Existing **fictional inputs** retained: Sell Whole $10, Selective Harvest $14 parts + $2 board residual - $3 processing, 10 minutes, Deeper Recovery $20 material + $1 downstream residual - $5 processing, 15 minutes.
+- Board Recovery changed from **HIGHEST ENTERED NET: DEEPER RECOVERY** to **ECONOMIC RECOMMENDATION: SELL WHOLE**. It explicitly notes that deeper recovery still has highest raw entered net **$16** but selling whole has the best net-after-time at **$25/hour** with 0 entered minutes.
+- Independently calculated net-after-time fixture scores: Sell Whole **$10.00**, Selective Harvest **$8.83** (13 - 25×10/60), Deeper Recovery **$9.75** (16 - 25×15/60). UI shows labor-inclusive minimum payouts to match selling whole of **$15.17** for selective (10+3+25×10/60−2) and **$20.25** for deeper (10+5+25×15/60−1).
+- **PASS:** real owner-iPad field propagation for hourly target, recommendation switch based on time value, preservation of highest raw-net disclosure, and labor-inclusive break-even amounts. Still test fuel/travel and input reset independently; this does not verify actual buyer values, automatic Board Sense handoff, paid entitlements or production privacy.
+
 ## Release choices for November 19
 
 - **Option A: Public guarded free preview.** Consider only if real iPad upload and report, refusal safety, honest uncertainty, data handling, quota, and any advertised handoff are demonstrably working. Announce the limitations: manual review on dark/unclear views and no automatic multi-photo merged valuation.
