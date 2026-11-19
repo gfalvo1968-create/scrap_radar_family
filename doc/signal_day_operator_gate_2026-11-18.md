@@ -197,6 +197,14 @@ Scope: authenticated GitHub source review of Board Sense guarded candidate `rele
 - Independently calculated net-after-time fixture scores: Sell Whole **$10.00**, Selective Harvest **$8.83** (13 - 25×10/60), Deeper Recovery **$9.75** (16 - 25×15/60). UI shows labor-inclusive minimum payouts to match selling whole of **$15.17** for selective (10+3+25×10/60−2) and **$20.25** for deeper (10+5+25×15/60−1).
 - **PASS:** real owner-iPad field propagation for hourly target, recommendation switch based on time value, preservation of highest raw-net disclosure, and labor-inclusive break-even amounts. Still test fuel/travel and input reset independently; this does not verify actual buyer values, automatic Board Sense handoff, paid entitlements or production privacy.
 
+### November 19, 1:12 AM EST: owner-iPad travel-cost test INCOMPLETE (not a pass)
+
+- Owner screenshot of Scrap Radar Recovery Logistics at approximately **1:12 AM EST** shows **Sell Whole buyer distance 10 miles one-way**, other distances 0, all fees blank/0. However **Travel cost $0.00** is shown for all three recovery paths, despite the intended fictional $0.50/mile travel test.
+- The UI says **"LIMITED PLANNING COMPARISON: DEEPER RECOVERY"** and **"Still unpriced: SELL WHOLE"**, with blank break-even baseline. This indicates the formerly entered **Sell Whole $10 test offer is absent** in this current state. The screenshots do not prove a defect in fare calculation, because the required cost-method/rate input was not shown as active.
+- Source review: `scrap_radar_recovery_guard.js` doubles one-way path distance before calling `ScrapRadarOperatingProfile.vehicleCost`; `scrap_radar_profile.js` only applies the per-mile rate if `trip-cost-method === 'rate'` and takes the rate from `trip-fuel-rate`. Merely typing a figure into the unsaved operating-rate profile does **not** establish this case-specific method/rate. When mode is MPG with zero/blank mpg and fuel, travel costs remain zero.
+- **Status: Test Five PENDING**, not failed and not passed. Owner action to complete: restore fictional `br-whole = 10`, set main load evaluator method to cost per mile, set `trip-fuel-rate = 0.50`, keep recovery Sell Whole miles `10`, and verify Sell Whole `travel cost $10.00` and `net $0.00`; expected time-adjusted selected path **DEEPER RECOVERY** with earlier other fixtures intact, all hypothetical. Do not save a $5/mile operating rate.
+- No code or production changes made based on this screenshot.
+
 ## Release choices for November 19
 
 - **Option A: Public guarded free preview.** Consider only if real iPad upload and report, refusal safety, honest uncertainty, data handling, quota, and any advertised handoff are demonstrably working. Announce the limitations: manual review on dark/unclear views and no automatic multi-photo merged valuation.
