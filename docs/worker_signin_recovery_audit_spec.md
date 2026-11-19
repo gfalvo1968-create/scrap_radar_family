@@ -59,3 +59,19 @@ A single unexplained 0.1 gram per workday is 26 grams across 260 days; 0.1 gram 
 3. Two workers on the same processor must retain distinct verified sessions and handoffs. Shared-device sign-out prevents cross-attribution.
 4. A worker cannot alter final receipts or retroactively change the applied wage; approved supervisor correction creates a visible history event.
 5. Missing scale readings or unverified buyer settlement results in **incomplete evidence**, not a fabricated profit or theft claim.
+
+## Positive performance recognition and raise-review triggers
+
+The system is for **fair recognition as well as detecting process variation**. A worker who produces consistently better verified results should be eligible for an owner-reviewed raise, bonus, promotion, or peer-training opportunity. The software must never promise automatic compensation or autonomously change wages.
+
+- The example discussed by the owner is a **4% sustained improvement** in verified recovery relative to a fair comparable baseline. Treat 4% as an example/owner-configurable review threshold, **not** a guaranteed raise or automatic finding.
+- Define the comparison metric explicitly: *verified recovery value per comparable input batch*, *recovered mass/yield of a specific metal per comparable incoming grade*, or *verified contribution margin after costs*. Never interchange these measures.
+- Evaluate a configurable review window, such as consecutive comparable batches or weeks, with minimum sample size and consistency requirements. Do not count a single lucky batch as a trend.
+- Normalize for starting material type/grade, input batch weight, assay uncertainty, buyer prices, machine condition, shift, and actual processing time. Exclude unverified theoretical yields and fabricated market-price estimates.
+- Include **beneficial process effects** such as lower scrap losses, safer handling, improved measured yield, fewer rejected batches, and repeatable techniques useful to train colleagues.
+- Owner-only dashboard can display `Sustained above-baseline recovery: review for recognition` with evidence, confidence, dates and comparable peers; also allow employee to see their own measured accomplishments and dispute inaccurate records.
+- A performance flag opens a **human pay-review conversation**, not an automatic salary decision. Any approved raise creates a dated, owner-approved rate-history record. Historical job economics must retain the rate that applied when the work happened.
+- The same investigation standard applies to unusually low output: check measuring equipment, input quality, differences in machine settings and work assignment before drawing conclusions. Do not presume fraud, punish a worker automatically, or rank dissimilar jobs.
+- Avoid perverse incentives: employees should not be rewarded for skipping safety rules, misclassifying input grade, discarding unrecovered residue improperly, or rushing documentation.
+
+Acceptance criteria for a future owner-approved implementation: a sustained ~4% verified improvement on a fair baseline generates a review prompt; isolated/noisy changes and mismatched material do not; confirmed raises update only effective-dated future calculations; workers see the evidence supporting decisions.
