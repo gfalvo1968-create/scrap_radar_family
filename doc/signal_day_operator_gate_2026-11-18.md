@@ -41,6 +41,14 @@
 - Railway HTTP request log independently confirms staging `GET /` status **200** at `2026-11-19T01:01:14Z`, and staging `POST /analyze` status **200**, duration **3,493 ms**, at `2026-11-19T01:01:32Z`.
 - **Interpretation: PASS for this narrow staging dark-board object-gate test.** It corrects the prior complete non-PCB rejection for this test photo while withholding unproven economics. Not proof of valid clear-PCB grading, multi-photo same-board identity, public production behavior, Scrap Radar handoff, quota safety, or paid release readiness.
 
+### November 18, 8:08 PM EST: second owner-iPad PCB view
+
+- Owner submitted `IMG_5865.jpeg` alone to the repaired Board Sense staging scan at `boardsensestaging-staging.up.railway.app`.
+- Screenshot reported `Object: Circuit board / PCB`, `PCB check: Board candidate`, `Confidence: 33%`, `Provisional grade: MANUAL REVIEW`, `Board type: General PCB` and recommended keeping the board separate for manual grade review. Object gate shown in developer console as `board`; scan completed at approximately 8:08:47 PM EST.
+- Railway staging HTTP logs corroborate `GET /` HTTP 200 at `2026-11-19T01:08:21Z` and `POST /analyze` HTTP **200**, approximately **3,091 ms**, at `2026-11-19T01:08:47Z`.
+- **PASS:** Single-image iPad scan dispatch and board-object recognition; low-confidence grade guard behaves cautiously without manufacturing an automated buyer category. **NOT PASS:** Full standalone valuation, component-level report, recovery intelligence, or Scrap Radar case handoff. Staging UI's Recovery Intelligence panel still literally states `Recovery information will appear here` and does not prove recovery features are wired.
+- This screenshot reports 33% overall confidence alongside recognized PCB construction. Treat these as separate signals, not a 33% probability the object is a PCB. Investigate report semantics before public claims. Continue to mark full product flow untested.
+
 ## Release choices for November 19
 
 - **Option A: Public guarded free preview.** Consider only if real iPad upload and report, refusal safety, honest uncertainty, data handling, quota, and any advertised handoff are demonstrably working. Announce the limitations: manual review on dark/unclear views and no automatic multi-photo merged valuation.
@@ -53,7 +61,7 @@
 | --- | --- |
 | Candidate regression and staging infrastructure | PASS |
 | Owner iPad dark-PCB staging report | **PASS (Nov 18, 8:01 PM EST)** on repaired staging candidate 4533a2e9; PCB-like / manual verification required, 44%, grade/economics withheld |
-| Owner iPad known-good standalone investigation | UNTESTED |
+| Owner iPad clearer PCB-side staging recognition | **PASS recognition, LIMITATION in grading (Nov 18, 8:08 PM EST)**: IMG_5865.jpeg recognized as Circuit board / PCB, 33% overall confidence, General PCB, provisional grade MANUAL REVIEW; no demonstrated buyer-grade or recovery-economics computation |
 | Mixed/duplicate photos on exact owner-device candidate | UNTESTED |
 | Board Sense / Scrap Radar round trip on owner iPad | UNTESTED |
 | Public privacy, usage allowance, rollback | NOT SIGNED OFF |
