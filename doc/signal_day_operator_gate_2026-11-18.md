@@ -70,6 +70,15 @@ Scope: authenticated GitHub source review of Board Sense guarded candidate `rele
 - **Positive from code:** `routes/irm_core.py` guards the entire private sources router with a separate bearer admin key; unconfigured/short key fails closed with 503. This is not yet corroborated by a live unauthorized-access test.
 - **Release disposition:** Owner-iPad scans pass their narrow recognition checks. **Privacy/auth/retention and full paid/public release remain blocked pending staging validation and approved mitigation.**
 
+### November 18 evening: blueprint privacy hardening staged successfully
+
+- Board Sense draft PR #15 branch `release/guarded-preview-candidate-20261116`, exact code/test commit `1057be25d57a3b47c09e7c313bdeb1177f59bed2`.
+- Removed FastAPI public static mounts `/blueprints` and `/multi-board-crops` from `main.py`, and removed the analyzer's generated `/blueprints/...` link. `generate_blueprint` now encodes resized annotated images as inline JPEG data in the scan response instead of writing persistent blueprint files. Maximum preview side is 1200 pixels, JPEG quality 82.
+- Added `tests/test_generated_artifact_privacy.py` for inline preview, no image file persistence, and no public mounts. Updated legacy `tests/test_analysis_image.py` to assert the new privacy model (distinct inline images, none left in the Blueprint folder). The first CI run correctly caught that outdated public-image assertion. After updating it, **PCB object-gate and grade regression checks: SUCCESS**, **Jekyll site CI: SUCCESS** on exact commit.
+- Deployed **only** to `Board Sense Launch Staging` Railway service `Board_Sense_Staging`, deploy `b2c48aa6-0bf4-476d-aa26-57874105280b` **SUCCESS**; staging environment online, 1/1 replicas, no warnings or criticals. GitHub source SHA pinned to exact code commit. Prior staging deployment `908fd465-4444-4ccf-b18e-33caf7483bbb` is known rollback version. **Production untouched.**
+- **Remaining acceptance:** no verified live owner-iPad scan on this new privacy commit yet. Check an isolated, ordinary single-board scan, confirm it still displays a blueprint inline where available, and confirm public `/blueprints/<random-nonexistent>` and `/multi-board-crops/<random-nonexistent>` are unavailable. Do not inspect private generated assets. Validate intended front-end display, response/cache headers and limits, quotas and handoff before any launch GO. Existing files on prior production remain an exposure until production migration and retention cleanup are authorized.
+- **Status:** PATCHED AND DEPLOYED TO STAGING / AUTOMATED REGRESSIONS PASS; owner-device privacy and report acceptance PENDING; production privacy NOT FIXED. Paid launch remains blocked.
+
 ## Release choices for November 19
 
 - **Option A: Public guarded free preview.** Consider only if real iPad upload and report, refusal safety, honest uncertainty, data handling, quota, and any advertised handoff are demonstrably working. Announce the limitations: manual review on dark/unclear views and no automatic multi-photo merged valuation.
@@ -85,7 +94,7 @@ Scope: authenticated GitHub source review of Board Sense guarded candidate `rele
 | Owner iPad clearer PCB-side staging recognition | **PASS recognition, LIMITATION in grading (Nov 18, 8:08 PM EST)**: IMG_5865.jpeg recognized as Circuit board / PCB, 33% overall confidence, General PCB, provisional grade MANUAL REVIEW; no demonstrated buyer-grade or recovery-economics computation |
 | Mixed/duplicate photos on exact owner-device candidate | UNTESTED |
 | Board Sense / Scrap Radar round trip on owner iPad | UNTESTED |
-| Public privacy, usage allowance, rollback | NOT SIGNED OFF |
+| Public privacy, usage allowance, rollback | Staging blueprint privacy fix CI PASS and deployment SUCCESS; owner-device proof and production sign-off PENDING |
 | Paid checkout and membership | NOT VERIFIED |
 | Owner final GO | PENDING |
 
