@@ -5,6 +5,44 @@
 (function(){
 'use strict';
 const KEY='scrapRadarSpikeRecoveryPacketV1';
+ // Cross-origin single-photo fragment is untrusted input, never financial proof.
+ // Drop any earlier case before accepting a new one.
+ function consumeSingleBoardFragment(){
+   const marker='#bs-single-v1=';
+   const fragment=String(window.location.hash||'');
+   if(!fragment.startsWith(marker))return false;
+   try{localStorage.removeItem(KEY)}catch(_){}
+   try{window.history.replaceState(null,'',window.location.pathname+window.location.search+'#board-recovery')}catch(_){}
+   const encoded=fragment.slice(marker.length);
+   if(!encoded||encoded.length>2200)return false;
+   let untrusted;
+   try{untrusted=JSON.parse(decodeURIComponent(encoded))}catch(_){return false}
+   if(!untrusted||untrusted.version!==1||untrusted.kind!=='board_sense_single_view'||untrusted.manualReview!==true)return false;
+   const cleaned=function(v,max){
+     if(typeof v!=='string')return '';
+     return v.replace(/[\u0000-\u001f\u007f]/g,' ').trim().slice(0,max);
+   };
+   const boardType=cleaned(untrusted.boardType,120);
+   const confidence=Number(untrusted.confidence);
+   if(!boardType||!Number.isFinite(confidence)||confidence<0||confidence>100)return false;
+   const signals=Array.isArray(untrusted.signals)
+     ? untrusted.signals.slice(0,4).map(v=>cleaned(v,90)).filter(Boolean) : [];
+   const createdAt=new Date().toISOString();
+   const caseId=(window.crypto&&window.crypto.randomUUID)?window.crypto.randomUUID():createdAt+'-single-view';
+   const packet={
+     version:1,caseId:caseId,createdAt:createdAt,
+     source:'Board Sense / SPIKE',sourceMode:'single_board_photo',
+     identity:{boardType:boardType,confidence:Math.round(confidence)},
+     recovery:{grade:'MANUAL REVIEW',score:null,signals:signals},
+     sameBoard:{status:'SINGLE_VIEW_ONLY',confidence:null},
+     economics:{sellWholeValue:null,fullRecoveryValue:null,fullMinutes:null},
+     planning:{weightGrams:null},
+     verification:{buyerGradeVerified:false,materialYieldVerified:false,
+       note:'Transferred from one image only. Manually verify buyer category, weight, costs and payout.'}
+   };
+   try{localStorage.setItem(KEY,JSON.stringify(packet));return true}catch(_){return false}
+ }
+ consumeSingleBoardFragment();
 const RETURN_FIELDS=['br-whole','br-partial-value','br-residual','br-partial-minutes','br-partial-costs','br-full-value','br-full-residual','br-full-minutes','br-full-costs','br-whole-miles','br-whole-travel','br-whole-fees','br-partial-miles','br-partial-travel','br-partial-fees','br-full-miles','br-full-travel','br-full-fees','br-shared-mpg','br-shared-gas','trip-target','trip-cost-method','trip-fuel-rate'];
 let loadedCaseId=caseId(read());
 const SOURCE_LABELS={
@@ -214,8 +252,10 @@ function render(packet){
   const intro=E('spike-estimate-intro');if(intro)intro.textContent=packet?'Board identity received. Buyer grade may still require review. Enter a scale weight and verify a buyer category before using a whole-board planning estimate.':'Send a board case from Board Sense to use its grade and scale weight here.';
   if(!packet){d.innerHTML='<b>No SPIKE case loaded.</b> Analyze a board in Board Sense, then use Send Case to Scrap Radar.';if(out)out.textContent='Send a verified board case to see its grade and planning price.';if(b){b.disabled=true;b.textContent='Check Critical Materials'}return}
   const i=packet.identity||{},r=packet.recovery||{},e=packet.economics||{},same=packet.sameBoard||{};
+  const singleView=packet.sourceMode==='single_board_photo';
+
   const signals=(r.signals||[]).slice(0,6),cue=sourceCue(packet),cueLabel=cue?SOURCE_LABELS[cue]:null;
-  d.innerHTML='<b>'+safe(i.boardType||'Unknown Board')+'</b>'+(i.subtype?'<br>Subtype: '+safe(i.subtype):'')+(i.confidence!=null?'<br>Identity confidence: '+safe(i.confidence)+'%':'')+'<br><b>Recovery:</b> Grade '+safe(r.grade||'WITHHELD')+(r.score!=null?' • Observed-feature score '+safe(r.score):'')+(r.condition?' • '+safe(r.condition):'')+(same.status?'<br><b>Same-board verification:</b> '+safe(same.status)+(same.confidence!=null?' '+safe(same.confidence)+'%':''):'')+(signals.length?'<br><b>SPIKE recovery signals:</b> '+signals.map(safe).join(' • '):'')+'<br><b>Transferred values:</b> '+(e.sellWholeValue!=null?'Whole offer $'+safe(e.sellWholeValue):'No whole offer')+' • '+(e.fullRecoveryValue!=null?'Deeper recovery $'+safe(e.fullRecoveryValue):'No recovery dollars')+' • '+(e.fullMinutes!=null?safe(e.fullMinutes)+' min':'No recovery time')+(cueLabel?'<br><b>Critical-material inspection cue:</b> '+safe(cueLabel)+' <span class="muted">(source clue only, not composition proof)</span>':'')+'<br><span class="muted">SPIKE supplied evidence and previously entered values only. Confirm buyer terms, distance, fuel, processing costs and hourly target here before acting.</span>';
+  d.innerHTML=(singleView?'<b style="color:#ffdf73">SINGLE-PHOTO TRANSFER • UNVERIFIED</b><br>One view is not a buyer grade, an assay or a cash estimate.<br>':'')+'<b>'+safe(i.boardType||'Unknown Board')+'</b>'+(i.subtype?'<br>Subtype: '+safe(i.subtype):'')+(i.confidence!=null?'<br>Identity confidence: '+safe(i.confidence)+'%':'')+'<br><b>Recovery:</b> Grade '+safe(r.grade||'WITHHELD')+(r.score!=null?' • Observed-feature score '+safe(r.score):'')+(r.condition?' • '+safe(r.condition):'')+(same.status?'<br><b>Same-board verification:</b> '+safe(same.status)+(same.confidence!=null?' '+safe(same.confidence)+'%':''):'')+(signals.length?'<br><b>SPIKE recovery signals:</b> '+signals.map(safe).join(' • '):'')+'<br><b>Transferred values:</b> '+(e.sellWholeValue!=null?'Whole offer $'+safe(e.sellWholeValue):'No whole offer')+' • '+(e.fullRecoveryValue!=null?'Deeper recovery $'+safe(e.fullRecoveryValue):'No recovery dollars')+' • '+(e.fullMinutes!=null?safe(e.fullMinutes)+' min':'No recovery time')+(cueLabel?'<br><b>Critical-material inspection cue:</b> '+safe(cueLabel)+' <span class="muted">(source clue only, not composition proof)</span>':'')+'<br><span class="muted">SPIKE supplied evidence and previously entered values only. Confirm buyer terms, distance, fuel, processing costs and hourly target here before acting.</span>';
   if(b){b.disabled=false;b.textContent=cueLabel?'Check Critical Materials: '+cueLabel:'Check Critical Materials'}
   const q=boardQuote(packet),weight=E('spike-board-weight'),planning=packet.planning||{},grams=Number(planning.weightGrams),entry=planning.weightEntry;
   if(E('spike-buyer-category'))E('spike-buyer-category').value=planning.buyerCategoryId||'';
