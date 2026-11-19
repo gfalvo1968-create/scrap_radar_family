@@ -100,6 +100,14 @@ Scope: authenticated GitHub source review of Board Sense guarded candidate `rele
 - **Outstanding test:** owner iPad must check real same-origin photo upload, visible blueprint when one is generated, withheld blueprint on review images, clean second-scan/error state, and denied public derived-image URLs. There was no new HTTP-request evidence for these paths on the new staging deployment at time of write. CDN/cache delivery still needs external verification where relevant.
 - **Production not changed.** Origin restriction, paid entitlement/payment flows, and full Recovery Intelligence/handoff remain separate launch gates.
 
+### November 18, 9:52 PM ET: Owner-iPad acceptance of private blueprint viewer
+
+- Owner sent two iPad screenshots of `boardsensestaging-staging.up.railway.app`: browser shows `IMG_5174.jpeg` analysis completed, object `Circuit board / PCB`, `object_gate` whole-board candidate, confidence **67%**, provisional grade **MANUAL REVIEW**, type **Dense Logic / Controller Board**, and no inferred buyer-grade/recovery economics. Visible **Private Board Blueprint** section says `Annotated blueprint for this scan`, and displays a numbered yellow annotation overlay. A second screenshot shows lower portion of the rendered image, confirming it did not disappear when scrolling.
+- Railway staging HTTP logs corroborate one `POST /analyze` **200** at `2026-11-19T02:51:07.041Z` (November 18, **9:51 PM EST**), approximately 10.1 seconds; corresponding staging dashboard GET at `02:49:08Z` returned 200. Screenshots are approximately 9:52–9:53 PM EST. No server exception appeared in retrieved logs. This is real same-origin on-device success, not a prerecorded sample.
+- **Mark PASS:** owner iPad same-origin photo upload, completed Board Sense basic report, inline generated blueprint visibly rendered on iPad, manual-review valuation restraint maintained.
+- **Remain PENDING:** prove no-store cache headers and removed blueprint/crop URL 404s with actual HTTP client, second-scan clearing, unavailable/ambiguous PCB behavior, paid entitlements/payments, full Recovery Intelligence, economic figures and Scrap Radar handoff. Privacy derived-asset protection in production remains unpromoted.
+- **Operator conclusion:** Maintain guarded/demo-only release stance until the remaining blockers are verified; do not imply a complete paid public launch is ready based solely on this successful staging scan.
+
 ## Release choices for November 19
 
 - **Option A: Public guarded free preview.** Consider only if real iPad upload and report, refusal safety, honest uncertainty, data handling, quota, and any advertised handoff are demonstrably working. Announce the limitations: manual review on dark/unclear views and no automatic multi-photo merged valuation.
