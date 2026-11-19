@@ -44,7 +44,11 @@ function logistics(prefix,mpg,gas){
   const miles=Math.max(0,num('br-'+prefix+'-miles')||0);
   const fees=Math.max(0,num('br-'+prefix+'-fees')||0);
   const travel=Math.max(0,num('br-'+prefix+'-travel')||0);
-  const fuel=mpg!==null&&mpg>0&&gas!==null&&gas>=0?(miles*2/mpg)*gas:0;
+  // Use the same vehicle-cost engine as the Load + Trip Evaluator and
+  // Board Recovery guard. Cost-per-mile replaces MPG fuel, never adds to it.
+  const fuel=window.ScrapRadarOperatingProfile
+    ? window.ScrapRadarOperatingProfile.vehicleCost(miles*2,mpg,gas)
+    : mpg!==null&&mpg>0&&gas!==null&&gas>=0?(miles*2/mpg)*gas:0;
   return {miles,fees,travel,fuel,cost:fuel+fees};
 }
 
@@ -67,7 +71,7 @@ function breakEven(whole,wl,pl,fl,target){
   set('br-partial-target',cash(needed('partial',pl,'br-residual')));
   set('br-full-target',cash(needed('full',fl,'br-full-residual')));
   const planning=el('br-whole')?.dataset.basis==='planning_estimate';
-  set('br-break-even-basis','Compared with '+cash(whole)+' '+(planning?'whole-board planning value':'entered whole-board value')+'.');
+  set('br-break-even-basis','Compared with '+cash(whole)+' '+(planning?'whole-board planning value':'entered whole-board offer')+' ('+cash(wholeScore)+' after entered travel and time costs).');
   set('br-break-even-note','Uses entered processing and travel costs'+(rate?' plus your hourly target for entered minutes':'')+'. Blank costs, time and residual values count as zero. These are minimum payout targets to match selling whole, not predicted recovery dollars or buyer quotes.');
 }
 
@@ -124,10 +128,12 @@ function recalc(){
 function schedule(){setTimeout(recalc,0)}
 function relevant(node){
   const id=node?.id||'';
-  return id==='trip-target'||id==='trip-mpg'||id==='trip-gas'||id.startsWith('br-');
+  return id==='trip-target'||id==='trip-mpg'||id==='trip-gas'||
+    id==='trip-cost-method'||id==='trip-fuel-rate'||id.startsWith('br-');
 }
 function bind(){
   ensureCard();
+  window.addEventListener('scrapRadarProfileUpdated',schedule);
   document.addEventListener('input',e=>{if(relevant(e.target))schedule()},true);
   document.addEventListener('change',e=>{if(relevant(e.target))schedule()},true);
   new MutationObserver(()=>{ensureCard();schedule()}).observe(document.body,{childList:true,subtree:true});
