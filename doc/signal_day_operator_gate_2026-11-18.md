@@ -165,6 +165,15 @@ Scope: authenticated GitHub source review of Board Sense guarded candidate `rele
 - **PASS:** navigation and actual visual presence of the manual Board Recovery interface on owner iPad; no fabricated dollars with blank inputs.
 - **PENDING:** verify numerical three-path calculations using clearly labeled synthetic test values, labor/travel assumptions, round-trip correctness, data reset/clear, and whether current manual path carries data back to Board Sense. Automatic single-view cross-domain case transfer remains **draft PR #30, not live**. Neither Board Sense production nor Scrap Radar Family main was changed for this test.
 
+### November 19, 12:34 AM EST: owner-iPad baseline whole-board economics test PASS
+
+- Owner entered **$10** (explicit synthetic test offer, NOT real scrap price) into Scrap Radar Family live GitHub Pages **Sell Whole** box on the Board Recovery calculator, shown by an iPad screenshot around **12:34 AM EST**.
+- UI displayed **$10.00** whole-board result, **"ONE PATH PRICED: SELL WHOLE"**, and accurately stated **no overall recovery winner** because both Selective Harvest and Deeper Recovery remained unpriced.
+- **Recovery break-even targets** displayed **$10.00** each as the required minimum pre-extra-cost payout to tie selling whole. UI correctly states that missing travel, processing and time inputs have not been invented.
+- **PASS:** first live manual economics input propagation, whole-board baseline, incomplete-alternatives restraint, break-even zero-extra-cost baseline on owner iPad. This is only a *single-path* test; do not claim three-path net-cost or time-value arithmetic passed yet.
+- **Next staged manual values (all hypothetical)**: Retain Sell Whole **$10**, enter Selective Harvest parts payout **$14**, remaining-board residual **$2**, labor **10 minutes**, processing cost **$3**; leave all path travel/fuel/tolls blank. Source `scrap_radar_recovery_guard.js` should display **$13** selective net and **$3 above sell-whole**, with an incremental rate of **$18/hour** if no extra travel time entered. Deeper Recovery stays unpriced. Afterward test Deeper Recovery with another labeled synthetic set and a target hourly labor rate.
+- **Status**: Production UI already exists; no source promotion or paid-feature readiness implied. Automatic Board Sense case transfer remains draft.
+
 ## Release choices for November 19
 
 - **Option A: Public guarded free preview.** Consider only if real iPad upload and report, refusal safety, honest uncertainty, data handling, quota, and any advertised handoff are demonstrably working. Announce the limitations: manual review on dark/unclear views and no automatic multi-photo merged valuation.
