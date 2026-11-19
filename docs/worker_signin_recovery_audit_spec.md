@@ -92,3 +92,17 @@ Acceptance criteria for a future owner-approved implementation: a sustained ~4% 
 - **Payroll integrity:** A raise changes the rate history starting on its approved effective date only; never rewrite historic labor-cost snapshots. Future job defaults adopt the new rate after approval.
 
 The 4% improvement referenced in conversation remains an example of a positive trend, not a universal threshold or guarantee of a wage increase.
+
+## Shared gains: owner security and employee bonus opportunity
+
+The design should emphasize that preventing avoidable verified material loss can benefit **both owners and workers**. An example from the owner: if verified recoverable annual savings are $4,000 after valuation and before any additional program expenses, a proposed **$2,000 employee bonus pool** could pay **10 workers $200 each**, leaving **$2,000 with the company** before remaining costs. This is an **illustration**, not a committed or automatic bonus policy.
+
+- **Measure honestly:** 0.1 gram unaccounted-for per workday is 26 grams over 260 workdays (36.5 grams across 365 days), but its value depends on what material it is and verified valuation. A discrepancy may arise from scale variance, in-process inventory, residue, handling or bookkeeping, and is *not proof of theft*.
+- **Verify value of savings:** Do not automatically treat missing mass as precious metal or as pure profit. Estimate recoverable value only with comparable, independently verified material composition, actual recovery evidence, legitimate buyer settlement/valuation and processing costs.
+- **Owner controls:** Track chain-of-custody, calibrated measurements, reconciliations, approved corrections and repeatable variance patterns to reduce avoidable leakage without prejudging people.
+- **Worker benefit:** When savings are independently verified, show the owner an optional profit-sharing / bonus-pool scenario, explicitly accounting for remaining processing costs, taxes and other liabilities. The owner sets and discloses the policy and eligibility rules; the software does not automatically award or withhold pay.
+- **Fair allocation:** Compare meaningful contributions while acknowledging teams, training, safety, maintenance and input differences. Workers should not lose earned compensation or face blanket penalties for unverified missing material or somebody else's conduct.
+- **Transparency:** Allow workers to see the published bonus policy, their qualifying evidence, how the pool was calculated, their individual determination and a path to request corrections.
+- **Protect trust:** Owner management decisions and deferrals remain documented and reviewable, consistent with the foundational statement: “We're not trying to replace human judgment. We're trying to give human judgment an honest foundation.”
+
+Acceptance tests for eventual implementation: a supported $4,000 net-available-savings scenario produces a hypothetical $2,000 pool and 10 x $200 bonuses with $2,000 retained, *when that policy is explicitly selected*; it does not label missing 0.1g as verified theft or automatically turn unverified or pre-expense valuations into spendable bonus funds.
