@@ -150,6 +150,14 @@ Scope: authenticated GitHub source review of Board Sense guarded candidate `rele
 - Railway staging proxy shows `POST /analyze` **HTTP 200** at `2026-11-19T05:08:22Z`, approximately **5.2 seconds**, with no exceptions identified in the queried runtime logs. Screenshot time around 12:12 AM aligns with this within a few minutes.
 - **Not yet verified:** tapping the manual Scrap Radar link; actual cross-domain case transfer (separate **draft** PR #30 and an inactive sender); confidence/grade accuracy as a scrap buyer would judge it; complete economic workflow, production gate/security/retention, paid billing. The preview must **not** imply end-to-end handoff or public paid readiness. No production changes in this checkpoint.
 
+### November 19, 12:17 AM EST: owner-iPad manual Scrap Radar navigation PASS
+
+- Owner tapped **"Open Scrap Radar for manual economics"** from Board Sense staging's positive Recovery Intelligence report and shared a screenshot at approximately **12:17 AM EST**. The browser visibly reached `gfalvo1968-create.github.io` and loaded the Scrap Radar Family operating cockpit (Decision Center and Load + Trip Evaluator).
+- Dashboard showed **Single Load Net $0.00**, **Mixed Load Gross $0.00**, **Best Yard Net —**, **ROI Realized Net $0.00**, and **Decision Center: WAITING FOR INPUT** with Board Recovery "ENTER BOARD VALUES." These are empty-input defaults, **not verified profit, buyer quotes or a transferred board result**.
+- **PASS:** link navigates to Scrap Radar main page on owner iPad; manual economics page renders and does not fabricate prices or profits.
+- **PENDING:** actual visual scroll/anchor arrival at the Board Recovery panel (screenshot is above that panel), ability to enter and calculate a manual three-path case, and **automatic** cross-domain single-board transfer (still unmerged draft PR #30). Do not claim handoff or paid-feature readiness based on navigation.
+- **Production:** Existing Scrap Radar GitHub Pages page was visited but not modified as part of this check. Board Sense production and paid release remain unchanged.
+
 ## Release choices for November 19
 
 - **Option A: Public guarded free preview.** Consider only if real iPad upload and report, refusal safety, honest uncertainty, data handling, quota, and any advertised handoff are demonstrably working. Announce the limitations: manual review on dark/unclear views and no automatic multi-photo merged valuation.
