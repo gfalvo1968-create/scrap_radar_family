@@ -89,6 +89,17 @@ Scope: authenticated GitHub source review of Board Sense guarded candidate `rele
 - **Probe limitation:** Public web fetch attempts for staging `/health`, `/free-usage`, and a nonexistent `/blueprints/...` return fetch-tool inaccessible errors. These are **not** actual server HTTP statuses. No staging 404/401/403 behavior is verified from those probes. Treat private-route and old-mount denial as source-level checks until measured on a real client.
 - **Next hardening step, staging first:** wire the image preview from `board_blueprint.image_url` with safe `<img src>` assignment (never interpolate image into `innerHTML`), clear prior image on next scan/error, display truthful placeholder for gated PCB views, set `Cache-Control: no-store` on responses containing customer-derived images, remove public visitor IDs, run targeted tests, then owner-iPad screenshot and safe unauthorized-route checks. Do not use personal customer images in the public staging test.
 
+### November 18 night: inline blueprint viewer and public-response privacy deployed to staging
+
+- Board Sense guarded candidate PR #15, code commit `f474bc1ade7ff532d9853ef61efa5745dc3d082f`.
+- Updated `index.html`: added a private blueprint image preview using the backend's `board_blueprint.image_url` only when `object_gate.mode == "board"` and `delivery_mode == "inline_no_store"`; a new/failed/unconfirmed scan clears any previous image; avoids unsanitized `innerHTML` and remote image links. Does **not** imply an automated buyer grade, monetary valuation, or completed Scrap Radar handoff.
+- Updated `routes/free_usage_gate.py`: internal pseudonymous visitor ID is used for server quota accounting but no longer serialized to public free-usage and analysis responses.
+- Added `PrivateResponseNoStoreMiddleware` to `routes/upload_security.py` and enabled it in `main.py` for public analysis and free-usage routes, including error statuses; `Cache-Control: private, no-store, max-age=0`, `Pragma: no-cache`, `Expires: 0`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`.
+- Added `tests/test_private_api_responses.py` and GitHub workflow JavaScript syntax checking. **PCB object-gate/grade regression suite: SUCCESS** and **Jekyll site CI: SUCCESS** at this commit.
+- Railway `Board Sense Launch Staging` deployment `7feb68d4-fc4a-440f-a852-594d3272138d`: **SUCCESS**, 1/1 running replicas, 0 warning/critical notifications and no startup errors in deployment log. Staging service pins this exact commit. The earlier privacy-only staging commit `1057be25d57a3b47c09e7c313bdeb1177f59bed2` is the rollback checkpoint.
+- **Outstanding test:** owner iPad must check real same-origin photo upload, visible blueprint when one is generated, withheld blueprint on review images, clean second-scan/error state, and denied public derived-image URLs. There was no new HTTP-request evidence for these paths on the new staging deployment at time of write. CDN/cache delivery still needs external verification where relevant.
+- **Production not changed.** Origin restriction, paid entitlement/payment flows, and full Recovery Intelligence/handoff remain separate launch gates.
+
 ## Release choices for November 19
 
 - **Option A: Public guarded free preview.** Consider only if real iPad upload and report, refusal safety, honest uncertainty, data handling, quota, and any advertised handoff are demonstrably working. Announce the limitations: manual review on dark/unclear views and no automatic multi-photo merged valuation.
