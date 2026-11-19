@@ -108,6 +108,15 @@ Scope: authenticated GitHub source review of Board Sense guarded candidate `rele
 - **Remain PENDING:** prove no-store cache headers and removed blueprint/crop URL 404s with actual HTTP client, second-scan clearing, unavailable/ambiguous PCB behavior, paid entitlements/payments, full Recovery Intelligence, economic figures and Scrap Radar handoff. Privacy derived-asset protection in production remains unpromoted.
 - **Operator conclusion:** Maintain guarded/demo-only release stance until the remaining blockers are verified; do not imply a complete paid public launch is ready based solely on this successful staging scan.
 
+### November 18, 10:26 PM ET: independent staging HTTP security verification
+
+- Added a non-destructive, anonymous, five-GET staging smoke test `Board_Sense/scripts/staging_http_security_check.py` in Board Sense guarded PR #15, exact SHA `d44da94e8f971a477a1894544e3101a88188f736`. This avoids the separate assistant runtime DNS issue and runs on GitHub Actions against the existing, privacy-hardened Railway **staging-only** deployment. No POST uploads, quota claims, destructive testing or private-record reads.
+- GitHub Actions workflow `44451415000`, job `135316016607`: **SUCCESS**. The full local API/source regression suite ran **134 tests** successfully, and the JavaScript syntax check passed. Jekyll site CI also passed.
+- Independent staging HTTP results **5/5 PASS**, from the GitHub Actions log (UTC approximately `2026-11-19T03:26:37Z`): `/health` HTTP **200**; `/free-usage` HTTP **200**, no public `visitor_id`, `Cache-Control: no-store`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`; bogus `/blueprints/nonexistent-safe-probe.jpg` HTTP **404** FastAPI JSON; bogus `/multi-board-crops/nonexistent-safe-probe.jpg` HTTP **404** FastAPI JSON; anonymous `/irm/sources` HTTP **503**, safely denied due to missing admin secret on staging.
+- Note: fabricated nonexistent paths prove the old mounts are closed in this deployed staging version when combined with code/unit inspection. The test does **not** retrieve any actual generated image or private data. A 503 admin denial confirms fail-closed for an **unconfigured** staging secret, not successful authorized admin function.
+- **Staging passes now:** owner iPad completed one real board scan and saw an annotated inline blueprint; 134 automated regressions; five safe live GETs verify health, public response privacy, closed legacy image mounts, and anonymous admin rejection.
+- **Still pending:** second scan stale-image reset, physical board identity edge cases on hardware, production origin proxy setup, production cache/retention rollout, Supabase-backed quota behavior and paid entitlement gates, Recovery Intelligence and Scrap Radar handoff. No production changes or promotion have occurred.
+
 ## Release choices for November 19
 
 - **Option A: Public guarded free preview.** Consider only if real iPad upload and report, refusal safety, honest uncertainty, data handling, quota, and any advertised handoff are demonstrably working. Announce the limitations: manual review on dark/unclear views and no automatic multi-photo merged valuation.
