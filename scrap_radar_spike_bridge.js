@@ -9,7 +9,7 @@ const KEY='scrapRadarSpikeRecoveryPacketV1';
  // Drop any earlier case before accepting a new one.
  function consumeSingleBoardFragment(){
    const marker='#bs-single-v1=';
-   const fragment=String(window.location.hash||'');
+   const fragment=String((window.location&&window.location.hash)||'');
    if(!fragment.startsWith(marker))return false;
    try{localStorage.removeItem(KEY)}catch(_){}
    try{window.history.replaceState(null,'',window.location.pathname+window.location.search+'#board-recovery')}catch(_){}
