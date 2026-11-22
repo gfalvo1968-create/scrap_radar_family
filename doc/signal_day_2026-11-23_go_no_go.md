@@ -79,3 +79,8 @@ Mark each outcome PASS / FAIL / NOT TESTED with timestamp, screenshot and exact 
 - **Not yet confirmed:** sitemap read/processed status; indexed pages; homepage URL Inspection status; live search-result ranking.
 - OpenSEO Search Performance integration still returns `not_connected`, even though Search Console property itself is verified. Owner must return to OpenSEO, refresh, select the verified property and save.
 - Next action: Google Search Console URL Inspection on `https://gfalvo1968-create.github.io/scrap_radar_family/`, request indexing when eligible, then check sitemap status after Google processes it.
+
+## November 22 Google homepage indexing request (10:11 AM Eastern)
+
+- Jerry's Google Search Console URL Inspection screenshot confirms `Indexing requested`; the homepage URL was added to Google's priority crawl queue. This does NOT mean the page is indexed or ranked; repeat submissions do not increase priority.
+- Site ownership and sitemap submission are confirmed. OpenSEO Search Console performance connection is still `not_connected` as of this check. Next: owner opens OpenSEO's GSC Insights tab, presses Refresh, selects the newly verified property and saves it.
