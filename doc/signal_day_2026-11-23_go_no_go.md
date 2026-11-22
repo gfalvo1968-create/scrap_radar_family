@@ -57,3 +57,11 @@ Mark each outcome PASS / FAIL / NOT TESTED with timestamp, screenshot and exact 
 - **Safety branch:** reviewed promotion of PR #14/#15 and Family UI PR #28 after real release acceptance.
 - **Supabase:** restore paused/inactive customer identity project only with owner cost/operation awareness and verify login; do not confuse OSINT's separate active Supabase project.
 - **Communications:** publish accurate availability (preview/test release versus paid membership) and supported contact/retention text; do not promise unimplemented features.
+
+## November 22 owner iPad production test — 503 quota backend outage
+
+- Owner submitted two photos (`5026.jpg` and `5025.jpg`) through the public case tray. The UI displayed: `Case analysis failed: Board Sense public access is temporarily unavailable. Please try again shortly.`
+- Live Railway production HTTP logs confirm `POST /analyze-case` returned **503** at **2026-11-22 14:31:47 UTC**; app logs show `Daily usage check failed: URLError (HTTP status: n/a)` at 14:31:55 UTC. This was an upstream quota/usage verification failure, not a board classification or two-photo-identity result.
+- Board Sense `routes/free_usage_gate.py` points its production daily allowance gate at the Scrap Radar Family Supabase project `plcecfxejriiorzwqbfc`; the connected Supabase project was **INACTIVE**. This is a strong causal match for the URLError. The project's restore API returned `success:true`; subsequent status: **COMING_UP**, not yet `ACTIVE_HEALTHY`. Verification must continue.
+- `main.py` calls `_gate_or_block` *before* `_claim_or_block` on `/analyze-case`. For this specific 503 at the check phase, no free board use was claimed and no verified board report was produced.
+- **Public launch gate remains blocked** until Supabase is `ACTIVE_HEALTHY`, the anonymous `GET /free-usage` endpoint returns normal status *without consuming a case*, and Jerry's two-picture iPad test returns a verified report with correct daily accounting. Do not disable production quota checks or bypass usage protection to mask the outage.
