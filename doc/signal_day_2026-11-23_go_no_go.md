@@ -28,7 +28,7 @@ This checklist is based on live connected GitHub, Railway and Supabase metadata,
 ## Hard exit gates before free preview
 
 1. **Owner iPad cold-start:** With fresh/reloaded tabs open the live Family home, Scrap Radar, and Board Sense paths over HTTPS. Confirm no stale cached version and no broken links. Screenshot errors.
-2. **Board Sense live evidence:** One valid *single-board* original photo must upload, process, and return an understandable report or an honest manual-review state, not a false classification. Have a second distinct specimen for an explicit rejection test; do not accidentally consume extra quota.
+2. **Board Sense live evidence:** On the actual public two-picture case page, upload original **front/component side and back/solder side photos of the same physical board** as **one board case and one allowance**. Confirm the flow processes and returns an understandable report or honest manual-review state, not a false classification. Keep a second distinct specimen for a separately authorized rejection test; do not mix two different boards or accidentally consume extra quota.
 3. **Multi-board safety:** A mixed-board case must refuse combined grading, economic estimates and handoff. An accidental multi-board upload must not grant free extra analyses or silently debit the allowance on pre-analysis validation failures. Validate exact public release revision, not staging alone.
 4. **Public allowance:** Server-side daily limit works across reloads; invalid/unrelated/rejected inputs don't consume paid work or grant extra cases. Show 429/503 transparently on outage.
 5. **Board Sense ↔ Scrap Radar:** Only an accepted completed board case may hand off; original photo identity, measured mass, material category and entered costs remain coherent. One-way/round-trip travel is not double counted. No invented precious-metal contents, buyer acceptance or profit.
@@ -44,7 +44,7 @@ Do **not** accept real money until all of the above pass plus: Supabase customer
 ## iPad test plan for Jerry (public paths, no tester secrets in URLs)
 
 - Family: https://gfalvo1968-create.github.io/scrap_radar_family/
-- Board Sense: https://gfalvo1968-create.github.io/scrap_radar_family/board_sense_case.html
+- Board Sense: https://gfalvo1968-create.github.io/scrap_radar_family/board_sense_case.html (**two photos: front and back of one physical board; one case, one allowance**)
 - Scrap Radar: https://gfalvo1968-create.github.io/scrap_radar_family/scrap_radar.html
 - Customer account (diagnostic only; Supabase currently inactive): https://gfalvo1968-create.github.io/scrap_radar_family/account.html
 - Guarded standalone staging: https://boardsensestaging-staging.up.railway.app/ (not public sampler)
