@@ -1,3 +1,5 @@
+**November 23, 2026 launch:** [Current go/no-go and owner iPad checklist](doc/signal_day_2026-11-23_go_no_go.md). Paid subscriptions remain blocked until live checkout and entitlement verification; the free-preview decision is conditional on public production tests.
+
 Launch status and current setup are tracked in [launch readiness](doc/launch-readiness.md) and [security setup](doc/security-setup.md). Recovery quantities and dollar figures in older planning notes below are illustrative, not measured specimen yields.
 
 # scrap_radar_family
