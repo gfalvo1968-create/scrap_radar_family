@@ -72,3 +72,10 @@ Mark each outcome PASS / FAIL / NOT TESTED with timestamp, screenshot and exact 
 - Website SEO foundations committed: index title/description/canonical/social metadata; dedicated public sitemap; improved titles/descriptions/canonicals for Scrap Radar, Welcome Hall and Island Portal. OpenSEO crawl read 17 public pages and identified missing meta descriptions and thin content in several others. These are *not* confirmation of Google's indexing.
 - **Next Google actions:** Jerry opens the verified Search Console property, submits `sitemap.xml` under Sitemaps and inspects/requests indexing for the homepage. OpenSEO Google Search Console integration still reports `not_connected`; finish its property authorization after Google has registered the site. No indexing/rank guarantees.
 - **Supabase recovered:** Connected Supabase status for `plcecfxejriiorzwqbfc` is now `ACTIVE_HEALTHY`, following the restore previously accepted. Board Sense `GET /free-usage` and owner iPad two-picture scan still require live verification; healthy database status alone doesn't clear the launch gate.
+
+## November 22 Google Search Console milestone (10:05 AM Eastern)
+
+- Owner screenshot confirms URL-prefix site property ownership verified using HTML file and subsequent **`Sitemap submitted successfully`** confirmation for `sitemap.xml`.
+- **Not yet confirmed:** sitemap read/processed status; indexed pages; homepage URL Inspection status; live search-result ranking.
+- OpenSEO Search Performance integration still returns `not_connected`, even though Search Console property itself is verified. Owner must return to OpenSEO, refresh, select the verified property and save.
+- Next action: Google Search Console URL Inspection on `https://gfalvo1968-create.github.io/scrap_radar_family/`, request indexing when eligible, then check sitemap status after Google processes it.
