@@ -84,3 +84,9 @@ Mark each outcome PASS / FAIL / NOT TESTED with timestamp, screenshot and exact 
 
 - Jerry's Google Search Console URL Inspection screenshot confirms `Indexing requested`; the homepage URL was added to Google's priority crawl queue. This does NOT mean the page is indexed or ranked; repeat submissions do not increase priority.
 - Site ownership and sitemap submission are confirmed. OpenSEO Search Console performance connection is still `not_connected` as of this check. Next: owner opens OpenSEO's GSC Insights tab, presses Refresh, selects the newly verified property and saves it.
+
+## November 22 Google reporting connected and Board Sense allowance probe
+
+- At 10:16 AM Eastern, Jerry's OpenSEO screenshot displays Search Performance for the verified Google Search Console URL-prefix property, 0 clicks and 0 impressions over 28 days. Connected OpenSEO API independently returned `ok:true`, matching `https://gfalvo1968-create.github.io/scrap_radar_family/`, with zero query rows through Nov 19. This means the integration works, NOT that Google has indexed the homepage.
+- Scrap Radar Family Supabase project is `ACTIVE_HEALTHY`.
+- External non-consuming HTTP probe through OpenSEO crawler: `https://boardsense.scrapradarfamily.com/free-usage` returned HTTP **200** on Nov 22 (1.277s). This establishes availability of quota endpoint, but did not inspect its JSON payload or prove a successful full board analysis. Owner two-photo iPad test and backend accounting remain a release requirement.
