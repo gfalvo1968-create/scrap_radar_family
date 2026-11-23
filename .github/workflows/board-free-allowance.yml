@@ -1,0 +1,35 @@
+name: Board Sense free allowance display (draft)
+on:
+  pull_request:
+    paths:
+      - 'board_free_allowance.js'
+      - 'board_sense_case.html'
+      - 'tests/test_board_free_allowance.cjs'
+      - '.github/workflows/board-free-allowance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-free-allowance-panel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out proposed code
+        uses: actions/checkout@v4
+      - name: Use Node.js LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run offline non-consuming allowance panel tests
+        run: node --test tests/test_board_free_allowance.cjs
+      - name: Verify case page links read-only allowance module
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const page = fs.readFileSync('board_sense_case.html', 'utf8');
+          const script = fs.readFileSync('board_free_allowance.js', 'utf8');
+          if (!page.includes("board_free_allowance.js?v=1")) throw Error('Public case page did not load allowance status panel');
+          if (!script.includes("method: 'GET'") || !script.includes('credentials: \'omit\'')) throw Error('Allowance fetch must be read-only and anonymous');
+          if (script.includes('/analyze-case')) throw Error('Allowance display must never submit board analyses');
+          NODE
