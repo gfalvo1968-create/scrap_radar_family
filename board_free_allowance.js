@@ -108,7 +108,7 @@
   }
 
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { parseUsage: parseUsage, usageText: usageText, readAllowance: readAllowance };
+    module.exports = { parseUsage: parseUsage, usageText: usageText, readAllowance: readAllowance, install: install };
   } else if (root && root.document) {
     install(root.document, root);
   }
