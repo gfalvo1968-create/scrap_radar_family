@@ -132,3 +132,16 @@ test('decorative signal animations pause and clear when a visitor is typing', ()
   assert.equal(app.body.children.length, count);
   assert.equal(removed, 2);
 });
+
+test('radar signals remain inside decorative radar and never cover page buttons', () => {
+  const app = fixture();
+  const radar = {children:[], appendChild(node) {this.children.push(node); return node;}};
+  app.context.document.querySelector = selector => {
+    assert.equal(selector, '.radar');
+    return radar;
+  };
+  const before = app.body.children.length;
+  vm.runInContext('showRadarSignal()', app.context);
+  assert.equal(radar.children.length, 2, 'one message and one radar ripple');
+  assert.equal(app.body.children.length, before, 'no fixed overlays attached to body');
+});
