@@ -48,6 +48,14 @@ function rotateDetectionFeed() {
 }
 
 function showRadarSignal() {
+  // Animated decorations never compete with someone entering a signal.
+  const focused = document.activeElement;
+  if (focused && (focused.tagName === 'INPUT' || focused.tagName === 'TEXTAREA')) {
+    if (typeof document.querySelectorAll === 'function') {
+      document.querySelectorAll('.signal-popup, .radar-ripple').forEach(node => node.remove());
+    }
+    return;
+  }
   const items = publicSignalExamples.concat(localSignals);
   const signal = document.createElement('div');
   signal.className = 'signal-popup';
