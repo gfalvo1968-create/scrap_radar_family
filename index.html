@@ -44,15 +44,17 @@ hard work, vision, and the belief that humans and AI can build together.</p>
 hard work, curiosity, and long nights learning.</p>
 </section>
 <section class="signbook" id="signal-log">
-<h2>Signal Log</h2>
-<input id="signalName" placeholder="Your Name">
-<textarea id="signalMessage" placeholder="Your signal to the island..."></textarea>
+<h2>Personal Signal Log</h2>
+<p class="signal-local-note">Preview feature: signals entered here are saved only in this browser, not publicly transmitted. Please don't include private information. To request a place on the public Wall of Names, use Enter the Wall and submit for review.</p>
+<input id="signalName" placeholder="Your Name" aria-label="Name for personal signal" maxlength="60">
+<textarea id="signalMessage" placeholder="Your signal to the island..." aria-label="Personal signal message" maxlength="200"></textarea>
 <div class="button-center">
-<button onclick="transmitSignal()">Transmit Signal</button>
+<button type="button" onclick="transmitSignal()">Save Signal on This Device</button>
 <a href="hall.html" class="wall-button">ENTER THE WALL<br><span class="wall-subtitle">Where Every Name Lives On</span></a>
 </div>
+<p id="signalStatus" role="status" aria-live="polite"></p>
 <div id="signalWall"></div>
 </section>
-<script src="script.js"></script>
+<script src="script.js?v=signal-local-2"></script>
 </body>
 </html>
