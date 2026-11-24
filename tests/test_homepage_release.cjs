@@ -13,7 +13,7 @@ const tests = [
   ["ordinary Board Sense and Scrap Radar navigation remain", () => {
     assert.match(home, /href="board_sense_case\.html"/);
     assert.match(home, /href="scrap_radar\.html"/);
-    assert.match(home, /<script src="script\.js\?v=signal-local-2"><\/script>/);
+    assert.match(home, /<script src="script\.js\?v=signal-local-3"><\/script>/);
   }],
   ["public homepage has no tester access or client secret lookup", () => {
     assert.doesNotMatch(home, /mainTesterDoor|boardSenseTesterKeyV1|tester=1|localStorage/);
