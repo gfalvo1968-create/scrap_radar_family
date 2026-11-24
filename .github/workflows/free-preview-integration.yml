@@ -6,6 +6,9 @@ on:
   pull_request:
     paths:
       - index.html
+      - hall.html
+      - hall.css
+      - hall.js
       - script.js
       - style.css
       - board_case_tray.js
@@ -17,6 +20,7 @@ on:
       - tests/test_object_gate_report.js
       - tests/test_homepage_release.cjs
       - tests/test_local_signal_log.cjs
+      - tests/test_wall_of_names_display.cjs
       - .github/workflows/free-preview-integration.yml
 permissions:
   contents: read
@@ -31,6 +35,7 @@ jobs:
       - name: Verify JavaScript parses
         run: |
           node --check script.js
+          node --check hall.js
           node --check board_case_tray.js
           node --check board_free_allowance.js
       - name: Run combined public UI checks
@@ -38,6 +43,7 @@ jobs:
           node tests/test_free_preview_integration.cjs
           node tests/test_homepage_release.cjs
           node --test tests/test_local_signal_log.cjs
+          node --test tests/test_wall_of_names_display.cjs
           node tests/test_board_case_identity_vs_object_status.js
           node tests/test_object_gate_report.js
           node --test tests/test_board_free_allowance.cjs
