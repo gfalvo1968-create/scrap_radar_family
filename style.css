@@ -93,3 +93,23 @@ body{
 @media(prefers-reduced-motion:reduce){
   .signal-popup,.radar-ripple{animation:none;opacity:.85}
 }
+
+/* Decorative transmissions stay within the radar viewport, never over links. */
+.radar .signal-popup{
+  position:absolute;
+  left:10%!important;
+  right:10%!important;
+  top:35%!important;
+  width:auto;
+  max-width:none;
+  padding:8px 9px;
+  font-size:clamp(.65rem,2vw,.8rem);
+  line-height:1.3;
+  z-index:8;
+}
+.radar .radar-ripple{
+  position:absolute;
+  left:50%!important;
+  top:50%!important;
+  z-index:7;
+}
