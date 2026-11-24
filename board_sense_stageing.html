@@ -1,7 +1,7 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Board Sense Staging</title><style>html,body,#bs{margin:0;width:100%;height:100%;border:0;background:#050505}body{overflow:hidden}#bs{display:block}</style></head><body><iframe id="bs" src="board_sense.html?v=case26" title="Board Sense Staging"></iframe><script>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Board Sense Staging</title><style>html,body,#bs{margin:0;width:100%;height:100%;border:0;background:#050505}body{overflow:hidden}#bs{display:block}</style></head><body><iframe id="bs" src="board_sense.html?v=case38" title="Board Sense Staging"></iframe><script>
 (function(){
   var frame=document.getElementById('bs');
-  var STAGING_API='https://boardsense-stageing.up.railway.app';
+  var STAGING_API='https://boardsensestaging-staging.up.railway.app';
   var TESTER_STORAGE_KEY='boardSenseTesterKeyV1';
   function add(d,id,src,onload){if(d.getElementById(id)){if(onload)onload();return}var s=d.createElement('script');s.id=id;s.src=src;s.async=false;if(onload)s.onload=onload;d.body.appendChild(s)}
   function diagnosticGate(data){var x=(data&&data.combined)||data||{};return x.same_board_verification||(x.case_analysis&&x.case_analysis.identity_gate)||x.identity||null}
@@ -60,7 +60,35 @@
   }
   function installTesterAccess(d){
     var w=d.defaultView;if(!w)return;w.API=STAGING_API;
-    if(!w.__boardSenseTesterFetchPatched){var originalFetch=w.fetch.bind(w);w.fetch=function(input,init){init=init||{};var key='';try{key=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}if(key){var headers=new w.Headers(init.headers||{});headers.set('x-board-sense-tester-key',key);init.headers=headers}var requestUrl=typeof input==='string'?input:(input&&input.url)||'';try{var parsed=new w.URL(requestUrl,w.location.href);if(parsed.hostname==='boardsense.scrapradarfamily.com'||parsed.hostname==='boardsense-stageing.up.railway.app'){var staged=STAGING_API+parsed.pathname+parsed.search;if(typeof input==='string'){input=staged}else{input=new w.Request(staged,input)}requestUrl=staged}}catch(_){ }return originalFetch(input,init).then(function(res){if(String(requestUrl).indexOf('/analyze-case')>=0){try{res.clone().json().then(function(data){showDiagnostics(d,data);var model=String(((data||{}).combined||{}).model||'');if(model&&!/Case Reasoner v0\.2[4-9]/.test(model)&&!(String(((data||{}).combined||{}).status||'').indexOf('case_identity_')===0&&/Case Reasoner v0\.22/.test(model))){var note=d.createElement('div');note.style.cssText='position:fixed;left:10px;right:10px;top:12px;z-index:99999;background:#381400;color:#fff;border:2px solid #ff9800;border-radius:10px;padding:12px;font-weight:bold';note.textContent='STAGING API CHECK: An older backend answered this case. Reload this page before trusting the result. Engine: '+model;d.body.appendChild(note)}}).catch(function(){})}catch(_){}}return res})};w.__boardSenseTesterFetchPatched=true}
+    if(!w.__boardSenseTesterFetchPatched){
+      var originalFetch=w.fetch.bind(w);
+      w.fetch=function(input,init){
+        var target=typeof input==='string'?input:input&&input.url;
+        var parsed;try{parsed=new w.URL(target,w.location.href)}catch(_){return originalFetch(input,init)}
+        var hosts=['boardsense.scrapradarfamily.com','boardsense-stageing.up.railway.app','boardsensestaging-staging.up.railway.app'];
+        if(hosts.indexOf(parsed.hostname)===-1)return originalFetch(input,init);
+        if(parsed.protocol!=='https:'||parsed.port)return Promise.reject(new Error('Unsafe staging API target'));
+        var url=STAGING_API+parsed.pathname+parsed.search;
+        var opts=Object.assign({},init||{});
+        var headers=new w.Headers(opts.headers||(input&&input.headers)||{});
+        headers.delete('x-board-sense-tester-key');
+        if(['/analyze','/analyze-case','/analyze-pair','/analyze-spike-pair'].indexOf(parsed.pathname)!==-1){
+          var key='';try{key=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}
+          if(key)headers.set('x-board-sense-tester-key',key);
+        }
+        opts.headers=headers;opts.redirect='error';
+        var request=typeof input==='string'?url:new w.Request(url,input);
+        return originalFetch(request,opts).then(function(res){
+          if(parsed.pathname==='/analyze-case')res.clone().json().then(function(data){showDiagnostics(d,data)}).catch(function(){});
+          return res;
+        });
+      };
+      w.__boardSenseTesterFetchPatched=true;
+    }
+    var banner=d.createElement('div');
+    banner.textContent='STAGING ONLY • Target build 56d31c43 • '+STAGING_API+' • build verified in Railway, not by this page';
+    banner.style.cssText='padding:10px;background:#332600;color:#ffd700;border:1px solid #ffd700;font:bold 13px monospace;overflow-wrap:anywhere';
+    d.body.prepend(banner);
     if(d.getElementById('boardSenseTesterAccessBtn'))return;
     var btn=d.createElement('button');btn.id='boardSenseTesterAccessBtn';btn.type='button';var saved='';try{saved=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}btn.textContent=saved?'✅ STAGING • Tester Access Saved':'🧪 STAGING • Tester Access';btn.style.cssText='position:fixed;right:12px;bottom:12px;z-index:99999;padding:10px 14px;border-radius:12px;border:1px solid #ffd700;background:#111;color:#ffd700;font-weight:700;box-shadow:0 0 14px rgba(255,215,0,.35)';btn.onclick=function(){var existing='';try{existing=w.localStorage.getItem(TESTER_STORAGE_KEY)||''}catch(_){}var entered=w.prompt(existing?'Tester access is already saved. Enter a NEW key to replace it. Leave blank to keep it. Type CLEAR to disable.':'Enter the Board Sense tester key.','');if(entered===null)return;entered=String(entered).trim();try{if(existing&&!entered){btn.textContent='✅ STAGING • Tester Access Saved';return}if(entered.toUpperCase()==='CLEAR'){w.localStorage.removeItem(TESTER_STORAGE_KEY);btn.textContent='🧪 STAGING • Tester Access';return}if(entered){w.localStorage.setItem(TESTER_STORAGE_KEY,entered);btn.textContent='✅ STAGING • Tester Access Saved'}}catch(_){w.alert('Tester key could not be saved on this browser.')}};d.body.appendChild(btn)
   }
@@ -111,7 +139,7 @@
     function paint(){var tray=d.getElementById('caseTray');if(!tray)return;Array.prototype.forEach.call(tray.querySelectorAll('.blueprint-item'),function(row){if(row.querySelector('.staging-file-preview'))return;var title=row.querySelector('.blueprint-title');var name=title?String(title.textContent||'').trim():'';if(!name||!urls[name])return;var img=d.createElement('img');img.className='staging-file-preview';img.src=urls[name];img.alt=name;img.style.cssText='width:88px;height:66px;object-fit:cover;border:1px solid #39ff14;border-radius:8px;margin-right:10px;vertical-align:middle;background:#111';row.insertBefore(img,row.firstChild)})}
     ['casePhotos','casePhoto'].forEach(function(id){var input=d.getElementById(id);if(input)input.addEventListener('change',function(){remember(input);setTimeout(paint,30)})});var tray=d.getElementById('caseTray');if(tray)new MutationObserver(function(){paint()}).observe(tray,{childList:true,subtree:true});paint()
   }
-  function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=18',function(){installTrayPreviews(d)})}
+  function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=24',function(){installTrayPreviews(d)})}
   function loadSpikeDual(d){add(d,'spikeDualLoader','board_spike_dual.js?v=2')}
   function loadTargetArea(d){add(d,'targetAreaDisplayLoader','board_target_area_patch.js?v=2',function(){loadSpikeDual(d)})}
   frame.addEventListener('load',function(){try{var d=this.contentDocument;if(!d)return;installTesterAccess(d);add(d,'inspectionTargetLoader','board_inspection_target.js?v=4',function(){loadTargetArea(d)});if(d.getElementById('spikeScrapBridgeLoader')){loadTray(d);return}var b=d.createElement('script');b.id='spikeScrapBridgeLoader';b.src='board_scrap_bridge.js?v=3';b.async=false;b.onload=function(){loadTray(d)};b.onerror=function(){loadTray(d)};d.body.appendChild(b)}catch(e){console.error('Board Sense staging injection failed',e)}});
