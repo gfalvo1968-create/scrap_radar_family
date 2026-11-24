@@ -66,3 +66,30 @@ body{
 /* Prelaunch status is visible to everyone; never imply paid enrollment is open. */
 .preview-note{box-sizing:border-box;max-width:900px;margin:24px auto;padding:16px 20px;border:1px solid rgba(0,255,153,.5);border-radius:14px;background:rgba(0,30,25,.8);color:#e1fff5;font-size:1.05rem;line-height:1.6;text-align:left}
 .preview-note strong{color:#00ffcc}
+
+/* Public-preview iPad fixes: match account link to portal buttons and keep
+   decorative signal effects from obscuring or intercepting interactive areas. */
+.account-btn{
+  width:min(450px,calc(100vw - 32px));
+  color:#f4fbff;
+  background:#183447;
+  border:2px solid #78d9ff;
+  box-shadow:0 0 18px rgba(120,217,255,.35);
+}
+.account-btn:hover,.account-btn:focus-visible{outline:3px solid #b8eeff;outline-offset:3px}
+.signal-popup{
+  pointer-events:none;
+  left:auto!important;
+  right:12px;
+  max-width:min(260px,calc(100vw - 24px));
+  box-sizing:border-box;
+  font-size:clamp(.8rem,2.5vw,1rem);
+}
+.radar-ripple{pointer-events:none}
+@media(max-width:600px){
+  .portal-container .portal{width:min(450px,calc(100vw - 32px));padding:20px 16px}
+  .portal-container .maya-btn,.portal-container .boardsense-btn{width:min(450px,calc(100vw - 32px))}
+}
+@media(prefers-reduced-motion:reduce){
+  .signal-popup,.radar-ripple{animation:none;opacity:.85}
+}
