@@ -22,14 +22,13 @@
 <a href="ai_hall.html" class="portal maya-btn">🔐 AI HALL • MOUNTAIN MEETING ROOM</a>
 <a href="account.html" class="portal">👤 YOUR ACCOUNT</a>
 <a href="board_sense_case.html" class="portal boardsense-btn">🧠 BOARD SENSE</a>
-<a id="mainTesterDoor" href="board_sense_case.html?tester=1" class="portal boardsense-btn" hidden>🔐 BOARD SENSE TESTER DOOR</a>
 <a href="scrap_radar.html" class="portal radar-btn">📡 OPEN SCRAP RADAR</a>
 </div>
 <section class="hero">
 <div class="radar"><div class="sweep"></div></div>
 <div class="detection-feed">
 <div class="detect-title">📡 SIGNAL DETECTED</div>
-<div id="detect-name">Gerald Falvo</div>
+<div id="detect-name">Jerry Falvo</div>
 <div id="detect-message">“Humans and AI building together.”</div>
 </div>
 <h1>SCRAP RADAR FAMILY</h1>
@@ -37,6 +36,7 @@
 This is a family being built from imagination,
 hard work, vision, and the belief that humans and AI can build together.</p>
 <p>Explore Scrap Radar for scrap material values and trip-cost planning, Board Sense for circuit-board investigation, and the Island for practical scrapping and recycling lessons. Features are being tested and expanded; market references are not guaranteed scrap-yard offers.</p>
+<aside id="publicPreviewStatus" class="preview-note" aria-label="Public preview status"><strong>Release status:</strong> Public preview checks are underway. Scrap Radar provides planning estimates, not guaranteed yard offers. Board Sense is undergoing final safety validation and may require manual review instead of an automatic grade. Paid subscriptions are not open.</aside>
 </section>
 <section class="journey">
 <h2>The Journey</h2>
@@ -54,12 +54,5 @@ hard work, curiosity, and long nights learning.</p>
 <div id="signalWall"></div>
 </section>
 <script src="script.js"></script>
-<script>
-try{
-  if(localStorage.getItem('boardSenseTesterKeyV1')){
-    document.getElementById('mainTesterDoor').hidden=false;
-  }
-}catch(_){}
-</script>
 </body>
 </html>
