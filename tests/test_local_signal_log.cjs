@@ -118,3 +118,17 @@ test('localStorage write failure and invalid inputs fail safely', () => {
   assert.equal(invalid.writes, 0);
   assert.match(invalid.nodes.signalStatus.textContent, /Please enter a name/);
 });
+
+test('decorative signal animations pause and clear when a visitor is typing', () => {
+  const app = fixture();
+  let removed = 0;
+  const count = app.body.children.length;
+  app.context.document.activeElement = {tagName: 'TEXTAREA'};
+  app.context.document.querySelectorAll = selector => {
+    assert.equal(selector, '.signal-popup, .radar-ripple');
+    return [{remove() {removed++; }}, {remove() {removed++; }}];
+  };
+  vm.runInContext('showRadarSignal()', app.context);
+  assert.equal(app.body.children.length, count);
+  assert.equal(removed, 2);
+});
