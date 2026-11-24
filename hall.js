@@ -3,6 +3,7 @@ const SUPABASE_KEY = "sb_publishable_VeT36jSz3w8itRpHNnvl5g_Qe1bYiRJ";
 
 let activeSignals = [];
 let hallSignals = [];
+let currentSignalIndex = 0;
 const radar = document.getElementById("megaRadar");
 
 async function loadApprovedNames(){
@@ -15,24 +16,30 @@ async function loadApprovedNames(){
     hallSignals = rows.map(row => ({name:row.display_name,remark:row.remark || "Every Name Lives On."}));
     const count = document.getElementById("approvedCount");
     if(count) count.textContent = String(hallSignals.length);
-    if(hallSignals.length){createHallSignal();createHallSignal();createHallSignal();}
+    if(!hallSignals.length){activeSignals.forEach(label=>label.remove());activeSignals=[];return;}
+    if(!activeSignals.length)createHallSignal();
   }catch(error){console.error("Wall of Names load error", error);}
 }
 
 function createHallSignal(){
   if(!radar || !hallSignals.length) return;
-  const signal = hallSignals[Math.floor(Math.random()*hallSignals.length)];
+  // One readable approved record at a time. No data changes or public edits.
+  activeSignals.forEach(label=>label.remove());
+  activeSignals=[];
+  const signal = hallSignals[currentSignalIndex % hallSignals.length];
+  currentSignalIndex++;
   const label = document.createElement("div");
   label.className = "hall-label";
   label.textContent = signal.remark ? `${signal.name}: ${signal.remark}` : signal.name;
-  label.style.left = `${Math.random()*76+12}%`;
-  label.style.top = `${Math.random()*76+12}%`;
-  label.style.maxWidth = "250px";
+  label.style.left = "50%";
+  label.style.top = "50%";
+  label.style.width = "min(80%, 360px)";
+  label.style.maxWidth = "100%";
+  label.style.overflowWrap = "anywhere";
   label.style.textAlign = "center";
   label.style.zIndex = "20";
   radar.appendChild(label);
   activeSignals.push(label);
-  if(activeSignals.length>12){activeSignals.shift().remove();}
 }
 
 async function submitWallEntry(){
@@ -78,6 +85,6 @@ function installSignButton(){
 window.addEventListener("load",async()=>{
   installSignButton();
   await loadApprovedNames();
-  setInterval(createHallSignal,1800);
+  setInterval(createHallSignal,6000);
   setInterval(loadApprovedNames,60000);
 });
