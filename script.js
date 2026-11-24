@@ -56,19 +56,23 @@ function showRadarSignal() {
     }
     return;
   }
+  // Keep decorative messages inside the radar instead of floating over navigation.
+  const host = typeof document.querySelector === 'function'
+    ? document.querySelector('.radar') : null;
+  if (!host) return;
   const items = publicSignalExamples.concat(localSignals);
   const signal = document.createElement('div');
   signal.className = 'signal-popup';
   signal.textContent = items[Math.floor(Math.random() * items.length)];
-  signal.style.left = (Math.random() * 60 + 25) + '%';
-  signal.style.top = (Math.random() * 30 + 28) + '%';
-  document.body.appendChild(signal);
+  signal.style.left = '10%';
+  signal.style.top = '35%';
+  host.appendChild(signal);
 
   const ripple = document.createElement('div');
   ripple.className = 'radar-ripple';
-  ripple.style.left = signal.style.left;
-  ripple.style.top = signal.style.top;
-  document.body.appendChild(ripple);
+  ripple.style.left = '50%';
+  ripple.style.top = '50%';
+  host.appendChild(ripple);
 
   setTimeout(() => ripple.remove(), 2200);
   setTimeout(() => signal.remove(), 4000);
