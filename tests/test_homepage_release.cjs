@@ -18,6 +18,13 @@ const tests = [
   ["public homepage has no tester access or client secret lookup", () => {
     assert.doesNotMatch(home, /mainTesterDoor|boardSenseTesterKeyV1|tester=1|localStorage/);
   }],
+  ["iPad account link is styled like a real portal and decorative effects cannot intercept taps", () => {
+    assert.match(home, /href="account\.html" class="portal account-btn"/);
+    assert.match(home, /href="style\.css\?v=preview-mobile-3"/);
+    assert.match(css, /\.account-btn\s*\{/);
+    assert.match(css, /\.signal-popup\s*\{[^}]*pointer-events:none/s);
+    assert.match(css, /max-width:min\(260px,calc\(100vw - 24px\)\)/);
+  }],
   ["private tester path functionality remains on case page for authorized team", () => {
     assert.match(casePage, /boardSenseTesterKeyV1/);
     assert.match(casePage, /installTesterAccess/);
