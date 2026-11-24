@@ -1,0 +1,39 @@
+name: Integrated free-preview surface checks
+on:
+  push:
+    branches:
+      - release/free-preview-integration-20261124
+  pull_request:
+    paths:
+      - index.html
+      - style.css
+      - board_case_tray.js
+      - board_sense_case.html
+      - board_free_allowance.js
+      - tests/test_free_preview_integration.cjs
+      - tests/test_board_free_allowance.cjs
+      - tests/test_board_case_identity_vs_object_status.js
+      - tests/test_object_gate_report.js
+      - tests/test_homepage_release.cjs
+      - .github/workflows/free-preview-integration.yml
+permissions:
+  contents: read
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify JavaScript parses
+        run: |
+          node --check board_case_tray.js
+          node --check board_free_allowance.js
+      - name: Run combined public UI checks
+        run: |
+          node tests/test_free_preview_integration.cjs
+          node tests/test_homepage_release.cjs
+          node tests/test_board_case_identity_vs_object_status.js
+          node tests/test_object_gate_report.js
+          node --test tests/test_board_free_allowance.cjs
