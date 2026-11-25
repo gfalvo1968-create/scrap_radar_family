@@ -101,7 +101,7 @@
       w.__boardSenseTesterFetchPatched=true;
     }
     var banner=d.createElement('div');
-    banner.textContent='STAGING ONLY • Target build 55a90ad • '+STAGING_API+' • build verified in Railway, not by this page';
+    banner.textContent='STAGING ONLY • Target build 6690f73 • '+STAGING_API+' • build verified in Railway, not by this page';
     banner.style.cssText='padding:10px;background:#332600;color:#ffd700;border:1px solid #ffd700;font:bold 13px monospace;overflow-wrap:anywhere';
     d.body.prepend(banner);
     if(d.getElementById('boardSenseTesterAccessBtn'))return;
@@ -181,7 +181,10 @@
         var report={};
         fields.forEach(function(key){if(Object.prototype.hasOwnProperty.call(result,key))report[key]=result[key]});
         status.textContent='Single-photo diagnostic response received. Inspection only.';
-        output.textContent=JSON.stringify(report,null,2);
+        var ci=result.component_intelligence||{},dg=ci.diagnostics||{},side=ci.side_context||{},vis=result.visual||{};
+        var summary={board_type:result.board_type,confidence:result.confidence,grade:result.grade,score:result.score,mask_coverage_pct:dg.mask_coverage_pct,ic_like:ci.ic_like,gold_contact_count:vis.gold_contact_count,solder_side_likelihood:ci.solder_side_likelihood,body_rejected:dg.body_rejected,pin_rejected:dg.pin_rejected,face_rejected:dg.face_rejected,side_status:side.status};
+        output.textContent='QUICK DIAGNOSTIC SUMMARY\n'+JSON.stringify(summary,null,2)+'\n\nREJECTED PACKAGE REGIONS (inspection only)\n'+JSON.stringify(dg.rejected_package_regions||[],null,2)+'\n\nFULL REPORT\n'+JSON.stringify(report,null,2);
+        output.scrollTop=0;
       }catch(e){status.textContent='Diagnostic failed: '+e.message}
       finally{button.disabled=false;input.disabled=false}
     });
