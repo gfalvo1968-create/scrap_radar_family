@@ -12,7 +12,7 @@
 <meta property="og:description" content="Tools and lessons for scrappers: Scrap Radar planning, Board Sense circuit board investigation, and recovery education.">
 <meta property="og:url" content="https://gfalvo1968-create.github.io/scrap_radar_family/">
 <meta name="twitter:card" content="summary">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=preview-mobile-4">
 </head>
 <body>
 <div class="portal-container">
@@ -20,16 +20,15 @@
 <a href="island_portal.html" class="portal island-btn">🌴 ENTER THE ISLAND</a>
 <a href="maya.html" class="portal maya-btn">🤖 MAYA AI CONTROL ROOM</a>
 <a href="ai_hall.html" class="portal maya-btn">🔐 AI HALL • MOUNTAIN MEETING ROOM</a>
-<a href="account.html" class="portal">👤 YOUR ACCOUNT</a>
+<a href="account.html" class="portal account-btn">👤 YOUR ACCOUNT</a>
 <a href="board_sense_case.html" class="portal boardsense-btn">🧠 BOARD SENSE</a>
-<a id="mainTesterDoor" href="board_sense_case.html?tester=1" class="portal boardsense-btn" hidden>🔐 BOARD SENSE TESTER DOOR</a>
 <a href="scrap_radar.html" class="portal radar-btn">📡 OPEN SCRAP RADAR</a>
 </div>
 <section class="hero">
 <div class="radar"><div class="sweep"></div></div>
 <div class="detection-feed">
 <div class="detect-title">📡 SIGNAL DETECTED</div>
-<div id="detect-name">Gerald Falvo</div>
+<div id="detect-name">Jerry Falvo</div>
 <div id="detect-message">“Humans and AI building together.”</div>
 </div>
 <h1>SCRAP RADAR FAMILY</h1>
@@ -37,6 +36,7 @@
 This is a family being built from imagination,
 hard work, vision, and the belief that humans and AI can build together.</p>
 <p>Explore Scrap Radar for scrap material values and trip-cost planning, Board Sense for circuit-board investigation, and the Island for practical scrapping and recycling lessons. Features are being tested and expanded; market references are not guaranteed scrap-yard offers.</p>
+<aside id="publicPreviewStatus" class="preview-note" aria-label="Public preview status"><strong>Release status:</strong> Public preview checks are underway. Scrap Radar provides planning estimates, not guaranteed yard offers. Board Sense is undergoing final safety validation and may require manual review instead of an automatic grade. Paid subscriptions are not open.</aside>
 </section>
 <section class="journey">
 <h2>The Journey</h2>
@@ -44,22 +44,17 @@ hard work, vision, and the belief that humans and AI can build together.</p>
 hard work, curiosity, and long nights learning.</p>
 </section>
 <section class="signbook" id="signal-log">
-<h2>Signal Log</h2>
-<input id="signalName" placeholder="Your Name">
-<textarea id="signalMessage" placeholder="Your signal to the island..."></textarea>
+<h2>Personal Signal Log</h2>
+<p class="signal-local-note">Preview feature: signals entered here are saved only in this browser, not publicly transmitted. Please don't include private information. To request a place on the public Wall of Names, use Enter the Wall and submit for review.</p>
+<input id="signalName" placeholder="Your Name" aria-label="Name for personal signal" maxlength="60">
+<textarea id="signalMessage" placeholder="Your signal to the island..." aria-label="Personal signal message" maxlength="200"></textarea>
 <div class="button-center">
-<button onclick="transmitSignal()">Transmit Signal</button>
+<button type="button" onclick="transmitSignal()">Save Signal on This Device</button>
 <a href="hall.html" class="wall-button">ENTER THE WALL<br><span class="wall-subtitle">Where Every Name Lives On</span></a>
 </div>
+<p id="signalStatus" role="status" aria-live="polite"></p>
 <div id="signalWall"></div>
 </section>
-<script src="script.js"></script>
-<script>
-try{
-  if(localStorage.getItem('boardSenseTesterKeyV1')){
-    document.getElementById('mainTesterDoor').hidden=false;
-  }
-}catch(_){}
-</script>
+<script src="script.js?v=signal-local-4"></script>
 </body>
 </html>
