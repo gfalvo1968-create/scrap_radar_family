@@ -10,6 +10,21 @@
   function showDiagnostics(d,data){
     var old=d.getElementById('stagingFrameDiagnostics');if(old)old.remove();
     var gate=diagnosticGate(data);if(!gate)return;
+    var combinedCase=(data&&data.combined)||{};
+    // Operator testimony is accepted, but does not establish independent
+    // physical matching. Explain the hold rather than requesting it again.
+    if(gate.status==='OPERATOR_CONFIRMED_SAME_BOARD' &&
+       combinedCase.status==='case_identity_failed' &&
+       combinedCase.requires_manual_board_verification===true &&
+       !gate.block_reconciliation){
+      setTimeout(function(){
+        var u=d.getElementById('uploadStatus');
+        if(u && u.textContent.indexOf('Case paused: same-board identity is uncertain')===0){
+          u.textContent='Your confirmation was accepted. Independent physical matching remains unverified. Combined grading is withheld. Use single-photo inspection or add a new independent full-board view; repeating confirmation will not resolve this.';
+        }
+      },250);
+    }
+
     if(gate.status==='IDENTITY_CLARIFICATION_NEEDED'){
       var request=(gate.requested_photos&&gate.requested_photos[0])||{};
       var instruction=request.instruction||gate.identity_next_step||'Add the targeted identity photo SPIKE requested.';
