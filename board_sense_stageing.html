@@ -192,8 +192,9 @@
         var img=new w.Image();
         img.onload=function(){
           try{
-            canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;
-            var ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);
+            var scale=Math.min(1,1600/Math.max(img.naturalWidth,img.naturalHeight));
+            canvas.width=Math.round(img.naturalWidth*scale);canvas.height=Math.round(img.naturalHeight*scale);
+            var ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);
             var regions=dg.rejected_package_regions||[];
             ctx.lineWidth=Math.max(2,canvas.width/400);
             ctx.font=Math.max(14,canvas.width/55)+'px sans-serif';
@@ -208,7 +209,7 @@
         img.onerror=function(){w.URL.revokeObjectURL(url);canvas.remove()};
         img.src=url;
         var legend=d.createElement('p');legend.id='diagnosticOverlayLegend';var prior=d.getElementById(legend.id);if(prior)prior.remove();
-        legend.textContent='Candidate overlay (inspection only): red = body, yellow = pins, cyan = brightness. Alignment may differ if the server rotates or resizes the photograph.';
+        legend.textContent='Candidate overlay (inspection only): red = body, yellow = pins, cyan = brightness. Preview scaled to the server working-image limit of 1600 pixels; orientation and alignment still require verification.';
         canvas.before(legend);
       }catch(e){status.textContent='Diagnostic failed: '+e.message}
       finally{button.disabled=false;input.disabled=false}
