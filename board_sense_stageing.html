@@ -165,7 +165,7 @@
     panel.innerHTML='<h2>STAGING • Single-Photo Board Diagnostic</h2><p>One board photograph. Direct /analyze test. No multi-photo merge, buyer valuation or Scrap Radar handoff.</p><input type="file" id="diagnosticBoardPhoto" accept="image/*"><button type="button" id="diagnosticBoardRun">Analyze One Board</button><p id="diagnosticBoardStatus" role="status">Choose the front photograph.</p><pre id="diagnosticBoardOutput" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:70vh;overflow:auto"></pre>';
     parent.insertAdjacentElement('beforebegin',panel);
     var input=d.getElementById('diagnosticBoardPhoto'),button=d.getElementById('diagnosticBoardRun'),status=d.getElementById('diagnosticBoardStatus'),output=d.getElementById('diagnosticBoardOutput');
-    input.addEventListener('change',function(){output.textContent='';status.textContent='Ready for diagnostic analysis.'});
+    input.addEventListener('change',function(){['diagnosticOverlay','diagnosticOverlayLegend'].forEach(function(id){var el=d.getElementById(id);if(el)el.remove()});output.textContent='';status.textContent='Ready for diagnostic analysis.'});
     button.addEventListener('click',async function(){
       output.textContent='';
       var file=input.files&&input.files[0];
@@ -185,6 +185,31 @@
         var summary={board_type:result.board_type,confidence:result.confidence,grade:result.grade,score:result.score,mask_coverage_pct:dg.mask_coverage_pct,ic_like:ci.ic_like,gold_contact_count:vis.gold_contact_count,solder_side_likelihood:ci.solder_side_likelihood,body_rejected:dg.body_rejected,pin_rejected:dg.pin_rejected,face_rejected:dg.face_rejected,side_status:side.status};
         output.textContent='QUICK DIAGNOSTIC SUMMARY\n'+JSON.stringify(summary,null,2)+'\n\nREJECTED PACKAGE REGIONS (inspection only)\n'+JSON.stringify(dg.rejected_package_regions||[],null,2)+'\n\nFULL REPORT\n'+JSON.stringify(report,null,2);
         output.scrollTop=0;
+        var old=d.getElementById('diagnosticOverlay');if(old)old.remove();
+        var canvas=d.createElement('canvas');canvas.id='diagnosticOverlay';canvas.style.cssText='display:block;width:100%;height:auto;margin:12px 0';
+        output.before(canvas);
+        var url=w.URL.createObjectURL(file);
+        var img=new w.Image();
+        img.onload=function(){
+          try{
+            canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;
+            var ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);
+            var regions=dg.rejected_package_regions||[];
+            ctx.lineWidth=Math.max(2,canvas.width/400);
+            ctx.font=Math.max(14,canvas.width/55)+'px sans-serif';
+            regions.forEach(function(q,i){
+              if(![q.x,q.y,q.w,q.h].every(Number.isFinite))return;
+              ctx.strokeStyle=q.reason==='body'?'#ff5050':q.reason==='pins'?'#ffda30':'#54e8ff';
+              ctx.strokeRect(q.x,q.y,q.w,q.h);
+              ctx.fillStyle=ctx.strokeStyle;ctx.fillText(String(i+1),q.x,Math.max(16,q.y-3));
+            });
+          }finally{w.URL.revokeObjectURL(url)}
+        };
+        img.onerror=function(){w.URL.revokeObjectURL(url);canvas.remove()};
+        img.src=url;
+        var legend=d.createElement('p');legend.id='diagnosticOverlayLegend';var prior=d.getElementById(legend.id);if(prior)prior.remove();
+        legend.textContent='Candidate overlay (inspection only): red = body, yellow = pins, cyan = brightness. Alignment may differ if the server rotates or resizes the photograph.';
+        canvas.before(legend);
       }catch(e){status.textContent='Diagnostic failed: '+e.message}
       finally{button.disabled=false;input.disabled=false}
     });
