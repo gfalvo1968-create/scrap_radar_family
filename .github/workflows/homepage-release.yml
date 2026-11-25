@@ -1,0 +1,22 @@
+name: Homepage release hygiene
+on:
+  push:
+    branches:
+      - release/homepage-preview-clarity-20261123
+  pull_request:
+    paths:
+      - index.html
+      - style.css
+      - board_sense_case.html
+      - tests/test_homepage_release.cjs
+      - .github/workflows/homepage-release.yml
+jobs:
+  homepage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify public landing page does not leak tester entrance or overpromise
+        run: node tests/test_homepage_release.cjs
