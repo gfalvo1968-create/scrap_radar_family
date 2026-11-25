@@ -154,7 +154,39 @@
     function paint(){var tray=d.getElementById('caseTray');if(!tray)return;Array.prototype.forEach.call(tray.querySelectorAll('.blueprint-item'),function(row){if(row.querySelector('.staging-file-preview'))return;var title=row.querySelector('.blueprint-title');var name=title?String(title.textContent||'').trim():'';if(!name||!urls[name])return;var img=d.createElement('img');img.className='staging-file-preview';img.src=urls[name];img.alt=name;img.style.cssText='width:88px;height:66px;object-fit:cover;border:1px solid #39ff14;border-radius:8px;margin-right:10px;vertical-align:middle;background:#111';row.insertBefore(img,row.firstChild)})}
     ['casePhotos','casePhoto'].forEach(function(id){var input=d.getElementById(id);if(input)input.addEventListener('change',function(){remember(input);setTimeout(paint,30)})});var tray=d.getElementById('caseTray');if(tray)new MutationObserver(function(){paint()}).observe(tray,{childList:true,subtree:true});paint()
   }
-  function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=24',function(){installTrayPreviews(d)})}
+  function installSingleBoardDiagnostic(d){
+    if(d.getElementById('singleBoardDiagnostic'))return;
+    var w=d.defaultView, tray=d.getElementById('caseTray');
+    var parent=tray&&tray.closest('section');
+    if(!w||!parent)return;
+    var panel=d.createElement('section');
+    panel.id='singleBoardDiagnostic';panel.className='panel';
+    panel.style.cssText='border:2px solid #ffd700;padding:18px;margin:16px 0;color:#ffd700';
+    panel.innerHTML='<h2>STAGING • Single-Photo Board Diagnostic</h2><p>One board photograph. Direct /analyze test. No multi-photo merge, buyer valuation or Scrap Radar handoff.</p><input type="file" id="diagnosticBoardPhoto" accept="image/*"><button type="button" id="diagnosticBoardRun">Analyze One Board</button><p id="diagnosticBoardStatus" role="status">Choose the front photograph.</p><pre id="diagnosticBoardOutput" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:70vh;overflow:auto"></pre>';
+    parent.insertAdjacentElement('beforebegin',panel);
+    var input=d.getElementById('diagnosticBoardPhoto'),button=d.getElementById('diagnosticBoardRun'),status=d.getElementById('diagnosticBoardStatus'),output=d.getElementById('diagnosticBoardOutput');
+    input.addEventListener('change',function(){output.textContent='';status.textContent='Ready for diagnostic analysis.'});
+    button.addEventListener('click',async function(){
+      output.textContent='';
+      var file=input.files&&input.files[0];
+      if(!file){status.textContent='Choose one photograph first.';return}
+      if(!file.type.startsWith('image/')||file.size>15*1024*1024){status.textContent='Choose an image under 15 MB.';return}
+      button.disabled=true;input.disabled=true;status.textContent='Analyzing one board on staging…';
+      try{
+        var body=new w.FormData();body.append('file',file);
+        var response=await w.fetch(STAGING_API+'/analyze',{method:'POST',body:body,cache:'no-store'});
+        if(!response.ok)throw new Error('HTTP '+response.status);
+        var result=await response.json();
+        var fields=['status','model','object_gate','board_type','board_type_reason','confidence','grade','score','grade_assessment','signals','visual','component_intelligence','power','physical_fingerprint','recommendation'];
+        var report={};
+        fields.forEach(function(key){if(Object.prototype.hasOwnProperty.call(result,key))report[key]=result[key]});
+        status.textContent='Single-photo diagnostic response received. Inspection only.';
+        output.textContent=JSON.stringify(report,null,2);
+      }catch(e){status.textContent='Diagnostic failed: '+e.message}
+      finally{button.disabled=false;input.disabled=false}
+    });
+  }
+  function loadTray(d){add(d,'spikeCaseTrayLoader','board_case_tray.js?v=24',function(){installTrayPreviews(d);installSingleBoardDiagnostic(d)})}
   function loadSpikeDual(d){add(d,'spikeDualLoader','board_spike_dual.js?v=2')}
   function loadTargetArea(d){add(d,'targetAreaDisplayLoader','board_target_area_patch.js?v=2',function(){loadSpikeDual(d)})}
   frame.addEventListener('load',function(){try{var d=this.contentDocument;if(!d)return;installTesterAccess(d);add(d,'inspectionTargetLoader','board_inspection_target.js?v=4',function(){loadTargetArea(d)});if(d.getElementById('spikeScrapBridgeLoader')){loadTray(d);return}var b=d.createElement('script');b.id='spikeScrapBridgeLoader';b.src='board_scrap_bridge.js?v=3';b.async=false;b.onload=function(){loadTray(d)};b.onerror=function(){loadTray(d)};d.body.appendChild(b)}catch(e){console.error('Board Sense staging injection failed',e)}});
